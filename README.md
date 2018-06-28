@@ -2,7 +2,7 @@
 
 ## Quick set up
 
-first make sure you have mongodb installed and running, you can follow the steps here: https://docs.mongodb.com/manual/administration/install-community/
+First make sure you have mongodb installed and running, you can follow the steps here: https://docs.mongodb.com/manual/administration/install-community/
 
 You will also need to have *Node.js* installed (https://nodejs.org/en/).
 
