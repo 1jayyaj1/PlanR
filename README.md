@@ -11,7 +11,7 @@ We use *Express.js* as our backend. In order to start the server, do this:
 ```
 cd Umba/server
 npm install
-PORT=3001 node bin/www
+npm start
 ```
 
 As for the frontend, we use *React* (duh!). To get started, run this:
