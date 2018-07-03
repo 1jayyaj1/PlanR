@@ -7,6 +7,10 @@
   height: 80px;
 }
 
+.inputName {
+  font-size: 15pt;
+}
+
 .App-header {
   background-color: #222;
   height: 150px;
