@@ -3,7 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Modal from 'react-awesome-modal';
 import 'semantic-ui-css/semantic.min.css';
 import { Form, Input, TextArea, Button } from 'semantic-ui-react'
@@ -88,7 +87,7 @@ class App extends Component {
         <div class="inner-wrapper mt-auto mb-auto container">
           <div class="row">
             <div class="col-md-7">
-                <h1 class="welcome-heading display-4 text-white">Product Development</h1>
+                <h1 class="welcome-heading display-4 text-white">Let's move.</h1>
                 <p class="text-white">We can help you take your idea from concept to shipping using the latest technologies and best practices available.</p>
                 <a href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Learn More</a>
             </div>
@@ -97,44 +96,74 @@ class App extends Component {
       </div>
 
       <div id="our-services" class="our-services section py-4">
-        <h3 class="section-title text-center my-5">Our Services</h3>
-        <div class="features py-4 mb-4">
-          <div class="container">
-            <div class="row">
-              <div class="feature py-4 col-md-6 d-flex">
-                <div class="icon text-primary mr-3"><i class="fa fa-paint-brush"></i></div>
-                <div class="px-4">
-                    <h5>Design & Branding</h5>
-                    <p>Quisque mollis mi ac aliquet accumsan. Sed sed dapibus libero. Nullam luctus purus duis sensibus signiferumque.</p>
-                </div>
-              </div>
-              <div class="feature py-4 col-md-6 d-flex">
-                <div class="icon text-primary mr-3"><i class="fa fa-code"></i></div>
-                <div class="px-4">
-                    <h5>Programming</h5>
-                    <p>Quisque mollis mi ac aliquet accumsan. Sed sed dapibus libero. Nullam luctus purus duis sensibus signiferumque.</p>
-                </div>
-              </div>
-            </div>
+        <h3 class="section-title text-center my-5">Your schedule</h3>
 
-            <div class="row">
-              <div class="feature py-4 col-md-6 d-flex">
-                <div class="icon text-primary mr-3"><i class="fa fa-font"></i></div>
-                <div class="px-4">
-                    <h5>Copywriting</h5>
-                    <p>Quisque mollis mi ac aliquet accumsan. Sed sed dapibus libero. Nullam luctus purus duis sensibus signiferumque.</p>
-                </div>
-              </div>
-              <div class="feature py-4 col-md-6 d-flex">
-                <div class="icon text-primary mr-3"><i class="fa fa-support"></i></div>
-                <div class="px-4">
-                    <h5>Training & Support</h5>
-                    <p>Quisque mollis mi ac aliquet accumsan. Sed sed dapibus libero. Nullam luctus purus duis sensibus signiferumque.</p>
-                </div>
-              </div>
+
+      <div class="container py-4">
+          <div class="row justify-content-md-center px-4">
+            <div class="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
+              <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
+              <BigCalendar
+                  selectable={true}
+                  min={new Date('2018, 1, 7, 09:00')}
+                  max={new Date('2018, 1, 7, 18:00')}
+                  defaultView='week'
+                  onSelectEvent={event => alert(event.title)}
+                onSelectSlot={() => this.openModal()}
+                events={[{
+                    'title': 'Woohoo2',
+                    'allDay': false,
+                    'start': moment().add(5, "hours").toDate(),
+                    'end': moment().add(6, "hours").toDate()
+                  }
+                  ]}
+                  startAccessor='start'
+                  endAccessor='end'
+              />
+              <div>
+                <Modal 
+                    visible={this.state.visible}
+                    width="40%"
+                    height="50%"
+                    effect="fadeInUp"
+                    onClickAway={() => this.closeModal()}>
+                    <h1 style={{paddingTop: '4%', paddingLeft: '4%',  paddingBottom: '2%', fontSize: '30pt'}}>New Event</h1>
+                    <div style={{paddingLeft: '4%', paddingRight: '4%',}} class="ui grid">
+                        <div class="eight wide column" >
+                          <label class="inputName">Name</label>
+                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
+                            <input type="text" placeholder="What will it be called?" />
+                          </div><br/>
+
+                          <label class="inputName">Location</label>
+                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
+                            <input type="text" placeholder="Where is it taking place?" />
+                          </div><br/>
+
+                          <label class="inputName">Capacity</label>
+                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
+                            <input type="text" placeholder="How many attendees?" />
+                          </div>
+                        </div>
+                        <div class="eight wide column">
+                          <label class="inputName">Description</label>
+                          <Form style={{paddingRight: '4%',  paddingTop: '5%'}}>
+                              <Form.TextArea
+                              onChange={(e) => this.setState({text: e.target.value})}
+                              value={this.state.text} placeholder="What are you planning?" style={{maxHeight: '160pt', minHeight: '160pt', resize: 'none'}}/>
+                          </Form>
+                        </div>
+                        {/*<a href="javascript:void(0);" onClick={() => this.closeModal()}>Close</a>*/}
+                    </div>
+                </Modal>
+            </div>
+        </div>
+
+
             </div>
           </div>
         </div>
+
       </div>
 
       <div class="blog section section-invert py-4">
