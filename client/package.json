@@ -5,9 +5,12 @@
   "dependencies": {
     "moment": "^2.22.2",
     "react": "^16.4.1",
+    "react-awesome-modal": "^2.0.3",
     "react-big-calendar": "^0.19.2",
     "react-dom": "^16.4.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "semantic-ui-css": "^2.3.2",
+    "semantic-ui-react": "^0.81.3"
   },
   "scripts": {
     "start": "react-scripts start",
