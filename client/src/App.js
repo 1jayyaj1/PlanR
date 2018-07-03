@@ -43,7 +43,7 @@ class App extends Component {
           <nav class="navbar navbar-expand-lg navbar-dark pt-4 px-0">
             <a class="navbar-brand" href="#">
               <img src="img/agency-landing/shards-logo-white.svg" class="mr-2" alt="Shards - Agency Landing Page" />
-              Shards Agency
+              Umba
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
@@ -54,28 +54,10 @@ class App extends Component {
                   <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Our Services</a>
+                  <a class="nav-link" href="#">My profile</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Testimonials</a>
-                </li>
-              </ul>
-
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="https://twitter.com/DesignRevision"><i class="fa fa-twitter"></i></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="https://www.facebook.com/designrevision"><i class="fa fa-facebook"></i></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="https://dribbble.com/hisk"><i class="fa fa-dribbble"></i></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="https://github.com/designrevision"><i class="fa fa-github"></i></a>
+                  <a class="nav-link" href="#">Log Out</a>
                 </li>
               </ul>
             </div>
@@ -86,8 +68,7 @@ class App extends Component {
           <div class="row">
             <div class="col-md-7">
                 <h1 class="welcome-heading display-4 text-white">Let's move.</h1>
-                <p class="text-white">We can help you take your idea from concept to shipping using the latest technologies and best practices available.</p>
-                <a href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Learn More</a>
+                <button href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Learn More</button>
             </div>
           </div>
         </div>
@@ -111,8 +92,8 @@ class App extends Component {
                 events={[{
                     'title': 'Woohoo2',
                     'allDay': false,
-                    'start': moment().add(5, "hours").toDate(),
-                    'end': moment().add(6, "hours").toDate()
+                    'start': moment().add(22, "hours").toDate(),
+                    'end': moment().add(23, "hours").toDate()
                   }
                   ]}
                   startAccessor='start'
@@ -121,8 +102,8 @@ class App extends Component {
               <div>
                 <Modal 
                     visible={this.state.visible}
-                    width="40%"
-                    height="50%"
+                    width="35%"
+                    height="35%"
                     effect="fadeInUp"
                     onClickAway={() => this.closeModal()}>
                     <h1 style={{paddingTop: '4%', paddingLeft: '4%',  paddingBottom: '2%', fontSize: '30pt'}}>New Event</h1>
@@ -139,7 +120,7 @@ class App extends Component {
                           </div><br/>
 
                           <label class="inputName">Capacity</label>
-                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
+                          <div class="ui input" style={{ paddingTop: '5%', width: '100%'}}>
                             <input type="text" placeholder="How many attendees?" />
                           </div>
                         </div>
@@ -160,86 +141,7 @@ class App extends Component {
 
       </div>
 
-      <div class="blog section section-invert py-4">
-        <h3 class="section-title text-center m-5">Latest Posts</h3>
-
-        <div class="container">
-          <div class="py-4">
-            <div class="row">
-              <div class="card-deck">
-              <div class="col-md-12 col-lg-4">
-                <div class="card mb-4">
-                  <img class="card-img-top" src="img/common/card-1.jpg" alt="Card image cap" />
-                  <div class="card-body">
-                    <h4 class="card-title">Find Great Places to Work While Travelling</h4>
-                    <p class="card-text">He seems sinking under the evidence could not only grieve and a visit. The father is to bless and placed in his length hid...</p>
-                    <a class="btn btn-primary btn-pill" href="#">Read More &rarr;</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-12 col-lg-4">
-                <div class="card mb-4">
-                  <img class="card-img-top" src="img/common/card-3.jpg" alt="Card image cap" />
-                  <div class="card-body">
-                    <h4 class="card-title">Quick Tips for Improving Your Website's Design</h4>
-                    <p class="card-text">He seems sinking under the evidence could not only grieve and a visit. The father is to bless and placed in his length hid...</p>
-                    <a class="btn btn-primary btn-pill" href="#">Read More &rarr;</a>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-12 col-lg-4">
-                <div class="card mb-4">
-                  <img class="card-img-top" src="img/common/card-2.jpg" alt="Card image cap" />
-                  <div class="card-body">
-                    <h4 class="card-title">A Designer's Tips While Travelling and Working</h4>
-                    <p class="card-text">He seems sinking under the evidence could not only grieve and a visit. The father is to bless and placed in his length hid...</p>
-                    <a class="btn btn-primary btn-pill" href="#">Read More &rarr;</a>
-                  </div>
-                </div>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="testimonials section py-4">
-          <h3 class="section-title text-center m-5">Testimonials</h3>
-          <div class="container py-5">
-            <div class="row">
-                <div class="col-md-4 testimonial text-center">
-                    <div class="avatar rounded-circle with-shadows mb-3 ml-auto mr-auto">
-                        <img src="img/common/avatar-1.jpeg" class="w-100" alt="Testimonial Avatar" />
-                    </div>
-                    <h5 class="mb-1">Osbourne Tranter</h5>
-                    <span class="text-muted d-block mb-2">CEO at Megacorp</span>
-                    <p>Vivamus quis ex mattis, gravida erat a, iaculis urna. Proin ac eleifend tortor. Nunc in augue eget enim venenatis viverra.</p>
-                </div>
-
-                <div class="col-md-4 testimonial text-center">
-                    <div class="avatar rounded-circle with-shadows mb-3 ml-auto mr-auto">
-                        <img src="img/common/avatar-2.jpeg" class="w-100" alt="Testimonial Avatar" />
-                    </div>
-                    <h5 class="mb-1">Darrin Ollie</h5>
-                    <span class="text-muted d-block mb-2">CEO at Megacorp</span>
-                    <p>Nullam eu ligula facilisis, commodo velit non, vulputate dolor. Aenean congue euismod vestibulum.</p>
-                </div>
-
-                <div class="col-md-4 testimonial text-center">
-                    <div class="avatar rounded-circle with-shadows mb-3 ml-auto mr-auto">
-                        <img src="img/common/avatar-3.jpeg" class="w-100" alt="Testimonial Avatar" />
-                    </div>
-                    <h5 class="mb-1">Quinton Bruce</h5>
-                    <span class="text-muted d-block mb-2">CEO at Megacorp</span>
-                    <p> Aenean imperdiet ultrices tortor id convallis. Donec id metus magna. Morbi pretium odio faucibus blandit gravida.</p>
-                </div>
-            </div>
-          </div>
-      </div>
-
-      <div class="contact section-invert py-4">
+      {/*<div class="contact section-invert py-4">
         <h3 class="section-title text-center m-5">Contact Us</h3>
         <div class="container py-4">
           <div class="row justify-content-md-center px-4">
@@ -272,12 +174,12 @@ class App extends Component {
             </div>
           </div>
         </div>
-      </div>
+      </div>*/}
 
       <footer>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
           <div class="container">
-            <a class="navbar-brand" href="#">Shards Agency</a>
+            <a class="navbar-brand" href="#">Ericsson</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -290,10 +192,7 @@ class App extends Component {
                   <a class="nav-link" href="#">Our Services</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Blog</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Testimonials</a>
+                  <a class="nav-link" href="#">My profile</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">Contact Us</a>

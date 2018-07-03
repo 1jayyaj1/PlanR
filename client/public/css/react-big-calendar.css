@@ -101,6 +101,12 @@ button.rbc-input::-moz-focus-inner {
 .rbc-today {
   background-color: #f4f4f4;
 }
+.rbc-time-header {
+  margin-right: 0px !important;
+}
+.rbc-overflowing {
+  margin-right: 0px !important;
+}
 .rbc-toolbar {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 12pt;
