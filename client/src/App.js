@@ -3,8 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import Modal from 'react-awesome-modal';
-import { Button } from 'reactstrap';
+// import Modal from 'react-awesome-modal';
+import { Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
@@ -15,22 +15,23 @@ class App extends Component {
 
     this.state = {
       events: [],
-      visible : false
+      modal : false
     }
+
+    this.toggle = this.toggle.bind(this);
   }
 
-  openModal() {
-      this.setState({
-          visible : true
-      });
-  }
+  // openModal() {
+  //     this.setState({
+  //         visible : true
+  //     });
+  // }
 
-  closeModal() {
-      this.setState({
-          visible : false
-      });
+  toggle() {
+    this.setState({
+      modal: !this.state.modal
+    });
   }
-
 
 
   render() {
@@ -87,7 +88,7 @@ class App extends Component {
                   max={new Date('2018, 1, 7, 18:00')}
                   defaultView='week'
                   onSelectEvent={event => alert(event.title)}
-                onSelectSlot={() => this.openModal()}
+                onSelectSlot={() => this.toggle()}
                 events={[{
                     'title': 'Woohoo2',
                     'allDay': false,
@@ -99,37 +100,41 @@ class App extends Component {
                   endAccessor='end'
               />
               <div>
-                <Modal 
-                    visible={this.state.visible}
-                    width="35%"
-                    height="35%"
-                    effect="fadeInUp"
-                    onClickAway={() => this.closeModal()}>
-                    <h1 style={{paddingTop: '4%', paddingLeft: '4%',  paddingBottom: '2%', fontSize: '30pt'}}>New Event</h1>
-                    <div style={{paddingLeft: '4%', paddingRight: '4%',}} class="ui grid">
-                        <div class="eight wide column" >
-                          <label class="inputName">Name</label>
-                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
-                            <input type="text" placeholder="What will it be called?" />
-                          </div><br/>
 
-                          <label class="inputName">Location</label>
-                          <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
-                            <input type="text" placeholder="Where is it taking place?" />
-                          </div><br/>
-
-                          <label class="inputName">Capacity</label>
-                          <div class="ui input" style={{ paddingTop: '5%', width: '100%'}}>
-                            <input type="text" placeholder="How many attendees?" />
-                          </div>
-                        </div>
-                        <div class="eight wide column">
-                          <label class="inputName">Description</label>
-                          
-                        </div>
-                        {/*<a href="javascript:void(0);" onClick={() => this.closeModal()}>Close</a>*/}
-                    </div>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                  <ModalHeader toggle={this.toggle}>New Event</ModalHeader>
+                  <ModalBody>
+                   <Row>
+                    <Col xs="8" sm="8" md="8" lg="8">
+                      <label className="inputName">Name</label>
+                      <Input placeholder="What will it be called?" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs="8" sm="8" md="8" lg="8">
+                      <label className="inputName">Email</label>
+                      <Input placeholder="Your email" />
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs="8" sm="8" md="8" lg="8">
+                      <label className="inputName">Ho ho</label>
+                      <Input placeholder="Jay will be mad af" />
+                    </Col>
+                  </Row>
+                  </ModalBody>
+                  <ModalFooter>
+                    <Row>
+                      <Col>
+                        <Button className="btn btn-secondary" onClick={this.toggle}>Cancel</Button>
+                        <Button className="btn btn-success" onClick={this.toggle}>Do Something</Button>
+                      </Col>
+                    </Row>
+                  </ModalFooter>
                 </Modal>
+
+
+
             </div>
         </div>
 
@@ -214,3 +219,36 @@ class App extends Component {
                           </form> */}
 
 export default App;
+
+
+
+// <label class="inputName">Location</label>
+// <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
+//   <input type="text" placeholder="Where is it taking place?" />
+// </div><br/>
+
+// <label class="inputName">Capacity</label>
+// <div class="ui input" style={{ paddingTop: '5%', width: '100%'}}>
+//   <input type="text" placeholder="How many attendees?" />
+// </div>
+// </div>
+// <div class="col-lg-12">
+// <label class="inputName">Description</label>
+// </div>
+// {/*<a href="javascript:void(0);" onClick={() => this.closeModal()}>Close</a>*/}
+
+
+// <Modal 
+// visible={this.state.visible}
+// width="35%"
+// height="35%"
+// effect="fadeInUp"
+// onClickAway={() => this.closeModal()}>
+// <h1 style={{paddingTop: '4%', paddingLeft: '4%',  paddingBottom: '2%', fontSize: '30pt'}}>New Event</h1>
+// <div className="row">
+//     <div class="col-lg-12 col-md-12">
+//       <label class="inputName">Name</label>
+//       <input type="text" placeholder="What will it be called?" />
+//     </div>
+// </div>
+// </Modal>
