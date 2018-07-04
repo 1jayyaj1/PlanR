@@ -5,7 +5,6 @@ import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import Modal from 'react-awesome-modal';
 
-
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
 class App extends Component {
