@@ -4,7 +4,7 @@ import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import Modal from 'react-awesome-modal';
-
+import { Button } from 'reactstrap';
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
@@ -42,7 +42,6 @@ class App extends Component {
         <div class="container">
           <nav class="navbar navbar-expand-lg navbar-dark pt-4 px-0">
             <a class="navbar-brand" href="#">
-              <img src="img/agency-landing/shards-logo-white.svg" class="mr-2" alt="Shards - Agency Landing Page" />
               Umba
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +67,7 @@ class App extends Component {
           <div class="row">
             <div class="col-md-7">
                 <h1 class="welcome-heading display-4 text-white">Let's move.</h1>
-                <button href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Learn More</button>
+                <button href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
             </div>
           </div>
         </div>
