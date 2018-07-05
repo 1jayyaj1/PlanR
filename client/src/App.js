@@ -4,7 +4,7 @@ import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 // import Modal from 'react-awesome-modal';
-import { Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import { Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
@@ -15,10 +15,12 @@ class App extends Component {
 
     this.state = {
       events: [],
-      modal : false
+      modal : false,
+      display : 0,
     }
 
     this.toggle = this.toggle.bind(this);
+    this.next = this.next.bind(this);
   }
 
   // openModal() {
@@ -30,6 +32,12 @@ class App extends Component {
   toggle() {
     this.setState({
       modal: !this.state.modal
+    });
+  }
+
+  next() {
+    this.setState({
+      display: this.state.display + 1
     });
   }
 
@@ -104,7 +112,7 @@ class App extends Component {
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                   <ModalHeader toggle={this.toggle}>New Event</ModalHeader>
                   <ModalBody>
-                   <Row>
+                   {/* <Row>
                     <Col xs="8" sm="8" md="8" lg="8">
                       <label className="inputName">Name</label>
                       <Input placeholder="What will it be called?" />
@@ -121,13 +129,61 @@ class App extends Component {
                       <label className="inputName">Ho ho</label>
                       <Input placeholder="Jay will be mad af" />
                     </Col>
-                  </Row>
+                  </Row> */}
+
+
+                  <Form>
+                    <h6 className="text-muted"> Progress </h6>
+                    <div className="progress progress-lg">
+                      <div className="progress-bar bg-success" role="progressbar" Style="width: 20%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">20%</div>
+                    </div>
+                    <fieldset className={ "fadeout " + (this.state.display == 0 ? "active" : "") }> 
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Name 1</label>
+                          <Input placeholder="What will it be called?" />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Email</label>
+                          <Input placeholder="Your email" />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Ho ho</label>
+                          <Input placeholder="Jay will be mad af" />
+                        </Col>
+                      </Row>
+                    </fieldset>
+                    <fieldset  className={ "fadeout " + (this.state.display == 1 ? "active" : "") }> 
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Name</label>
+                          <Input placeholder="What will it be called?" />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Email</label>
+                          <Input placeholder="Your email" />
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="8" sm="8" md="8" lg="8">
+                          <label className="inputName">Ho ho</label>
+                          <Input placeholder="Jay will be mad af" />
+                        </Col>
+                      </Row>
+                    </fieldset>
+                  </Form>
                   </ModalBody>
                   <ModalFooter>
                     <Row>
                       <Col>
-                        <Button className="btn btn-secondary" onClick={this.toggle}>Cancel</Button>
-                        <Button className="btn btn-success" onClick={this.toggle}>Do Something</Button>
+                        <Button className="btn btn-secondary" onClick={this.toggle}>Previous</Button>
+                        <Button className="btn btn-success" Style="width: 93px" onClick={this.next}>Next</Button>
                       </Col>
                     </Row>
                   </ModalFooter>

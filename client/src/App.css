@@ -26,6 +26,22 @@
   font-size: large;
 }
 
+.modal-dialog {
+  height: 45%
+}
+
+.modal-content {
+  height: 100%
+}
+
+.fadeout {
+  display: none;
+}
+
+.fadeout.active {
+  display: block;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
