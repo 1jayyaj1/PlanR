@@ -42,6 +42,14 @@
   display: block;
 }
 
+.steps-content {
+  margin-top: 16px;
+}
+
+.steps-action {
+  margin-top: 24px;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

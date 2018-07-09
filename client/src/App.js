@@ -5,6 +5,42 @@ import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 // import Modal from 'react-awesome-modal';
 import { Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
+import { Steps, Button as AntButton, message } from 'antd';
+import 'antd/dist/antd.css';
+
+const Step = Steps.Step;
+
+const steps = [{
+  title: 'First',
+  content:
+    () => { 
+      <fieldset> 
+        <Row>
+          <Col xs="8" sm="8" md="8" lg="8">
+            <label className="inputName">Name 1</label>
+            <Input placeholder="What will it be called?" />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs="8" sm="8" md="8" lg="8">
+            <label className="inputName">Email</label>
+            <Input placeholder="Your email" />
+          </Col>
+        </Row>
+        <Row>
+          <Col xs="8" sm="8" md="8" lg="8">
+            <label className="inputName">Ho ho</label>
+            <Input placeholder="Jay will be mad af" />
+          </Col>
+        </Row>
+      </fieldset> },
+}, {
+  title: 'Second',
+  content: 'Second-content',
+}, {
+  title: 'Last',
+  content: 'Last-content',
+}];
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
@@ -17,11 +53,14 @@ class App extends Component {
       events: [],
       modal : false,
       display : 0,
+      step: 0,
     }
 
     this.toggle = this.toggle.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
+    this.nextStep = this.nextStep.bind(this);
+    this.prevStep = this.prevStep.bind(this);
   }
 
   // openModal() {
@@ -48,8 +87,88 @@ class App extends Component {
     });
   }
 
+  nextStep() {
+    const step = this.state.step + 1;
+    this.setState({ step });
+  }
+
+  prevStep() {
+    const step = this.state.step - 1;
+    this.setState({ step });
+  }
+
 
   render() {
+
+    let wizardContent;
+    if (this.state.step == 0) {
+      wizardContent = 
+        <fieldset> 
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Name</label>
+              <Input placeholder="What will it be called?" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Email</label>
+              <Input placeholder="Your email" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Ho ho</label>
+              <Input placeholder="Jay will be mad af" />
+            </Col>
+          </Row>
+        </fieldset>;
+    }
+    else if (this.state.step == 1) {
+      wizardContent = 
+        <fieldset> 
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Name 1</label>
+              <Input placeholder="What will it be called?" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Email 1</label>
+              <Input placeholder="Your email" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Ho ho 1</label>
+              <Input placeholder="Jay will be mad af" />
+            </Col>
+          </Row>
+        </fieldset>;
+    }  else {
+        wizardContent = 
+        <fieldset> 
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Name 2</label>
+              <Input placeholder="What will it be called?" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Email 2</label>
+              <Input placeholder="Your email" />
+            </Col>
+          </Row>
+          <Row>
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Ho ho 2</label>
+              <Input placeholder="Jay will be mad af" />
+            </Col>
+          </Row>
+        </fieldset>;
+    }
 
     return (
 
@@ -120,16 +239,39 @@ class App extends Component {
                   <ModalBody>
                     <h2> New Event </h2>
                     <Form>
-                      {/* <h6 className="text-muted"> Progress </h6>
-                      <div className="progress progress-sm">
-                        <div className="progress-bar bg-success" role="progressbar" Style="width: 20%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100">20%</div>
-                      </div> */}
-                    <div className="col-md-6 pb-widths"> 
-                    <div class="progress progress-sm mb-4"><div class="progress-bar" role="progressbar" Style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div></div>
-                    </div>
+
+                    <Row>
+                      <Col xs="12" sm="12" md="12" lg="12">
+                        <Steps current={this.state.step}>
+                          {steps.map(item => <Step key={item.title} title={item.title} />)}
+                        </Steps>
+                        <div className="steps-content">
+                          {wizardContent}
+                        </div>
+                        <div className="steps-action">
+                          {
+                            this.state.step < steps.length - 1
+                            && <Button onClick={() => this.nextStep()}>Next</Button>
+                          }
+                          {
+                            this.state.step === steps.length - 1
+                            && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
+                          }
+                          {
+                            this.state.step > 0
+                            && (
+                            <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
+                              Previous
+                            </Button>
+                            )
+                          }
+                        </div>
+                      </Col>
+                    </Row>
 
 
-                      <fieldset className={ "fadeout " + (this.state.display == 0 ? "active" : "") }> 
+
+                      {/* <fieldset className={ "fadeout " + (this.state.display == 0 ? "active" : "") }> 
                         <Row>
                           <Col xs="8" sm="8" md="8" lg="8">
                             <label className="inputName">Name 1</label>
@@ -168,16 +310,16 @@ class App extends Component {
                             <Input placeholder="Jay will be mad af" />
                           </Col>
                         </Row>
-                      </fieldset>
+                      </fieldset> */}
                     </Form>
                   </ModalBody>
                   <ModalFooter>
-                    <Row>
+                    {/* <Row>
                       <Col>
                         <Button className="btn btn-secondary" onClick={this.previous}>Previous</Button>
                         <Button className="btn btn-success" Style="width: 93px" onClick={this.next}>Next</Button>
                       </Col>
-                    </Row>
+                    </Row> */}
                   </ModalFooter>
                 </Modal>
 
