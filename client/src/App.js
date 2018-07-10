@@ -52,26 +52,28 @@ class App extends Component {
     this.state = {
       events: [],
       modal : false,
+      modal2: false,
       display : 0,
       step: 0,
     }
 
     this.toggle = this.toggle.bind(this);
+    this.toggle2 = this.toggle2.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
   }
 
-  // openModal() {
-  //     this.setState({
-  //         visible : true
-  //     });
-  // }
-
   toggle() {
     this.setState({
       modal: !this.state.modal
+    });
+  }
+
+   toggle2() {
+    this.setState({
+      modal2: !this.state.modal2
     });
   }
 
@@ -320,6 +322,58 @@ class App extends Component {
                         <Button className="btn btn-success" Style="width: 93px" onClick={this.next}>Next</Button>
                       </Col>
                     </Row> */}
+                  </ModalFooter>
+                </Modal>
+
+                <Button className="btn btn-primary" onClick={this.toggle2}>Open modal</Button>
+
+                <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className}>
+                <ModalHeader toggle={this.toggle2}>New Event</ModalHeader>
+                  <ModalBody>
+                   <form>
+                   <Row>
+                    <Col xs="12" sm="12" md="12" lg="12">
+                      <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                      <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
+                      <ul style={{fontSize: '15px'}}>
+                        <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                        <li><span>Type of event:</span> <span>recurrent</span></li>
+                        <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
+                        <li><span>Location:</span> <span>Ericsson gym</span></li>
+                      </ul> 
+                      <hr/>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs="12" sm="12" md="12" lg="12">
+                      <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                      <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
+                      <ul style={{fontSize: '15px'}}>
+                        <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
+                        <li><span>Type of event:</span> <span>recurrent</span></li>
+                        <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
+                        <li><span>Location:</span> <span>Ericsson conference room</span></li>
+                      </ul> 
+                      <hr/>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col xs="12" sm="12" md="12" lg="12">
+                      <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                      <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
+                      <ul style={{fontSize: '15px'}}>
+                        <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
+                        <li><span>Type of event:</span> <span>one time</span></li>
+                        <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
+                        <li><span>Location:</span> <span>Ericsson garage</span></li>
+                      </ul> 
+                      <hr/>
+                    </Col>
+                  </Row>
+                  </form>
+                  </ModalBody>
+                  <ModalFooter>
+                  <button type="button" class="btn btn-outline-success pull-right" align="right">Register</button>
                   </ModalFooter>
                 </Modal>
 
