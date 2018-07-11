@@ -270,49 +270,6 @@ class App extends Component {
                         </div>
                       </Col>
                     </Row>
-
-
-
-                      {/* <fieldset className={ "fadeout " + (this.state.display == 0 ? "active" : "") }> 
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Name 1</label>
-                            <Input placeholder="What will it be called?" />
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Email</label>
-                            <Input placeholder="Your email" />
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Ho ho</label>
-                            <Input placeholder="Jay will be mad af" />
-                          </Col>
-                        </Row>
-                      </fieldset>
-                      <fieldset  className={ "fadeout " + (this.state.display == 1 ? "active" : "") }> 
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Name</label>
-                            <Input placeholder="What will it be called?" />
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Email</label>
-                            <Input placeholder="Your email" />
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="8" sm="8" md="8" lg="8">
-                            <label className="inputName">Ho ho</label>
-                            <Input placeholder="Jay will be mad af" />
-                          </Col>
-                        </Row>
-                      </fieldset> */}
                     </Form>
                   </ModalBody>
                   <ModalFooter>
@@ -380,49 +337,12 @@ class App extends Component {
 
 
             </div>
-        </div>
-
-
+            </div>
             </div>
           </div>
         </div>
 
       </div>
-
-      {/*<div class="contact section-invert py-4">
-        <h3 class="section-title text-center m-5">Contact Us</h3>
-        <div class="container py-4">
-          <div class="row justify-content-md-center px-4">
-            <div class="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-              <form>
-                <div class="row">
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group">
-                      <label for="contactFormFullName">Full Name</label>
-                      <input type="email" class="form-control" id="contactFormFullName" placeholder="Enter your full name" />
-                    </div>
-                  </div>
-                  <div class="col-md-6 col-sm-12">
-                    <div class="form-group">
-                      <label for="contactFormEmail">Email address</label>
-                      <input type="email" class="form-control" id="contactFormEmail" placeholder="Enter your email address" />
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col">
-                    <div class="form-group">
-                        <label for="exampleInputMessage1">Message</label>
-                        <textarea id="exampleInputMessage1" class="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
-                    </div>
-                  </div>
-                </div>
-                <input class="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message" />
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>*/}
 
       <footer>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -463,36 +383,3 @@ class App extends Component {
                           </form> */}
 
 export default App;
-
-
-
-// <label class="inputName">Location</label>
-// <div class="ui input" style={{paddingBottom: '5%', paddingTop: '5%', width: '100%'}}>
-//   <input type="text" placeholder="Where is it taking place?" />
-// </div><br/>
-
-// <label class="inputName">Capacity</label>
-// <div class="ui input" style={{ paddingTop: '5%', width: '100%'}}>
-//   <input type="text" placeholder="How many attendees?" />
-// </div>
-// </div>
-// <div class="col-lg-12">
-// <label class="inputName">Description</label>
-// </div>
-// {/*<a href="javascript:void(0);" onClick={() => this.closeModal()}>Close</a>*/}
-
-
-// <Modal 
-// visible={this.state.visible}
-// width="35%"
-// height="35%"
-// effect="fadeInUp"
-// onClickAway={() => this.closeModal()}>
-// <h1 style={{paddingTop: '4%', paddingLeft: '4%',  paddingBottom: '2%', fontSize: '30pt'}}>New Event</h1>
-// <div className="row">
-//     <div class="col-lg-12 col-md-12">
-//       <label class="inputName">Name</label>
-//       <input type="text" placeholder="What will it be called?" />
-//     </div>
-// </div>
-// </Modal>
