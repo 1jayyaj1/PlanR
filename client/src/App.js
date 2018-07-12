@@ -193,115 +193,125 @@ class App extends Component {
           <div class="container py-4">
             <div class="row justify-content-md-center px-4">
               <div class="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
-                <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
-                  <BigCalendar
-                    selectable={true}
-                    min={new Date('2018, 1, 7, 09:00')}
-                    max={new Date('2018, 1, 7, 18:00')}
-                    defaultView='week'
-                    onSelectEvent={event => alert(event.title)}
-                    onSelectSlot={() => this.toggle()}
-                    events={[{
-                        'title': 'Woohoo2',
-                        'allDay': false,
-                        'start': moment().add(22, "hours").toDate(),
-                        'end': moment().add(23, "hours").toDate()
-                      }]}
-                      startAccessor='start'
-                      endAccessor='end'/>
 
-                  <Button className="btn btn-primary" onClick={this.toggle2}>Open modal</Button>
+                <Row>
+                  <Col xs="12" sm="12" md="12" lg="12">
+                    <Button className="btn btn-primary" onClick={this.toggle2}>Open modal</Button>
+                  </Col>
+                </Row>
 
-                  {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                  <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalBody>
-                      <h2> New Event </h2>
-                      <Form>
-                        <Row>
-                          <Col xs="12" sm="12" md="12" lg="12">
-                            <Steps current={this.state.step}>
-                              {steps.map(item => <Step key={item.title} title={item.title} />)}
-                            </Steps>
-                            <div className="steps-content">
-                              {wizardContent}
-                            </div>
-                            <div className="steps-action">
-                              {
-                                this.state.step < steps.length - 1
-                                && <Button onClick={() => this.nextStep()}>Next</Button>
-                              }
-                              {
-                                this.state.step === steps.length - 1
-                                && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
-                              }
-                              {
-                                this.state.step > 0
-                                && (
-                                <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
-                                  Previous
-                                </Button>
-                                )
-                              }
-                            </div>
-                          </Col>
-                        </Row>
-                      </Form>
-                    </ModalBody>
-                    <ModalFooter>
-                    </ModalFooter>
-                  </Modal>
+                <Row>
+                  <Col xs="12" sm="12" md="12" lg="12">
+                    <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
+                      <BigCalendar
+                        selectable={true}
+                        min={new Date('2018, 1, 7, 09:00')}
+                        max={new Date('2018, 1, 7, 18:00')}
+                        defaultView='week'
+                        onSelectEvent={event => alert(event.title)}
+                        onSelectSlot={() => this.toggle()}
+                        events={[{
+                            'title': 'Woohoo2',
+                            'allDay': false,
+                            'start': moment().add(22, "hours").toDate(),
+                            'end': moment().add(23, "hours").toDate()
+                          }]}
+                          startAccessor='start'
+                          endAccessor='end'>
+                      </BigCalendar>
+                    </div>
+                  </Col>
+                </Row>
 
-                  {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
-                  <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle2}>New Event</ModalHeader>
-                    <ModalBody>
-                      <form>
-                        <Row>
-                          <Col xs="12" sm="12" md="12" lg="12">
-                            <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                            <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
-                            <ul style={{fontSize: '15px'}}>
-                              <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                              <li><span>Type of event:</span> <span>recurrent</span></li>
-                              <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
-                              <li><span>Location:</span> <span>Ericsson gym</span></li>
-                            </ul> 
-                            <hr/>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="12" sm="12" md="12" lg="12">
-                            <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                            <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
-                            <ul style={{fontSize: '15px'}}>
-                              <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
-                              <li><span>Type of event:</span> <span>recurrent</span></li>
-                              <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
-                              <li><span>Location:</span> <span>Ericsson conference room</span></li>
-                            </ul> 
-                            <hr/>
-                          </Col>
-                        </Row>
-                        <Row>
-                          <Col xs="12" sm="12" md="12" lg="12">
-                            <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                            <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
-                            <ul style={{fontSize: '15px'}}>
-                              <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
-                              <li><span>Type of event:</span> <span>one time</span></li>
-                              <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
-                              <li><span>Location:</span> <span>Ericsson garage</span></li>
-                            </ul> 
-                            <hr/>
-                          </Col>
-                        </Row>
-                      </form>
-                    </ModalBody>
-                    <ModalFooter>
-                      <button type="button" class="btn btn-outline-success pull-right" align="right">Register</button>
-                    </ModalFooter>
-                  </Modal>
-                </div>
+                {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                  <ModalBody>
+                    <h2> New Event </h2>
+                    <Form>
+                      <Row>
+                        <Col xs="12" sm="12" md="12" lg="12">
+                          <Steps current={this.state.step}>
+                            {steps.map(item => <Step key={item.title} title={item.title} />)}
+                          </Steps>
+                          <div className="steps-content">
+                            {wizardContent}
+                          </div>
+                          <div className="steps-action">
+                            {
+                              this.state.step < steps.length - 1
+                              && <Button onClick={() => this.nextStep()}>Next</Button>
+                            }
+                            {
+                              this.state.step === steps.length - 1
+                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
+                            }
+                            {
+                              this.state.step > 0
+                              && (
+                              <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
+                                Previous
+                              </Button>
+                              )
+                            }
+                          </div>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </ModalBody>
+                  <ModalFooter>
+                  </ModalFooter>
+                </Modal>
+
+                {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
+                <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className}>
+                  <ModalHeader toggle={this.toggle2}>New Event</ModalHeader>
+                  <ModalBody>
+                    <form>
+                      <Row>
+                        <Col xs="12" sm="12" md="12" lg="12">
+                          <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                          <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
+                          <ul style={{fontSize: '15px'}}>
+                            <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                            <li><span>Type of event:</span> <span>recurrent</span></li>
+                            <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
+                            <li><span>Location:</span> <span>Ericsson gym</span></li>
+                          </ul> 
+                          <hr/>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="12" sm="12" md="12" lg="12">
+                          <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                          <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
+                          <ul style={{fontSize: '15px'}}>
+                            <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
+                            <li><span>Type of event:</span> <span>recurrent</span></li>
+                            <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
+                            <li><span>Location:</span> <span>Ericsson conference room</span></li>
+                          </ul> 
+                          <hr/>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col xs="12" sm="12" md="12" lg="12">
+                          <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                          <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
+                          <ul style={{fontSize: '15px'}}>
+                            <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
+                            <li><span>Type of event:</span> <span>one time</span></li>
+                            <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
+                            <li><span>Location:</span> <span>Ericsson garage</span></li>
+                          </ul> 
+                          <hr/>
+                        </Col>
+                      </Row>
+                    </form>
+                  </ModalBody>
+                  <ModalFooter>
+                    <button type="button" class="btn btn-outline-success pull-right" align="right">Register</button>
+                  </ModalFooter>
+                </Modal>
               </div>
             </div>
           </div>
