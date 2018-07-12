@@ -27,6 +27,7 @@ class App extends Component {
       events: [],
       modal : false,
       modal2: false,
+      modal3: false,
       display : 0,
       step: 0,
     }
@@ -48,6 +49,11 @@ class App extends Component {
    toggle2() {
     this.setState({
       modal2: !this.state.modal2
+    });
+  }
+  toggle3() {
+    this.setState({
+      modal3: !this.state.modal3
     });
   }
 
@@ -196,19 +202,13 @@ class App extends Component {
 
                 <Row>
                   <Col xs="12" sm="12" md="12" lg="12">
-                    <Button className="btn btn-primary" onClick={this.toggle2}>Open modal</Button>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col xs="12" sm="12" md="12" lg="12">
                     <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
                       <BigCalendar
                         selectable={true}
                         min={new Date('2018, 1, 7, 09:00')}
                         max={new Date('2018, 1, 7, 18:00')}
                         defaultView='week'
-                        onSelectEvent={event => alert(event.title)}
+                        onSelectEvent={() => this.toggle3()}
                         onSelectSlot={() => this.toggle()}
                         events={[{
                             'title': 'Woohoo2',
@@ -220,6 +220,12 @@ class App extends Component {
                           endAccessor='end'>
                       </BigCalendar>
                     </div>
+                  </Col>
+                </Row>
+                
+                <Row>
+                  <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
+                    <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggle2}>Register</Button>
                   </Col>
                 </Row>
 
@@ -310,6 +316,45 @@ class App extends Component {
                   </ModalBody>
                   <ModalFooter>
                     <button type="button" class="btn btn-outline-success pull-right" align="right">Register</button>
+                  </ModalFooter>
+                </Modal>
+
+                {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
+                <Modal isOpen={this.state.modal3} toggle={this.toggle3} className={this.props.className}>
+                  <ModalBody>
+                    <h2> Woohoo2 </h2>
+                    <Form>
+                      <Row>
+                        <Col xs="12" sm="12" md="12" lg="12">
+                          <Steps current={this.state.step}>
+                            {steps.map(item => <Step key={item.title} title={item.title} />)}
+                          </Steps>
+                          <div className="steps-content">
+                            {wizardContent}
+                          </div>
+                          <div className="steps-action">
+                            {
+                              this.state.step < steps.length - 1
+                              && <Button onClick={() => this.nextStep()}>Next</Button>
+                            }
+                            {
+                              this.state.step === steps.length - 1
+                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
+                            }
+                            {
+                              this.state.step > 0
+                              && (
+                              <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
+                                Previous
+                              </Button>
+                              )
+                            }
+                          </div>
+                        </Col>
+                      </Row>
+                    </Form>
+                  </ModalBody>
+                  <ModalFooter>
                   </ModalFooter>
                 </Modal>
               </div>
