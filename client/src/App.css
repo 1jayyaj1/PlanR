@@ -7,8 +7,29 @@
   height: 80px;
 }
 
-.inputName {
+.basicInfo {
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.rightInputInBasicInfo {
+  padding-left: 8%;
+}
+
+.basicInfo {
   font-size: 15pt;
+}
+
+.inputDescription {
+  height:143pt;
+}
+
+.steps-action {
+  float:right;
+}
+
+.eventCreationModal {
+  width:90%;
 }
 
 .App-header {

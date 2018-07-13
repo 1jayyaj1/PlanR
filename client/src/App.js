@@ -2,18 +2,19 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
+import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
 import { Steps, message } from 'antd';
 import 'antd/dist/antd.css';
+
 
 const Step = Steps.Step;
 
 const steps = [{
-  title: 'First',
+  title: 'Basic info',
 }, {
-  title: 'Second',
+  title: 'Time & date',
 }, {
-  title: 'Last',
+  title: 'Summary',
 }];
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
@@ -30,8 +31,10 @@ class App extends Component {
       modal3: false,
       display : 0,
       step: 0,
+      cSelected: [],
     }
 
+    this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
     this.toggle = this.toggle.bind(this);
     this.toggle2 = this.toggle2.bind(this);
     this.toggle3 = this.toggle3.bind(this);
@@ -39,6 +42,16 @@ class App extends Component {
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
+  }
+
+  onCheckboxBtnClick(selected) {
+    const index = this.state.cSelected.indexOf(selected);
+    if (index < 0) {
+      this.state.cSelected.push(selected);
+    } else {
+      this.state.cSelected.splice(index, 1);
+    }
+    this.setState({ cSelected: [...this.state.cSelected] });
   }
 
   toggle() {
@@ -86,23 +99,27 @@ class App extends Component {
     let wizardContent;
     if (this.state.step == 0) {
       wizardContent = 
-        <fieldset> 
-          <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Name</label>
-              <Input placeholder="What will it be called?" />
+        <fieldset>
+          <Row className="basicInfo">
+            <Col xs="6" sm="6" md="6" lg="6">
+              <Row>
+                  <label>Name</label>
+                  <Input className="inputName" placeholder="What will it be called?" />
+              </Row>
+              <Row>
+                  <label>Capacity</label>
+                  <Input className="inputCapacity" placeholder="How many people?" />
+              </Row>
+              <Row>
+                  <label>Location</label>
+                  <Input className="inputLocation" placeholder="Where will it take place?" />
+              </Row>
             </Col>
-          </Row>
-          <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Email</label>
-              <Input placeholder="Your email" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Ho ho</label>
-              <Input placeholder="Jay will be mad af" />
+            <Col xs="6" sm="6" md="6" lg="6">
+              <Row  className="rightInputInBasicInfo">
+                <label>Description</label>
+                  <Input className="inputDescription"placeholder="What is your event about?" />
+              </Row>
             </Col>
           </Row>
         </fieldset>;
@@ -111,21 +128,50 @@ class App extends Component {
       wizardContent = 
         <fieldset> 
           <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Name 1</label>
-              <Input placeholder="What will it be called?" />
+            <Col xs="10" sm="10" md="8" lg="10">
+              <label className="inputName">Date</label>
+                <div class="input-daterange input-group" id="datepicker-example-2">
+                  <span class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="fa fa-calendar"></i>
+                        </span>
+                          </span>
+                            <input type="text" class="input-sm form-control" name="start" placeholder="Start Date"/>
+                            <input type="text" class="input-sm form-control" name="end" placeholder="End Date"/>
+                          <span class="input-group-append">
+                        <span class="input-group-text">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                </div>
             </Col>
-          </Row>
+          </Row><br/>
           <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Email 1</label>
-              <Input placeholder="Your email" />
+            <Col xs="10" sm="10" md="10" lg="10">
+              <Row>
+                <Col xs="6" sm="6" md="6" lg="6">
+                  <label className="inputName">Start Time</label>
+                  <Input placeholder="When will it start?" />
+                </Col>
+                <Col xs="6" sm="6" md="6" lg="6">
+                  <label className="inputName">End Time</label>
+                  <Input placeholder="When will it end?" />
+                </Col>
+              </Row>
             </Col>
-          </Row>
+          </Row><br/>
           <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Ho ho 1</label>
-              <Input placeholder="Jay will be mad af" />
+            <Col xs="10" sm="10" md="10" lg="10">
+              <label className="inputName">Weekly Occurence</label>
+              <ButtonGroup>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Mon</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tue</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wed</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thu</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Fri</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(6)} active={this.state.cSelected.includes(6)}>Sat</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(7)} active={this.state.cSelected.includes(7)}>Sun</Button>
+              </ButtonGroup>
             </Col>
           </Row>
         </fieldset>;
@@ -231,7 +277,7 @@ class App extends Component {
                 </Row>
 
                 {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                <Modal isOpen={this.state.modal} toggle={this.toggle} className="eventCreationModal" className={this.props.className}>
                   <ModalBody>
                     <h2> New Event </h2>
                     <Form>
@@ -244,15 +290,7 @@ class App extends Component {
                             {wizardContent}
                           </div>
                           <div className="steps-action">
-                            {
-                              this.state.step < steps.length - 1
-                              && <Button onClick={() => this.nextStep()}>Next</Button>
-                            }
-                            {
-                              this.state.step === steps.length - 1
-                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
-                            }
-                            {
+                          {
                               this.state.step > 0
                               && (
                               <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
@@ -260,13 +298,19 @@ class App extends Component {
                               </Button>
                               )
                             }
+                            {
+                              this.state.step < steps.length - 1
+                              && <Button className="" onClick={() => this.nextStep()}>Next</Button>
+                            }
+                            {
+                              this.state.step === steps.length - 1
+                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
+                            }
                           </div>
                         </Col>
                       </Row>
                     </Form>
                   </ModalBody>
-                  <ModalFooter>
-                  </ModalFooter>
                 </Modal>
 
                 {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
@@ -362,6 +406,8 @@ class App extends Component {
             </div>
           </div>
         </div>
+
+
 
         {/*<----------------------- FOOTER ----------------------->*/}                 
         <footer>
