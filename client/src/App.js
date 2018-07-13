@@ -97,7 +97,7 @@ class App extends Component {
   render() {
 
     let wizardContent;
-    if (this.state.step == 0) {
+    if (this.state.step === 0) {
       wizardContent = 
         <fieldset>
           <Row className="basicInfo">
@@ -124,7 +124,7 @@ class App extends Component {
           </Row>
         </fieldset>;
     }
-    else if (this.state.step == 1) {
+    else if (this.state.step === 1) {
       wizardContent = 
         <fieldset> 
           <Row>
@@ -203,25 +203,25 @@ class App extends Component {
       <div>
 
         {/*<----------------------- NAVBAR ----------------------->*/}
-        <div class="welcome d-flex justify-content-center flex-column">
-          <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-              <a class="navbar-brand" href="#">
+        <div className="welcome d-flex justify-content-center flex-column">
+          <div className="container">
+            <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
+              <a className="navbar-brand" href="#">
                 Umba
               </a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+              <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span className="navbar-toggler-icon"></span>
               </button>
-              <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav">
-                  <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul className="navbar-nav">
+                  <li className="nav-item active">
+                    <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">My profile</a>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">My profile</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Log Out</a>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Log Out</a>
                   </li>
                 </ul>
               </div>
@@ -229,23 +229,23 @@ class App extends Component {
           </div>
 
           {/*<----------------------- MAIN PAGE ----------------------->*/}
-          <div class="inner-wrapper mt-auto mb-auto container">
-            <div class="row">
-              <div class="col-md-7">
-                  <h1 class="welcome-heading display-4 text-white">Let's move.</h1>
-                  <button href="#our-services" class="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
+          <div className="inner-wrapper mt-auto mb-auto container">
+            <div className="row">
+              <div className="col-md-7">
+                  <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
+                  <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
               </div>
             </div>
           </div>
         </div>
 
         {/*<----------------------- CALENDAR PAGE ----------------------->*/}
-        <div id="our-services" class="our-services section py-4">
-          <h3 class="section-title text-center my-5">Your schedule</h3>
+        <div id="our-services" className="our-services section py-4">
+          <h3 className="section-title text-center my-5">Your schedule</h3>
 
-          <div class="container py-4">
-            <div class="row justify-content-md-center px-4">
-              <div class="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
+          <div className="container py-4">
+            <div className="row justify-content-md-center px-4">
+              <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
 
                 <Row>
                   <Col xs="12" sm="12" md="12" lg="12">
@@ -256,7 +256,7 @@ class App extends Component {
                         max={new Date('2018, 1, 7, 18:00')}
                         defaultView='week'
                         onSelectEvent={() => this.toggle3()}
-                        onSelectSlot={() => this.toggle()}
+                        onSelectSlot={(date) => this.toggle(date)}
                         events={[{
                             'title': 'Woohoo2',
                             'allDay': false,
@@ -304,7 +304,7 @@ class App extends Component {
                             }
                             {
                               this.state.step === steps.length - 1
-                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
+                              && <Button type="button">Done</Button>
                             }
                           </div>
                         </Col>
@@ -360,7 +360,7 @@ class App extends Component {
                     </form>
                   </ModalBody>
                   <ModalFooter>
-                    <button type="button" class="btn btn-outline-success pull-right" align="right">Register</button>
+                    <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
                   </ModalFooter>
                 </Modal>
 
@@ -411,25 +411,25 @@ class App extends Component {
 
         {/*<----------------------- FOOTER ----------------------->*/}                 
         <footer>
-          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-              <a class="navbar-brand" href="#">Ericsson</a>
-              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+          <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div className="container">
+              <a className="navbar-brand" href="#">Ericsson</a>
+              <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span className="navbar-toggler-icon"></span>
               </button>
-              <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                  <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              <div className="collapse navbar-collapse" id="navbarNav">
+                <ul className="navbar-nav ml-auto">
+                  <li className="nav-item active">
+                    <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Our Services</a>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Our Services</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">My profile</a>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">My profile</a>
                   </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Contact Us</a>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Contact Us</a>
                   </li>
                 </ul>
               </div>
