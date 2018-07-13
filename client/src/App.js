@@ -34,6 +34,7 @@ class App extends Component {
 
     this.toggle = this.toggle.bind(this);
     this.toggle2 = this.toggle2.bind(this);
+    this.toggle3 = this.toggle3.bind(this);
     this.next = this.next.bind(this);
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
