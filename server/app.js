@@ -3,12 +3,25 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+var mongoose = require('mongoose')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
 
+mongoose.connect('mongodb://localhost/nodekb');
+let db = mongoose.connection;
+// Check connection
+db.once('open', function(){
+  console.log('connected to mongodb');
+})
+// Check for db errors
+db.on('error', function(err){
+  console.log(err)
+})
+
+// Bring in Models
+let Schedule = require('./models/schedule')
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
