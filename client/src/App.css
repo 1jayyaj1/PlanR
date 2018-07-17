@@ -12,16 +12,56 @@
   padding-right: 3%;
 }
 
+.startDate {
+    border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+}
+
+.endDate {
+  border-radius: 0 !important;
+  -moz-border-radius: 0 !important;
+}
+
+#startIcon {
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+}
+
+#endIcon {
+  border-top-left-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+.dateSelector {
+  padding-left: 3% !important;
+  font-size: 15pt;
+}
 .rightInputInBasicInfo {
   padding-left: 8%;
+}
+
+.recurrenceLabel {
+  font-size: 15pt;
+}
+
+.occurenceLabel {
+  font-size: 15pt;
 }
 
 .basicInfo {
   font-size: 15pt;
 }
 
+.startTime {
+  font-size: 15pt;
+}
+
 .inputDescription {
   height:143pt;
+}
+
+.inputName {
+  font-size: 15pt;
 }
 
 .steps-action {

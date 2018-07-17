@@ -5,7 +5,8 @@ import moment from 'moment';
 import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
 import { Steps, message } from 'antd';
 import 'antd/dist/antd.css';
-
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const Step = Steps.Step;
 
@@ -32,8 +33,13 @@ class App extends Component {
       display : 0,
       step: 0,
       cSelected: [],
+      startDate: null,
+      endDate: null,
     }
 
+    this.handleChangeStart = this.handleChangeStart.bind(this);
+    this.handleChangeEnd = this.handleChangeEnd.bind(this);
+    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
     this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
     this.toggle = this.toggle.bind(this);
     this.toggle2 = this.toggle2.bind(this);
@@ -42,6 +48,22 @@ class App extends Component {
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
+  }
+
+  handleChangeStart(date) {
+    this.setState({
+      startDate: date,
+    });
+  }
+
+  handleChangeEnd(date) {
+    this.setState({
+      endDate: date,
+    });
+  }
+
+  onRadioBtnClick(rSelected) {
+    this.setState({ rSelected });
   }
 
   onCheckboxBtnClick(selected) {
@@ -127,50 +149,143 @@ class App extends Component {
     else if (this.state.step === 1) {
       wizardContent = 
         <fieldset> 
-          <Row>
-            <Col xs="10" sm="10" md="8" lg="10">
-              <label className="inputName">Date</label>
-                <div class="input-daterange input-group" id="datepicker-example-2">
-                  <span class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="fa fa-calendar"></i>
-                        </span>
-                          </span>
-                            <input type="text" class="input-sm form-control" name="start" placeholder="Start Date"/>
-                            <input type="text" class="input-sm form-control" name="end" placeholder="End Date"/>
-                          <span class="input-group-append">
-                        <span class="input-group-text">
-                      <i class="fa fa-calendar"></i>
+          <label className="inputName">Date</label>
+          <Row className="dateSelector">
+            <Col xs="12" sm="12" md="12" lg="12">
+                <div className="input-daterange input-group" id="datepicker-example-2">
+                  <Row>
+                    <span className="input-group-prepend" id="startIcon">
+                      <span className="input-group-text" id="startIcon">
+                        <i className="fa fa-calendar"></i>
+                      </span>
                     </span>
-                  </span>
+                      <DatePicker selected={this.state.startDate} onChange={this.handleChangeStart} className="input-sm form-control startDate" name="start" placeholderText="Start date"/>
+                      <DatePicker selected={this.state.endDate} onChange={this.handleChangeEnd} className="input-sm form-control endDate" name="end" placeholderText="End date"/>
+                    <span className="input-group-prepend" id="endIcon">
+                      <span className="input-group-text" id="endIcon">
+                        <i className="fa fa-calendar"></i>
+                      </span>
+                    </span>
+                   </Row>
                 </div>
             </Col>
           </Row><br/>
           <Row>
             <Col xs="10" sm="10" md="10" lg="10">
-              <Row>
+              <Row className="startTime">
                 <Col xs="6" sm="6" md="6" lg="6">
-                  <label className="inputName">Start Time</label>
-                  <Input placeholder="When will it start?" />
+                  <label className="inputName">Start time</label>
+                    <fieldset>
+                      <select class="custom-select w-100" required="">
+                        <option value="">When will it start?</option>
+                        <option value="1">9:00AM</option>
+                        <option value="2">9:15AM</option>
+                        <option value="3">9:30AM</option>
+                        <option value="4">9:45AM</option>
+                        <option value="5">10:00AM</option>
+                        <option value="6">10:15AM</option>
+                        <option value="7">10:30AM</option>
+                        <option value="8">10:45AM</option>
+                        <option value="9">11:00AM</option>
+                        <option value="10">11:15AM</option>
+                        <option value="11">11:30AM</option>
+                        <option value="12">11:45AM</option>
+                        <option value="13">12:00PM</option>
+                        <option value="14">12:15PM</option>
+                        <option value="15">12:30PM</option>
+                        <option value="16">12:45PM</option>
+                        <option value="17">13:00PM</option>
+                        <option value="18">13:15PM</option>
+                        <option value="19">13:30PM</option>
+                        <option value="20">13:45PM</option>
+                        <option value="21">14:00PM</option>
+                        <option value="22">14:15PM</option>
+                        <option value="23">14:30PM</option>
+                        <option value="24">14:45PM</option>
+                        <option value="25">15:00PM</option>
+                        <option value="26">15:15PM</option>
+                        <option value="27">15:30PM</option>
+                        <option value="28">15:45PM</option>
+                        <option value="29">16:00PM</option>
+                        <option value="30">16:15PM</option>
+                        <option value="31">16:30PM</option>
+                        <option value="32">16:45PM</option>
+                        <option value="33">17:00PM</option>
+                        <option value="34">17:15PM</option>
+                        <option value="35">17:30PM</option>
+                        <option value="36">17:45PM</option>
+                        <option value="37">18:00PM</option>
+                      </select>
+                    </fieldset>
                 </Col>
                 <Col xs="6" sm="6" md="6" lg="6">
-                  <label className="inputName">End Time</label>
-                  <Input placeholder="When will it end?" />
+                  <label className="inputName">End time</label>
+                  <fieldset>
+                      <select class="custom-select w-100" required="">
+                        <option value="">When will it end?</option>
+                        <option value="1">9:00AM</option>
+                        <option value="2">9:15AM</option>
+                        <option value="3">9:30AM</option>
+                        <option value="4">9:45AM</option>
+                        <option value="5">10:00AM</option>
+                        <option value="6">10:15AM</option>
+                        <option value="7">10:30AM</option>
+                        <option value="8">10:45AM</option>
+                        <option value="9">11:00AM</option>
+                        <option value="10">11:15AM</option>
+                        <option value="11">11:30AM</option>
+                        <option value="12">11:45AM</option>
+                        <option value="13">12:00PM</option>
+                        <option value="14">12:15PM</option>
+                        <option value="15">12:30PM</option>
+                        <option value="16">12:45PM</option>
+                        <option value="17">13:00PM</option>
+                        <option value="18">13:15PM</option>
+                        <option value="19">13:30PM</option>
+                        <option value="20">13:45PM</option>
+                        <option value="21">14:00PM</option>
+                        <option value="22">14:15PM</option>
+                        <option value="23">14:30PM</option>
+                        <option value="24">14:45PM</option>
+                        <option value="25">15:00PM</option>
+                        <option value="26">15:15PM</option>
+                        <option value="27">15:30PM</option>
+                        <option value="28">15:45PM</option>
+                        <option value="29">16:00PM</option>
+                        <option value="30">16:15PM</option>
+                        <option value="31">16:30PM</option>
+                        <option value="32">16:45PM</option>
+                        <option value="33">17:00PM</option>
+                        <option value="34">17:15PM</option>
+                        <option value="35">17:30PM</option>
+                        <option value="36">17:45PM</option>
+                        <option value="37">18:00PM</option>
+                      </select>
+                    </fieldset>
                 </Col>
               </Row>
             </Col>
           </Row><br/>
-          <Row>
+          <Row className="recurrenceLabel">
+            <Col xs="10" sm="10" md="10" lg="10">
+              <label className="inputName">Recurrence</label>
+              <ButtonGroup>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(1)} active={this.state.rSelected === 1}>Weekly</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(2)} active={this.state.rSelected === 2}>Biweekly</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(3)} active={this.state.rSelected === 3}>Triweekly</Button>
+                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(4)} active={this.state.rSelected === 4}>Monthly</Button>
+              </ButtonGroup>
+            </Col>
+          </Row><br/>
+          <Row className="occurenceLabel">
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
               <ButtonGroup>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Mon</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tue</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wed</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thu</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Fri</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(6)} active={this.state.cSelected.includes(6)}>Sat</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onCheckboxBtnClick(7)} active={this.state.cSelected.includes(7)}>Sun</Button>
+                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Monday</Button>
+                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tuesday</Button>
+                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wednesday</Button>
+                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thursday</Button>
+                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -179,21 +294,16 @@ class App extends Component {
         wizardContent = 
         <fieldset> 
           <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Name 2</label>
-              <Input placeholder="What will it be called?" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Email 2</label>
-              <Input placeholder="Your email" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Ho ho 2</label>
-              <Input placeholder="Jay will be mad af" />
+            <Col xs="12" sm="12" md="12" lg="12">
+              <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+              <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
+              <ul style={{fontSize: '15px'}}>
+                <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                <li><span>Type of event:</span> <span>recurrent</span></li>
+                <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
+                <li><span>Location:</span> <span>Ericsson gym</span></li>
+              </ul> 
+              <hr/>
             </Col>
           </Row>
         </fieldset>;
