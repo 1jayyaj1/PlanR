@@ -130,17 +130,17 @@ class App extends Component {
           <Row>
             <Col xs="10" sm="10" md="8" lg="10">
               <label className="inputName">Date</label>
-                <div class="input-daterange input-group" id="datepicker-example-2">
-                  <span class="input-group-prepend">
-                    <span class="input-group-text">
-                      <i class="fa fa-calendar"></i>
+                <div className="input-daterange input-group" id="datepicker-example-2">
+                  <span className="input-group-prepend">
+                    <span className="input-group-text">
+                      <i className="fa fa-calendar"></i>
                         </span>
                           </span>
-                            <input type="text" class="input-sm form-control" name="start" placeholder="Start Date"/>
-                            <input type="text" class="input-sm form-control" name="end" placeholder="End Date"/>
-                          <span class="input-group-append">
-                        <span class="input-group-text">
-                      <i class="fa fa-calendar"></i>
+                            <input type="text" className="input-sm form-control" name="start" placeholder="Start Date"/>
+                            <input type="text" className="input-sm form-control" name="end" placeholder="End Date"/>
+                          <span className="input-group-append">
+                        <span className="input-group-text">
+                      <i className="fa fa-calendar"></i>
                     </span>
                   </span>
                 </div>
