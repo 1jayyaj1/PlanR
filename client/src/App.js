@@ -32,6 +32,10 @@ class App extends Component {
       display : 0,
       step: 0,
       cSelected: [],
+      name: "",
+      description: "",
+      location: "",
+      capacity: 0
     }
 
     this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
@@ -42,6 +46,7 @@ class App extends Component {
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   onCheckboxBtnClick(selected) {
@@ -93,6 +98,12 @@ class App extends Component {
     this.setState({ step });
   }
 
+  handleChange(event) {
+    const target = event.target;
+    this.setState({
+      [target.name]: target.value
+    });
+  }
 
   render() {
 
@@ -104,21 +115,21 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input className="inputName" placeholder="What will it be called?" />
+                  <Input name="name" value={this.state.name} onChange={this.handleChange} className="inputName" placeholder="What will it be called?" />
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input className="inputCapacity" placeholder="How many people?" />
+                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="inputCapacity" placeholder="How many people?" />
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input className="inputLocation" placeholder="Where will it take place?" />
+                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="inputLocation" placeholder="Where will it take place?" />
               </Row>
             </Col>
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
                 <label>Description</label>
-                  <Input className="inputDescription"placeholder="What is your event about?" />
+                  <Input name="description" value={this.state.description} onChange={this.handleChange} className="inputDescription" placeholder="What is your event about?" />
               </Row>
             </Col>
           </Row>
