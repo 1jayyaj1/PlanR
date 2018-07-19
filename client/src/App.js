@@ -49,13 +49,10 @@ class App extends Component {
       display : 0,
       step: 0,
       cSelected: [],
-      startDate: null,
-      endDate: null,
       name: "",
-      location: "",
       description: "",
-      capacity: 0,
-      recurrence: false
+      location: "",
+      capacity: 0
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -69,7 +66,7 @@ class App extends Component {
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   handleChangeStart(date) {
@@ -137,12 +134,12 @@ class App extends Component {
     this.setState({ step });
   }
 
-  handleInputChange(event) {
+  handleChange(event) {
     const target = event.target;
-    const name = target.name;
-    const location = target.location;
-    const description = target.description;
-    const capacity = target.capacity;
+    this.setState({
+      [target.name]: target.value
+    });
+  }
 
     this.setState({
       name: name,
@@ -162,15 +159,15 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input className="inputName" value={this.state.name} onChange={this.handleInputChange} placeholder="What will it be called?" />
+                  <Input name="name" value={this.state.name} onChange={this.handleChange} className="inputName" placeholder="What will it be called?" />
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input className="inputCapacity" value={this.state.capacity} onChange={this.handleInputChange} placeholder="How many people?" />
+                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="inputCapacity" placeholder="How many people?" />
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input className="inputLocation" value={this.state.location} onChange={this.handleInputChange} placeholder="Where will it take place?" />
+                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="inputLocation" placeholder="Where will it take place?" />
               </Row>
               
               <Row>
@@ -188,7 +185,7 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
                 <label>Description</label>
-                  <Input className="inputDescription" value={this.state.description} onChange={this.handleInputChange} placeholder="What is your event about?" />
+                  <Input name="description" value={this.state.description} onChange={this.handleChange} className="inputDescription" placeholder="What is your event about?" />
               </Row>
             </Col>
           </Row>
@@ -197,15 +194,20 @@ class App extends Component {
     else if (this.state.step === 1) {
       wizardContent = 
         <fieldset> 
-          <label className="inputName">Date</label>
-          <Row className="dateSelector">
-            <Col xs="12" sm="12" md="12" lg="12">
+          <Row>
+            <Col xs="10" sm="10" md="8" lg="10">
+              <label className="inputName">Date</label>
                 <div className="input-daterange input-group" id="datepicker-example-2">
-                  <Row>
-                    <span className="input-group-prepend" id="startIcon">
-                      <span className="input-group-text" id="startIcon">
-                        <i className="fa fa-calendar"></i>
-                      </span>
+                  <span className="input-group-prepend">
+                    <span className="input-group-text">
+                      <i className="fa fa-calendar"></i>
+                        </span>
+                          </span>
+                            <input type="text" className="input-sm form-control" name="start" placeholder="Start Date"/>
+                            <input type="text" className="input-sm form-control" name="end" placeholder="End Date"/>
+                          <span className="input-group-append">
+                        <span className="input-group-text">
+                      <i className="fa fa-calendar"></i>
                     </span>
                       <DatePicker selected={this.state.startDate} onChange={this.handleChangeStart} className="input-sm form-control startDate" name="start" placeholderText="Start date"/>
                       <DatePicker selected={this.state.endDate} onChange={this.handleChangeEnd} className="input-sm form-control endDate" name="end" placeholderText="End date"/>
