@@ -1,21 +1,16 @@
 var express = require('express');
 var router = express.Router();
+let User =  require('../models/user');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  var test = {
-    name: "John",
-    email: "Doe@mail.com"
-  }
-  res.json(test);
-});
-
-router.get('/hello', function(req, res, next) {
-  var test = {
-    name: "John 2",
-    email: "Doe@mail.com"
-  }
-  res.json(test);
+  User.find()
+      .sort()
+      .exec()
+      .then(docs => {
+        console.log(docs)
+        res.send(docs)
+      })
 });
 
 module.exports = router;
