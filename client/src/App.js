@@ -21,17 +21,20 @@ const steps = [{
 var events =
   [
     {
-      'title': 'Woohoo2',
-      'allDay': false,
-      'start': new Date('2018-07-17T10:24:00'),
-      'end': new Date('2018-07-17T11:27:00')
-    },
-    {
-      'title': 'Woohoo3',
-      'allDay': false,
-      'start': new Date('2018-07-18T10:24:00'),
-      'end': new Date('2018-07-18T11:27:00')
-    },
+      capacity: "",
+      location: "",
+      description: "",
+      recurrenceSelectorSwitch: "",
+      recurrence: "",
+      weeklyOcurrence: "",
+      calendarInfo: 
+        {
+          title: 'Woohoo2',
+          allDay: false,
+          start: new Date('2018-07-17T10:24:00'),
+          end: new Date('2018-07-17T13:27:00')
+        }
+    }
 ]
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
@@ -51,8 +54,14 @@ class App extends Component {
       cSelected: [],
       name: "",
       description: "",
+      startTime: "",
+      endTime: "",
       location: "",
-      capacity: 0
+      capacity: "",
+      recurrenceSelectorSwitch: "",
+      recurrence: "",
+      weeklyOcurrence: "",
+      events: events
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -67,6 +76,7 @@ class App extends Component {
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.createEvent = this.createEvent.bind(this);
   }
 
   handleChangeStart(date) {
@@ -141,6 +151,24 @@ class App extends Component {
     });
   }
 
+  createEvent() {
+    var sDate = moment(this.state.startDate).format()
+    var sTime = this.state.startTime
+    var sDateTime = sDate.replace(/00:00{1}/, sTime);
+    var eDate = moment(this.state.endDate).format()
+    var eTime = this.state.endTime
+    var eDateTime = eDate.replace(/00:00{1}/, eTime);
+    var event = {
+      title: this.state.name,
+      allDay: false,
+      start:  new Date(sDateTime) ,
+      end: new Date(eDateTime)
+    }
+    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, recurrenceSelectorSwitch: this.state.recurrenceSelectorSwitch, recurrence: this.state.rSelected, weeklyOcurrence: this.state.cSelected, calendarInfo: event }
+    this.setState({events: this.state.events.concat(obj)});
+    console.log(obj);
+  }
+
   render() {
 
     let wizardContent;
@@ -165,10 +193,10 @@ class App extends Component {
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select class="custom-select w-100" required="">
+                      <select class="custom-select w-100" required="" name="recurrenceSelectorSwitch" value={this.state.recurrenceSelectorSwitch} onChange={this.handleChange}>
                         <option value="">Will it be a recurring event?</option>
-                        <option value="1">Yes</option>
-                        <option value="2">No</option>
+                        <option value="recurring">Yes</option>
+                        <option value="non-recurring">No</option>
                       </select>
                   </fieldset>
               </Row>
@@ -211,90 +239,90 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">Start time</label>
                     <fieldset>
-                      <select class="custom-select w-100" required="">
+                      <select class="custom-select w-100" required="" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
                         <option value="">When will it start?</option>
-                        <option value="1">9:00AM</option>
-                        <option value="2">9:15AM</option>
-                        <option value="3">9:30AM</option>
-                        <option value="4">9:45AM</option>
-                        <option value="5">10:00AM</option>
-                        <option value="6">10:15AM</option>
-                        <option value="7">10:30AM</option>
-                        <option value="8">10:45AM</option>
-                        <option value="9">11:00AM</option>
-                        <option value="10">11:15AM</option>
-                        <option value="11">11:30AM</option>
-                        <option value="12">11:45AM</option>
-                        <option value="13">12:00PM</option>
-                        <option value="14">12:15PM</option>
-                        <option value="15">12:30PM</option>
-                        <option value="16">12:45PM</option>
-                        <option value="17">13:00PM</option>
-                        <option value="18">13:15PM</option>
-                        <option value="19">13:30PM</option>
-                        <option value="20">13:45PM</option>
-                        <option value="21">14:00PM</option>
-                        <option value="22">14:15PM</option>
-                        <option value="23">14:30PM</option>
-                        <option value="24">14:45PM</option>
-                        <option value="25">15:00PM</option>
-                        <option value="26">15:15PM</option>
-                        <option value="27">15:30PM</option>
-                        <option value="28">15:45PM</option>
-                        <option value="29">16:00PM</option>
-                        <option value="30">16:15PM</option>
-                        <option value="31">16:30PM</option>
-                        <option value="32">16:45PM</option>
-                        <option value="33">17:00PM</option>
-                        <option value="34">17:15PM</option>
-                        <option value="35">17:30PM</option>
-                        <option value="36">17:45PM</option>
-                        <option value="37">18:00PM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:15">9:15 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="09:45">9:45 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:15">10:15 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="10:45">10:45 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:15">11:15 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="11:45">11:45 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:15">12:15 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="12:45">12:45 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:15">1:15 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="13:45">1:45 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:15">2:15 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="14:45">2:45 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:15">3:15 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="15:45">3:45 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="16:15">4:15 PM</option>
+                        <option value="16:30">4:30 PM</option>
+                        <option value="16:45">4:45 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="17:15">5:15 PM</option>
+                        <option value="17:30">5:30 PM</option>
+                        <option value="17:45">5:45 PM</option>
+                        <option value="18:00">6:00 PM</option>
                       </select>
                     </fieldset>
                 </Col>
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">End time</label>
                   <fieldset>
-                      <select class="custom-select w-100" required="">
+                      <select class="custom-select w-100" required="" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
                         <option value="">When will it end?</option>
-                        <option value="1">9:00AM</option>
-                        <option value="2">9:15AM</option>
-                        <option value="3">9:30AM</option>
-                        <option value="4">9:45AM</option>
-                        <option value="5">10:00AM</option>
-                        <option value="6">10:15AM</option>
-                        <option value="7">10:30AM</option>
-                        <option value="8">10:45AM</option>
-                        <option value="9">11:00AM</option>
-                        <option value="10">11:15AM</option>
-                        <option value="11">11:30AM</option>
-                        <option value="12">11:45AM</option>
-                        <option value="13">12:00PM</option>
-                        <option value="14">12:15PM</option>
-                        <option value="15">12:30PM</option>
-                        <option value="16">12:45PM</option>
-                        <option value="17">13:00PM</option>
-                        <option value="18">13:15PM</option>
-                        <option value="19">13:30PM</option>
-                        <option value="20">13:45PM</option>
-                        <option value="21">14:00PM</option>
-                        <option value="22">14:15PM</option>
-                        <option value="23">14:30PM</option>
-                        <option value="24">14:45PM</option>
-                        <option value="25">15:00PM</option>
-                        <option value="26">15:15PM</option>
-                        <option value="27">15:30PM</option>
-                        <option value="28">15:45PM</option>
-                        <option value="29">16:00PM</option>
-                        <option value="30">16:15PM</option>
-                        <option value="31">16:30PM</option>
-                        <option value="32">16:45PM</option>
-                        <option value="33">17:00PM</option>
-                        <option value="34">17:15PM</option>
-                        <option value="35">17:30PM</option>
-                        <option value="36">17:45PM</option>
-                        <option value="37">18:00PM</option>
+                        <option value="09:00">9:00 AM</option>
+                        <option value="09:15">9:15 AM</option>
+                        <option value="09:30">9:30 AM</option>
+                        <option value="09:45">9:45 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="10:15">10:15 AM</option>
+                        <option value="10:30">10:30 AM</option>
+                        <option value="10:45">10:45 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="11:15">11:15 AM</option>
+                        <option value="11:30">11:30 AM</option>
+                        <option value="11:45">11:45 AM</option>
+                        <option value="12:00">12:00 PM</option>
+                        <option value="12:15">12:15 PM</option>
+                        <option value="12:30">12:30 PM</option>
+                        <option value="12:45">12:45 PM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="13:15">1:15 PM</option>
+                        <option value="13:30">1:30 PM</option>
+                        <option value="13:45">1:45 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="14:15">2:15 PM</option>
+                        <option value="14:30">2:30 PM</option>
+                        <option value="14:45">2:45 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="15:15">3:15 PM</option>
+                        <option value="15:30">3:30 PM</option>
+                        <option value="15:45">3:45 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                        <option value="16:15">4:15 PM</option>
+                        <option value="16:30">4:30 PM</option>
+                        <option value="16:45">4:45 PM</option>
+                        <option value="17:00">5:00 PM</option>
+                        <option value="17:15">5:15 PM</option>
+                        <option value="17:30">5:30 PM</option>
+                        <option value="17:45">5:45 PM</option>
+                        <option value="18:00">6:00 PM</option>
                       </select>
                     </fieldset>
                 </Col>
@@ -305,43 +333,69 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Recurrence</label>
               <ButtonGroup>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(1)} active={this.state.rSelected === 1} >Weekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(2)} active={this.state.rSelected === 2}>Biweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(3)} active={this.state.rSelected === 3}>Triweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(4)} active={this.state.rSelected === 4}>Monthly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Weekly")} active={this.state.rSelected === "Weekly"} name="recurrence" checked={this.state.recurrence === 'weekly'}  >Weekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Biweekly")} active={this.state.rSelected === "Biweekly"}>Biweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Triweekly")} active={this.state.rSelected === "Triweekly"}>Triweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Monthly")} active={this.state.rSelected === "Monthly"}>Monthly</Button>
               </ButtonGroup>
             </Col>
           </Row><br/>
           <Row className="occurenceLabel">
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
-              <ButtonGroup>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Monday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tuesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wednesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thursday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Friday</Button>
+              <ButtonGroup name="weeklyOcurrence">
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Monday")} active={this.state.cSelected.includes("Monday")}>Monday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Tuesday")} active={this.state.cSelected.includes("Tuesday")}>Tuesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Wednesday")} active={this.state.cSelected.includes("Wednesday")}>Wednesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Thursday")} active={this.state.cSelected.includes("Thursday")}>Thursday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Friday")} active={this.state.cSelected.includes("Friday")}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
         </fieldset>;
     }  else {
+      if (this.state.recurrenceSelectorSwitch === "non-recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
             <Col xs="12" sm="12" md="12" lg="12">
               <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-              <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
+              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name}</label>
               <ul style={{fontSize: '15px'}}>
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                <li><span>Type of event:</span> <span>recurrent</span></li>
-                <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
-                <li><span>Location:</span> <span>Ericsson gym</span></li>
+                <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
+                <li><span>Type of event:</span> <span>Non-recurring</span></li>
+                <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {this.state.startTime} to {this.state.endTime}</span></li>
+                <li><span>Location:</span> <span>{this.state.location}</span></li>
+                <li><span>Description:</span> <span>{this.state.description}</span></li>
               </ul> 
               <hr/>
             </Col>
           </Row>
         </fieldset>;
+      }
+      else if (this.state.recurrenceSelectorSwitch === "recurring"){
+        wizardContent = 
+        <fieldset> 
+          <Row>
+            <Col xs="12" sm="12" md="12" lg="12">
+              <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name}</label>
+              <ul style={{fontSize: '15px'}}>
+                <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
+                <li><span>Type of event:</span> <span>Recurring</span></li>
+                <li><span>Day of the week:</span> <span>{this.state.cSelected.join(", ")}</span></li>
+                <li><span>Time:</span> <span>From {this.state.startTime} to {this.state.endTime}</span></li>
+                <li><span>Recurring basis:</span> <span>{this.state.rSelected} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
+                <li><span>Location:</span> <span>{this.state.location}</span></li>
+                <li><span>Description:</span> <span>{this.state.description}</span></li>
+              </ul> 
+              <hr/>
+            </Col>
+          </Row>
+        </fieldset>;
+      }
     }
 
     return (
@@ -402,7 +456,7 @@ class App extends Component {
                         defaultView='week'
                         onSelectEvent={() => this.toggle3()}
                         onSelectSlot={(date) => this.toggle(date)}
-                        events={events}
+                        events={this.state.events.map(calendarInput => calendarInput.calendarInfo)}
                           startAccessor='start'
                           endAccessor='end'>
                       </BigCalendar>
