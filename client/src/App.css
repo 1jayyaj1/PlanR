@@ -32,6 +32,18 @@
   border-bottom-left-radius: 0px !important;
 }
 
+.radioButtons {
+  background-color: #e9ecef !important;
+  border: 1px solid #ced4da !important;
+  color: #495057 !important;
+}
+
+.checkButtons {
+  background-color: #e9ecef !important;
+  border: 1px solid #ced4da !important;
+  color: #495057 !important;
+}
+
 .dateSelector {
   padding-left: 3% !important;
   font-size: 15pt;
@@ -57,11 +69,18 @@
 }
 
 .inputDescription {
-  height:143pt;
+  vertical-align: top;
+  text-align: left;
+  height:199pt;
 }
 
 .inputName {
   font-size: 15pt;
+}
+
+.inputRecurrence {
+  font-size: 15pt;
+  width: 108% !important;
 }
 
 .steps-action {

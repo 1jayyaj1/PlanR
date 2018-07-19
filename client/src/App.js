@@ -18,6 +18,22 @@ const steps = [{
   title: 'Summary',
 }];
 
+var events =
+  [
+    {
+      'title': 'Woohoo2',
+      'allDay': false,
+      'start': new Date('2018-07-17T10:24:00'),
+      'end': new Date('2018-07-17T11:27:00')
+    },
+    {
+      'title': 'Woohoo3',
+      'allDay': false,
+      'start': new Date('2018-07-18T10:24:00'),
+      'end': new Date('2018-07-18T11:27:00')
+    },
+]
+
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
 class App extends Component {
@@ -35,6 +51,11 @@ class App extends Component {
       cSelected: [],
       startDate: null,
       endDate: null,
+      name: "",
+      location: "",
+      description: "",
+      capacity: 0,
+      recurrence: false
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -48,6 +69,7 @@ class App extends Component {
     this.previous = this.previous.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   handleChangeStart(date) {
@@ -115,6 +137,20 @@ class App extends Component {
     this.setState({ step });
   }
 
+  handleInputChange(event) {
+    const target = event.target;
+    const name = target.name;
+    const location = target.location;
+    const description = target.description;
+    const capacity = target.capacity;
+
+    this.setState({
+      name: name,
+      location: location,
+      description: description,
+      capacity: capacity
+    });
+  }
 
   render() {
 
@@ -126,21 +162,33 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input className="inputName" placeholder="What will it be called?" />
+                  <Input className="inputName" value={this.state.name} onChange={this.handleInputChange} placeholder="What will it be called?" />
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input className="inputCapacity" placeholder="How many people?" />
+                  <Input className="inputCapacity" value={this.state.capacity} onChange={this.handleInputChange} placeholder="How many people?" />
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input className="inputLocation" placeholder="Where will it take place?" />
+                  <Input className="inputLocation" value={this.state.location} onChange={this.handleInputChange} placeholder="Where will it take place?" />
               </Row>
+              
+              <Row>
+                  <label>Recurrence</label>
+                  <fieldset>
+                      <select className="inputRecurrence" class="custom-select w-100" required="">
+                        <option value="">Will it be a recurring event?</option>
+                        <option value="1">Yes</option>
+                        <option value="2">No</option>
+                      </select>
+                  </fieldset>
+              </Row>
+
             </Col>
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
                 <label>Description</label>
-                  <Input className="inputDescription"placeholder="What is your event about?" />
+                  <Input className="inputDescription" value={this.state.description} onChange={this.handleInputChange} placeholder="What is your event about?" />
               </Row>
             </Col>
           </Row>
@@ -270,10 +318,10 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Recurrence</label>
               <ButtonGroup>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(1)} active={this.state.rSelected === 1}>Weekly</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(2)} active={this.state.rSelected === 2}>Biweekly</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(3)} active={this.state.rSelected === 3}>Triweekly</Button>
-                <Button Style="font-size: 12pt;" color="primary" onClick={() => this.onRadioBtnClick(4)} active={this.state.rSelected === 4}>Monthly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(1)} active={this.state.rSelected === 1} >Weekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(2)} active={this.state.rSelected === 2}>Biweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(3)} active={this.state.rSelected === 3}>Triweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick(4)} active={this.state.rSelected === 4}>Monthly</Button>
               </ButtonGroup>
             </Col>
           </Row><br/>
@@ -281,11 +329,11 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
               <ButtonGroup>
-                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Monday</Button>
-                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tuesday</Button>
-                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wednesday</Button>
-                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thursday</Button>
-                <Button Style="font-size: 11.5pt;" color="primary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Friday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(1)} active={this.state.cSelected.includes(1)}>Monday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(2)} active={this.state.cSelected.includes(2)}>Tuesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(3)} active={this.state.cSelected.includes(3)}>Wednesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(4)} active={this.state.cSelected.includes(4)}>Thursday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick(5)} active={this.state.cSelected.includes(5)}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -367,12 +415,7 @@ class App extends Component {
                         defaultView='week'
                         onSelectEvent={() => this.toggle3()}
                         onSelectSlot={(date) => this.toggle(date)}
-                        events={[{
-                            'title': 'Woohoo2',
-                            'allDay': false,
-                            'start': moment().add(22, "hours").toDate(),
-                            'end': moment().add(23, "hours").toDate()
-                          }]}
+                        events={events}
                           startAccessor='start'
                           endAccessor='end'>
                       </BigCalendar>
@@ -414,7 +457,7 @@ class App extends Component {
                             }
                             {
                               this.state.step === steps.length - 1
-                              && <Button type="button">Done</Button>
+                              && <Button type="button" onClick={() => this.createEvent()}>Create</Button>
                             }
                           </div>
                         </Col>
