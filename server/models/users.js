@@ -1,12 +1,17 @@
 let mongoose = require('mongoose')
     Schema = mongoose.Schema;
-    
-let eventSchema = Schema({
+
+let userSchema = Schema({
     name: {
         type: String,
         required: true,
         lowercase: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
     }
 })
 
-mongoose.model('Event', eventSchema);
+mongoose.model('User', userSchema);

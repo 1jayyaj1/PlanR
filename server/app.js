@@ -21,7 +21,8 @@ db.on('error', function(err){
 })
 
 // Bring in Models
-let Schedule = require('./models/schedule')
+let Schedule = require('./models/schedule');
+let User =  require('./models/users');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -33,6 +34,23 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+
+// app.get('/', function(req, res, next) {
+//   console.log("HELLO");
+//   let bob = new User({
+//     name: "bob ross",
+//     email: "bob.ross@gmail.com"
+//   });
+//   bob.save()
+//     .then(doc => {
+//       console.log(doc)
+//     })
+//     .catch(err => {
+//       console.error(err)
+//     })
+//   res.render('index', { title: 'Express' });
+// });
+
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
