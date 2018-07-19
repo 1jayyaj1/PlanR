@@ -25,11 +25,15 @@
 #startIcon {
   border-top-right-radius: 0px !important;
   border-bottom-right-radius: 0px !important;
+  border-top-left-radius: 3px !important;
+  border-bottom-left-radius: 3px !important;
 }
 
 #endIcon {
   border-top-left-radius: 0px !important;
   border-bottom-left-radius: 0px !important;
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
 }
 
 .radioButtons {
@@ -69,8 +73,6 @@
 }
 
 .inputDescription {
-  vertical-align: top;
-  text-align: left;
   height:199pt;
 }
 
@@ -80,7 +82,7 @@
 
 .inputRecurrence {
   font-size: 15pt;
-  width: 108% !important;
+  width: 100% !important;
 }
 
 .steps-action {

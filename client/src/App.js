@@ -141,14 +141,6 @@ class App extends Component {
     });
   }
 
-    this.setState({
-      name: name,
-      location: location,
-      description: description,
-      capacity: capacity
-    });
-  }
-
   render() {
 
     let wizardContent;
@@ -172,8 +164,8 @@ class App extends Component {
               
               <Row>
                   <label>Recurrence</label>
-                  <fieldset>
-                      <select className="inputRecurrence" class="custom-select w-100" required="">
+                  <fieldset className="inputRecurrence">
+                      <select class="custom-select w-100" required="">
                         <option value="">Will it be a recurring event?</option>
                         <option value="1">Yes</option>
                         <option value="2">No</option>
@@ -195,28 +187,21 @@ class App extends Component {
       wizardContent = 
         <fieldset> 
           <Row>
-            <Col xs="10" sm="10" md="8" lg="10">
+            <Col xs="12" sm="12" md="12" lg="12">
               <label className="inputName">Date</label>
                 <div className="input-daterange input-group" id="datepicker-example-2">
-                  <span className="input-group-prepend">
-                    <span className="input-group-text">
-                      <i className="fa fa-calendar"></i>
-                        </span>
-                          </span>
-                            <input type="text" className="input-sm form-control" name="start" placeholder="Start Date"/>
-                            <input type="text" className="input-sm form-control" name="end" placeholder="End Date"/>
-                          <span className="input-group-append">
-                        <span className="input-group-text">
+                  <span className="input-group-append" id="startIcon">
+                    <span className="input-group-text" id="startIcon">
                       <i className="fa fa-calendar"></i>
                     </span>
-                      <DatePicker selected={this.state.startDate} onChange={this.handleChangeStart} className="input-sm form-control startDate" name="start" placeholderText="Start date"/>
-                      <DatePicker selected={this.state.endDate} onChange={this.handleChangeEnd} className="input-sm form-control endDate" name="end" placeholderText="End date"/>
-                    <span className="input-group-prepend" id="endIcon">
-                      <span className="input-group-text" id="endIcon">
-                        <i className="fa fa-calendar"></i>
-                      </span>
+                  </span>
+                  <DatePicker selected={this.state.startDate} onChange={this.handleChangeStart} className="input-sm form-control startDate" name="start" placeholderText="Start date"/>
+                  <DatePicker selected={this.state.endDate} onChange={this.handleChangeEnd} className="input-sm form-control endDate" name="end" placeholderText="End date"/>
+                  <span className="input-group-prepend" id="endIcon">
+                    <span className="input-group-text" id="endIcon">
+                      <i className="fa fa-calendar"></i>
                     </span>
-                   </Row>
+                  </span>
                 </div>
             </Col>
           </Row><br/>
