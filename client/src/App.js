@@ -25,8 +25,7 @@ var events =
       location: "",
       description: "",
       isRecurrent: "",
-      recurrence: "",
-      weeklyOcurrence: "",
+      daysSelected: "",
       calendarInfo: 
         {
           title: 'Dummy event',
@@ -50,22 +49,22 @@ class App extends Component {
       registerModal: false,
       viewModal: false,
       step: 0,
-      daysSelected: [],
       name: "",
       description: "",
       startTime: "",
       endTime: "",
       location: "",
       capacity: "",
-      isRecurrent: "",
+      daysSelected: [],
+      isRecurrent: false,
       recurrence: "",
       events: events
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
-    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
-    this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
+    this.updateRecurence = this.updateRecurence.bind(this);
+    this.updateDaysSelection = this.updateDaysSelection.bind(this);
     this.toggleCreateModal = this.toggleCreateModal.bind(this);
     this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
     this.toggleViewModal = this.toggleViewModal.bind(this);
@@ -87,11 +86,11 @@ class App extends Component {
     });
   }
 
-  onRadioBtnClick(rSelected) {
-    this.setState({ rSelected });
+  updateRecurence(selection) {
+    this.setState({ recurrence: selection });
   }
 
-  onCheckboxBtnClick(selected) {
+  updateDaysSelection(selected) {
     const index = this.state.daysSelected.indexOf(selected);
     if (index < 0) {
       this.state.daysSelected.push(selected);
@@ -145,12 +144,19 @@ class App extends Component {
     var event = {
       title: this.state.name,
       allDay: false,
-      start:  new Date(sDateTime) ,
+      start:  new Date(sDateTime),
       end: new Date(eDateTime)
     }
-    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, isRecurrent: this.state.isRecurrent, recurrence: this.state.rSelected, weeklyOcurrence: this.state.daysSelected, calendarInfo: event }
-    this.setState({events: this.state.events.concat(obj)});
-    console.log(obj);
+    var newEvent = {
+      capacity: this.state.capacity, 
+      description: this.state.description, 
+      location: this.state.location, 
+      isRecurrent: this.state.isRecurrent, 
+      daysSelected: this.state.daysSelected, 
+      recurrence: this.state.recurrence,
+      calendarInfo: event 
+    }
+    this.setState({events: this.state.events.concat(newEvent)});
   }
 
   render() {
@@ -214,18 +220,16 @@ class App extends Component {
                   <label>Location</label>
                   <Input name="location" value={this.state.location} onChange={this.handleChange} className="inputLocation" placeholder="Where will it take place?" />
               </Row>
-              
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select class="custom-select w-100" required="" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
+                      <select class="custom-select w-100" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
                         <option value="">Will it be a recurring event?</option>
                         <option value="recurring">Yes</option>
                         <option value="non-recurring">No</option>
                       </select>
                   </fieldset>
               </Row>
-
             </Col>
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
@@ -264,7 +268,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">Start time</label>
                     <fieldset>
-                      <select class="custom-select w-100" required="" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
+                      <select class="custom-select w-100" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
                         {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
@@ -272,7 +276,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">End time</label>
                   <fieldset>
-                      <select class="custom-select w-100" required="" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
+                      <select class="custom-select w-100" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
                         {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
@@ -284,10 +288,10 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Recurrence</label>
               <ButtonGroup>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Weekly")} active={this.state.rSelected === "Weekly"} name="recurrence" checked={this.state.recurrence === 'weekly'}  >Weekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Biweekly")} active={this.state.rSelected === "Biweekly"}>Biweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Triweekly")} active={this.state.rSelected === "Triweekly"}>Triweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Monthly")} active={this.state.rSelected === "Monthly"}>Monthly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
               </ButtonGroup>
             </Col>
           </Row><br/>
@@ -295,11 +299,11 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
               <ButtonGroup name="weeklyOcurrence">
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -338,7 +342,7 @@ class App extends Component {
                 <li><span>Type of event:</span> <span>Recurring</span></li>
                 <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
                 <li><span>Time:</span> <span>From {this.state.startTime} to {this.state.endTime}</span></li>
-                <li><span>Recurring basis:</span> <span>{this.state.rSelected} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
+                <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
                 <li><span>Location:</span> <span>{this.state.location}</span></li>
                 <li><span>Description:</span> <span>{this.state.description}</span></li>
               </ul> 
@@ -513,46 +517,12 @@ class App extends Component {
                 <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                   <ModalBody>
                     <h2> Woohoo2 </h2>
-                    <Form>
-                      <Row>
-                        <Col xs="12" sm="12" md="12" lg="12">
-                          <Steps current={this.state.step}>
-                            {steps.map(item => <Step key={item.title} title={item.title} />)}
-                          </Steps>
-                          <div className="steps-content">
-                            {wizardContent}
-                          </div>
-                          <div className="steps-action">
-                            {
-                              this.state.step < steps.length - 1
-                              && <Button onClick={() => this.nextStep()}>Next</Button>
-                            }
-                            {
-                              this.state.step === steps.length - 1
-                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
-                            }
-                            {
-                              this.state.step > 0
-                              && (
-                              <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
-                                Previous
-                              </Button>
-                              )
-                            }
-                          </div>
-                        </Col>
-                      </Row>
-                    </Form>
                   </ModalBody>
-                  <ModalFooter>
-                  </ModalFooter>
                 </Modal>
               </div>
             </div>
           </div>
         </div>
-
-
 
         {/*<----------------------- FOOTER ----------------------->*/}                 
         <footer>
