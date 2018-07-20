@@ -24,12 +24,12 @@ var events =
       capacity: "",
       location: "",
       description: "",
-      recurrenceSelectorSwitch: "",
+      isRecurrent: "",
       recurrence: "",
       weeklyOcurrence: "",
       calendarInfo: 
         {
-          title: 'Woohoo2',
+          title: 'Dummy event',
           allDay: false,
           start: new Date('2018-07-17T10:24:00'),
           end: new Date('2018-07-17T13:27:00')
@@ -46,21 +46,19 @@ class App extends Component {
 
     this.state = {
       events: [],
-      modal : false,
-      modal2: false,
-      modal3: false,
-      display : 0,
+      createModal : false,
+      registerModal: false,
+      viewModal: false,
       step: 0,
-      cSelected: [],
+      daysSelected: [],
       name: "",
       description: "",
       startTime: "",
       endTime: "",
       location: "",
       capacity: "",
-      recurrenceSelectorSwitch: "",
+      isRecurrent: "",
       recurrence: "",
-      weeklyOcurrence: "",
       events: events
     }
 
@@ -68,11 +66,9 @@ class App extends Component {
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
     this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
     this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.toggle2 = this.toggle2.bind(this);
-    this.toggle3 = this.toggle3.bind(this);
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
+    this.toggleCreateModal = this.toggleCreateModal.bind(this);
+    this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
+    this.toggleViewModal = this.toggleViewModal.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -96,41 +92,29 @@ class App extends Component {
   }
 
   onCheckboxBtnClick(selected) {
-    const index = this.state.cSelected.indexOf(selected);
+    const index = this.state.daysSelected.indexOf(selected);
     if (index < 0) {
-      this.state.cSelected.push(selected);
+      this.state.daysSelected.push(selected);
     } else {
-      this.state.cSelected.splice(index, 1);
+      this.state.daysSelected.splice(index, 1);
     }
-    this.setState({ cSelected: [...this.state.cSelected] });
+    this.setState({ daysSelected: [...this.state.daysSelected] });
   }
 
-  toggle() {
+  toggleCreateModal() {
     this.setState({
-      modal: !this.state.modal
+      createModal: !this.state.createModal
     });
   }
 
-   toggle2() {
+   toggleRegisterModal() {
     this.setState({
-      modal2: !this.state.modal2
+      registerModal: !this.state.registerModal
     });
   }
-  toggle3() {
+  toggleViewModal() {
     this.setState({
-      modal3: !this.state.modal3
-    });
-  }
-
-  next() {
-    this.setState({
-      display: this.state.display + 1
-    });
-  }
-
-  previous() {
-    this.setState({
-      display: this.state.display - 1
+      viewModal: !this.state.viewModal
     });
   }
 
@@ -164,7 +148,7 @@ class App extends Component {
       start:  new Date(sDateTime) ,
       end: new Date(eDateTime)
     }
-    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, recurrenceSelectorSwitch: this.state.recurrenceSelectorSwitch, recurrence: this.state.rSelected, weeklyOcurrence: this.state.cSelected, calendarInfo: event }
+    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, isRecurrent: this.state.isRecurrent, recurrence: this.state.rSelected, weeklyOcurrence: this.state.daysSelected, calendarInfo: event }
     this.setState({events: this.state.events.concat(obj)});
     console.log(obj);
   }
@@ -193,7 +177,7 @@ class App extends Component {
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select class="custom-select w-100" required="" name="recurrenceSelectorSwitch" value={this.state.recurrenceSelectorSwitch} onChange={this.handleChange}>
+                      <select class="custom-select w-100" required="" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
                         <option value="">Will it be a recurring event?</option>
                         <option value="recurring">Yes</option>
                         <option value="non-recurring">No</option>
@@ -344,17 +328,17 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
               <ButtonGroup name="weeklyOcurrence">
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Monday")} active={this.state.cSelected.includes("Monday")}>Monday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Tuesday")} active={this.state.cSelected.includes("Tuesday")}>Tuesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Wednesday")} active={this.state.cSelected.includes("Wednesday")}>Wednesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Thursday")} active={this.state.cSelected.includes("Thursday")}>Thursday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Friday")} active={this.state.cSelected.includes("Friday")}>Friday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
         </fieldset>;
     }  else {
-      if (this.state.recurrenceSelectorSwitch === "non-recurring"){
+      if (this.state.isRecurrent === "non-recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -374,7 +358,7 @@ class App extends Component {
           </Row>
         </fieldset>;
       }
-      else if (this.state.recurrenceSelectorSwitch === "recurring"){
+      else if (this.state.isRecurrent === "recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -385,7 +369,7 @@ class App extends Component {
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
                 <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
                 <li><span>Type of event:</span> <span>Recurring</span></li>
-                <li><span>Day of the week:</span> <span>{this.state.cSelected.join(", ")}</span></li>
+                <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
                 <li><span>Time:</span> <span>From {this.state.startTime} to {this.state.endTime}</span></li>
                 <li><span>Recurring basis:</span> <span>{this.state.rSelected} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
                 <li><span>Location:</span> <span>{this.state.location}</span></li>
@@ -454,8 +438,8 @@ class App extends Component {
                         min={new Date('2018, 1, 7, 09:00')}
                         max={new Date('2018, 1, 7, 18:00')}
                         defaultView='week'
-                        onSelectEvent={() => this.toggle3()}
-                        onSelectSlot={(date) => this.toggle(date)}
+                        onSelectEvent={() => this.toggleViewModal()}
+                        onSelectSlot={(date) => this.toggleCreateModal(date)}
                         events={this.state.events.map(calendarInput => calendarInput.calendarInfo)}
                           startAccessor='start'
                           endAccessor='end'>
@@ -466,12 +450,12 @@ class App extends Component {
                 
                 <Row>
                   <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-                    <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggle2}>Register</Button>
+                    <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
                   </Col>
                 </Row>
 
                 {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className="eventCreationModal" className={this.props.className}>
+                <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className="createModal" className={this.props.className}>
                   <ModalBody>
                     <h2> New Event </h2>
                     <Form>
@@ -508,8 +492,8 @@ class App extends Component {
                 </Modal>
 
                 {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className}>
-                  <ModalHeader toggle={this.toggle2}>New Event</ModalHeader>
+                <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
+                  <ModalHeader>New Event</ModalHeader>
                   <ModalBody>
                     <form>
                       <Row>
@@ -559,7 +543,7 @@ class App extends Component {
                 </Modal>
 
                 {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal3} toggle={this.toggle3} className={this.props.className}>
+                <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                   <ModalBody>
                     <h2> Woohoo2 </h2>
                     <Form>
