@@ -24,13 +24,12 @@ var events =
       capacity: "",
       location: "",
       description: "",
-      recurrenceSelectorSwitch: "",
-      recurrence: "",
-      weeklyOcurrence: "",
+      isRecurrent: "",
+      daysSelected: "",
       allDay: "",
       calendarInfo: 
         {
-          title: 'Woohoo2',
+          title: 'Dummy event',
           allDay: false,
           start: new Date('2018-07-17T10:24:00'),
           end: new Date('2018-07-17T13:27:00')
@@ -47,34 +46,30 @@ class App extends Component {
 
     this.state = {
       events: [],
-      modal : false,
-      modal2: false,
-      modal3: false,
-      display : 0,
+      createModal : false,
+      registerModal: false,
+      viewModal: false,
       step: 0,
-      cSelected: [],
-      name: "",
+      name: { value: "", valid: true },
       description: "",
       startTime: "",
       endTime: "",
       location: "",
       capacity: "",
-      recurrenceSelectorSwitch: "",
+      daysSelected: [],
+      isRecurrent: false,
       recurrence: "",
       allDay: "",
-      weeklyOcurrence: "",
       events: events
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
     this.handleChangeEnd = this.handleChangeEnd.bind(this);
-    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
-    this.onCheckboxBtnClick = this.onCheckboxBtnClick.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.toggle2 = this.toggle2.bind(this);
-    this.toggle3 = this.toggle3.bind(this);
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
+    this.updateRecurence = this.updateRecurence.bind(this);
+    this.updateDaysSelection = this.updateDaysSelection.bind(this);
+    this.toggleCreateModal = this.toggleCreateModal.bind(this);
+    this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
+    this.toggleViewModal = this.toggleViewModal.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -93,50 +88,38 @@ class App extends Component {
     });
   }
 
-  onRadioBtnClick(rSelected) {
-    this.setState({ rSelected });
+  updateRecurence(selection) {
+    this.setState({ recurrence: selection });
   }
 
   onRadioBtnClick(allDay) {
     this.setState({ allDay });
   }
 
-  onCheckboxBtnClick(selected) {
-    const index = this.state.cSelected.indexOf(selected);
+  updateDaysSelection(selected) {
+    const index = this.state.daysSelected.indexOf(selected);
     if (index < 0) {
-      this.state.cSelected.push(selected);
+      this.state.daysSelected.push(selected);
     } else {
-      this.state.cSelected.splice(index, 1);
+      this.state.daysSelected.splice(index, 1);
     }
-    this.setState({ cSelected: [...this.state.cSelected] });
+    this.setState({ daysSelected: [...this.state.daysSelected] });
   }
 
-  toggle() {
+  toggleCreateModal() {
     this.setState({
-      modal: !this.state.modal
+      createModal: !this.state.createModal
     });
   }
 
-   toggle2() {
+   toggleRegisterModal() {
     this.setState({
-      modal2: !this.state.modal2
+      registerModal: !this.state.registerModal
     });
   }
-  toggle3() {
+  toggleViewModal() {
     this.setState({
-      modal3: !this.state.modal3
-    });
-  }
-
-  next() {
-    this.setState({
-      display: this.state.display + 1
-    });
-  }
-
-  previous() {
-    this.setState({
-      display: this.state.display - 1
+      viewModal: !this.state.viewModal
     });
   }
 
@@ -152,8 +135,12 @@ class App extends Component {
 
   handleChange(event) {
     const target = event.target;
+    var valid = true;
+    if (target.name === "name" && !/^[a-zA-Z]*$/.test(target.value)) {
+      valid = false;
+    }
     this.setState({
-      [target.name]: target.value
+      [target.name]: { value: target.value, valid: valid }
     });
   }
 
@@ -161,14 +148,22 @@ class App extends Component {
     var sDate = moment(this.state.startDate).format()
     var eDate = moment(this.state.endDate).format()
     var event = {
-      title: this.state.name,
+      title: this.state.name.value,
       allDay: false,
-      start:  new Date(sDate) ,
+      start:  new Date(sDate),
       end: new Date(eDate)
     }
-    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, recurrenceSelectorSwitch: this.state.recurrenceSelectorSwitch, recurrence: this.state.rSelected, allDay: this.state.allDay, weeklyOcurrence: this.state.cSelected, calendarInfo: event }
-    this.setState({events: this.state.events.concat(obj)});
-    console.log(obj);
+    var newEvent = {
+      capacity: this.state.capacity, 
+      description: this.state.description, 
+      location: this.state.location, 
+      isRecurrent: this.state.isRecurrent, 
+      daysSelected: this.state.daysSelected, 
+      recurrence: this.state.recurrence,
+      allDay: this.state.allDay,
+      calendarInfo: event 
+    }
+    this.setState({events: this.state.events.concat(newEvent)});
   }
 
   render() {
@@ -181,28 +176,26 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input name="name" value={this.state.name} onChange={this.handleChange} className="inputName" placeholder="What will it be called?" />
+                  <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="inputCapacity" placeholder="How many people?" />
+                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="form-control" placeholder="How many people?" />
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="inputLocation" placeholder="Where will it take place?" />
+                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="form-control" placeholder="Where will it take place?" />
               </Row>
-              
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select class="custom-select w-100" required="" name="recurrenceSelectorSwitch" value={this.state.recurrenceSelectorSwitch} onChange={this.handleChange}>
+                      <select className="custom-select w-100" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
                         <option value="">Will it be a recurring event?</option>
                         <option value="recurring">Yes</option>
                         <option value="non-recurring">No</option>
                       </select>
                   </fieldset>
               </Row>
-
             </Col>
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
@@ -264,10 +257,10 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Recurrence</label>
               <ButtonGroup>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Weekly")} active={this.state.rSelected === "Weekly"} name="recurrence" checked={this.state.recurrence === 'weekly'}  >Weekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Biweekly")} active={this.state.rSelected === "Biweekly"}>Biweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Triweekly")} active={this.state.rSelected === "Triweekly"}>Triweekly</Button>
-                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.onRadioBtnClick("Monthly")} active={this.state.rSelected === "Monthly"}>Monthly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
               </ButtonGroup>
             </Col>
           </Row><br/>
@@ -275,11 +268,11 @@ class App extends Component {
             <Col xs="10" sm="10" md="10" lg="10">
               <label className="inputName">Weekly Occurence</label>
               <ButtonGroup name="weeklyOcurrence">
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Monday")} active={this.state.cSelected.includes("Monday")}>Monday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Tuesday")} active={this.state.cSelected.includes("Tuesday")}>Tuesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Wednesday")} active={this.state.cSelected.includes("Wednesday")}>Wednesday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Thursday")} active={this.state.cSelected.includes("Thursday")}>Thursday</Button>
-                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.onCheckboxBtnClick("Friday")} active={this.state.cSelected.includes("Friday")}>Friday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
               </ButtonGroup>
             </Col>
           </Row>
@@ -345,7 +338,7 @@ class App extends Component {
         </fieldset>;
       }
     }  else {
-      if (this.state.recurrenceSelectorSwitch === "non-recurring"){
+      if (this.state.isRecurrent === "non-recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -366,7 +359,7 @@ class App extends Component {
           </Row>
         </fieldset>;
       }
-      else if (this.state.recurrenceSelectorSwitch === "recurring"){
+      else if (this.state.isRecurrent === "recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -377,9 +370,9 @@ class App extends Component {
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
                 <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
                 <li><span>Type of event:</span> <span>Recurring</span></li>
-                <li><span>Day of the week:</span> <span>{this.state.cSelected.join(", ")}</span></li>
+                <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
                 <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("HH:mm")}</span></li>
-                <li><span>Recurring basis:</span> <span>{this.state.rSelected} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
+                <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
                 <li><span>Location:</span> <span>{this.state.location}</span></li>
                 <li><span>Description:</span> <span>{this.state.description}</span></li>
               </ul> 
@@ -446,8 +439,8 @@ class App extends Component {
                         min={new Date('2018, 1, 7, 09:00')}
                         max={new Date('2018, 1, 7, 18:00')}
                         defaultView='week'
-                        onSelectEvent={() => this.toggle3()}
-                        onSelectSlot={(date) => this.toggle(date)}
+                        onSelectEvent={() => this.toggleViewModal()}
+                        onSelectSlot={(date) => this.toggleCreateModal(date)}
                         events={this.state.events.map(calendarInput => calendarInput.calendarInfo)}
                           startAccessor='start'
                           endAccessor='end'>
@@ -458,12 +451,12 @@ class App extends Component {
                 
                 <Row>
                   <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-                    <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggle2}>Register</Button>
+                    <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
                   </Col>
                 </Row>
 
                 {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className="eventCreationModal" className={this.props.className}>
+                <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className="createModal" className={this.props.className}>
                   <ModalBody>
                     <h2> New Event </h2>
                     <Form>
@@ -500,8 +493,8 @@ class App extends Component {
                 </Modal>
 
                 {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal2} toggle={this.toggle2} className={this.props.className}>
-                  <ModalHeader toggle={this.toggle2}>New Event</ModalHeader>
+                <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
+                  <ModalHeader>New Event</ModalHeader>
                   <ModalBody>
                     <form>
                       <Row>
@@ -551,49 +544,51 @@ class App extends Component {
                 </Modal>
 
                 {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
-                <Modal isOpen={this.state.modal3} toggle={this.toggle3} className={this.props.className}>
+                <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                   <ModalBody>
                     <h2> Woohoo2 </h2>
-                    <Form>
-                      <Row>
-                        <Col xs="12" sm="12" md="12" lg="12">
-                          <Steps current={this.state.step}>
-                            {steps.map(item => <Step key={item.title} title={item.title} />)}
-                          </Steps>
-                          <div className="steps-content">
-                            {wizardContent}
-                          </div>
-                          <div className="steps-action">
-                            {
-                              this.state.step < steps.length - 1
-                              && <Button onClick={() => this.nextStep()}>Next</Button>
-                            }
-                            {
-                              this.state.step === steps.length - 1
-                              && <Button onClick={() => message.success('Processing complete!')}>Done</Button>
-                            }
-                            {
-                              this.state.step > 0
-                              && (
-                              <Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}>
-                                Previous
-                              </Button>
-                              )
-                            }
-                          </div>
-                        </Col>
-                      </Row>
-                    </Form>
                   </ModalBody>
-                  <ModalFooter>
-                  </ModalFooter>
                 </Modal>
               </div>
             </div>
           </div>
         </div>
 
-
+        {/*<---------------------FEEDBACK--------------------->*/}
+        <div class="contact section-invert py-4">
+          <h3 class="section-title text-center m-5">Contact Us</h3>
+          <div class="container py-4">
+            <div class="row justify-content-md-center px-4">
+              <div class="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
+                <form>
+                  <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                      <div class="form-group">
+                        <label for="contactFormFullName">Full Name</label>
+                        <input type="email" class="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
+                      </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                      <div class="form-group">
+                        <label for="contactFormEmail">Email address</label>
+                        <input type="email" class="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <div class="form-group">
+                          <label for="exampleInputMessage1">Message</label>
+                          <textarea id="exampleInputMessage1" class="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <input class="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/*<----------------------- FOOTER ----------------------->*/}                 
         <footer>
