@@ -9,7 +9,7 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-mongoose.connect('mongodb://localhost/nodekb');
+mongoose.connect('mongodb://localhost:27017/umba', { useNewUrlParser: true });
 let db = mongoose.connection;
 // Check connection
 db.once('open', function(){
@@ -21,18 +21,36 @@ db.on('error', function(err){
 })
 
 // Bring in Models
-let Schedule = require('./models/schedule')
+let Event = require('./models/event');
+let User =  require('./models/user');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(express.json());
+// app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+// app.use('/', indexRouter);
+
+app.get('/', function(req, res, next) {
+  console.log("HELLO");
+  let bob = new User({
+    name: "bob ross",
+    email: "bob.ross3@gmail.com"
+  });
+  bob.save()
+    .then(doc => {
+      console.log(doc)
+    })
+    .catch(err => {
+      console.error(err)
+    })
+  res.render('index', { title: 'Express' });
+});
+
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
