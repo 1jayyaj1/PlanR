@@ -155,6 +155,47 @@ class App extends Component {
 
   render() {
 
+    var availableTimes =
+      [
+        <option value="09:00">9:00 AM</option>,
+        <option value="09:15">9:15 AM</option>,
+        <option value="09:30">9:30 AM</option>,
+        <option value="09:45">9:45 AM</option>,
+        <option value="10:00">10:00 AM</option>,
+        <option value="10:15">10:15 AM</option>,
+        <option value="10:30">10:30 AM</option>,
+        <option value="10:45">10:45 AM</option>,
+        <option value="11:00">11:00 AM</option>,
+        <option value="11:15">11:15 AM</option>,
+        <option value="11:30">11:30 AM</option>,
+        <option value="11:45">11:45 AM</option>,
+        <option value="12:00">12:00 PM</option>,
+        <option value="12:15">12:15 PM</option>,
+        <option value="12:30">12:30 PM</option>,
+        <option value="12:45">12:45 PM</option>,
+        <option value="13:00">1:00 PM</option>,
+        <option value="13:15">1:15 PM</option>,
+        <option value="13:30">1:30 PM</option>,
+        <option value="13:45">1:45 PM</option>,
+        <option value="14:00">2:00 PM</option>,
+        <option value="14:15">2:15 PM</option>,
+        <option value="14:30">2:30 PM</option>,
+        <option value="14:45">2:45 PM</option>,
+        <option value="15:00">3:00 PM</option>,
+        <option value="15:15">3:15 PM</option>,
+        <option value="15:30">3:30 PM</option>,
+        <option value="15:45">3:45 PM</option>,
+        <option value="16:00">4:00 PM</option>,
+        <option value="16:15">4:15 PM</option>,
+        <option value="16:30">4:30 PM</option>,
+        <option value="16:45">4:45 PM</option>,
+        <option value="17:00">5:00 PM</option>,
+        <option value="17:15">5:15 PM</option>,
+        <option value="17:30">5:30 PM</option>,
+        <option value="17:45">5:45 PM</option>,
+        <option value="18:00">6:00 PM</option>,
+      ];
+
     let wizardContent;
     if (this.state.step === 0) {
       wizardContent = 
@@ -224,44 +265,7 @@ class App extends Component {
                   <label className="inputName">Start time</label>
                     <fieldset>
                       <select class="custom-select w-100" required="" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
-                        <option value="">When will it start?</option>
-                        <option value="09:00">9:00 AM</option>
-                        <option value="09:15">9:15 AM</option>
-                        <option value="09:30">9:30 AM</option>
-                        <option value="09:45">9:45 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="10:15">10:15 AM</option>
-                        <option value="10:30">10:30 AM</option>
-                        <option value="10:45">10:45 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="11:15">11:15 AM</option>
-                        <option value="11:30">11:30 AM</option>
-                        <option value="11:45">11:45 AM</option>
-                        <option value="12:00">12:00 PM</option>
-                        <option value="12:15">12:15 PM</option>
-                        <option value="12:30">12:30 PM</option>
-                        <option value="12:45">12:45 PM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="13:15">1:15 PM</option>
-                        <option value="13:30">1:30 PM</option>
-                        <option value="13:45">1:45 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="14:15">2:15 PM</option>
-                        <option value="14:30">2:30 PM</option>
-                        <option value="14:45">2:45 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="15:15">3:15 PM</option>
-                        <option value="15:30">3:30 PM</option>
-                        <option value="15:45">3:45 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                        <option value="16:15">4:15 PM</option>
-                        <option value="16:30">4:30 PM</option>
-                        <option value="16:45">4:45 PM</option>
-                        <option value="17:00">5:00 PM</option>
-                        <option value="17:15">5:15 PM</option>
-                        <option value="17:30">5:30 PM</option>
-                        <option value="17:45">5:45 PM</option>
-                        <option value="18:00">6:00 PM</option>
+                        {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
                 </Col>
@@ -269,44 +273,7 @@ class App extends Component {
                   <label className="inputName">End time</label>
                   <fieldset>
                       <select class="custom-select w-100" required="" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
-                        <option value="">When will it end?</option>
-                        <option value="09:00">9:00 AM</option>
-                        <option value="09:15">9:15 AM</option>
-                        <option value="09:30">9:30 AM</option>
-                        <option value="09:45">9:45 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="10:15">10:15 AM</option>
-                        <option value="10:30">10:30 AM</option>
-                        <option value="10:45">10:45 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="11:15">11:15 AM</option>
-                        <option value="11:30">11:30 AM</option>
-                        <option value="11:45">11:45 AM</option>
-                        <option value="12:00">12:00 PM</option>
-                        <option value="12:15">12:15 PM</option>
-                        <option value="12:30">12:30 PM</option>
-                        <option value="12:45">12:45 PM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="13:15">1:15 PM</option>
-                        <option value="13:30">1:30 PM</option>
-                        <option value="13:45">1:45 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="14:15">2:15 PM</option>
-                        <option value="14:30">2:30 PM</option>
-                        <option value="14:45">2:45 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="15:15">3:15 PM</option>
-                        <option value="15:30">3:30 PM</option>
-                        <option value="15:45">3:45 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                        <option value="16:15">4:15 PM</option>
-                        <option value="16:30">4:30 PM</option>
-                        <option value="16:45">4:45 PM</option>
-                        <option value="17:00">5:00 PM</option>
-                        <option value="17:15">5:15 PM</option>
-                        <option value="17:30">5:30 PM</option>
-                        <option value="17:45">5:45 PM</option>
-                        <option value="18:00">6:00 PM</option>
+                        {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
                 </Col>
