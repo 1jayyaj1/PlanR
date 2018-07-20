@@ -49,7 +49,7 @@ class App extends Component {
       registerModal: false,
       viewModal: false,
       step: 0,
-      name: "",
+      name: { value: "", valid: true },
       description: "",
       startTime: "",
       endTime: "",
@@ -129,8 +129,12 @@ class App extends Component {
 
   handleChange(event) {
     const target = event.target;
+    var valid = true;
+    if (target.name === "name" && !/^[a-zA-Z]*$/.test(target.value)) {
+      valid = false;
+    }
     this.setState({
-      [target.name]: target.value
+      [target.name]: { value: target.value, valid: valid }
     });
   }
 
@@ -142,7 +146,7 @@ class App extends Component {
     var eTime = this.state.endTime
     var eDateTime = eDate.replace(/00:00{1}/, eTime);
     var event = {
-      title: this.state.name,
+      title: this.state.name.value,
       allDay: false,
       start:  new Date(sDateTime),
       end: new Date(eDateTime)
@@ -210,20 +214,20 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input name="name" value={this.state.name} onChange={this.handleChange} className="inputName" placeholder="What will it be called?" />
+                  <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="inputCapacity" placeholder="How many people?" />
+                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="form-control" placeholder="How many people?" />
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="inputLocation" placeholder="Where will it take place?" />
+                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="form-control" placeholder="Where will it take place?" />
               </Row>
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select class="custom-select w-100" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
+                      <select className="custom-select w-100" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
                         <option value="">Will it be a recurring event?</option>
                         <option value="recurring">Yes</option>
                         <option value="non-recurring">No</option>
@@ -268,7 +272,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">Start time</label>
                     <fieldset>
-                      <select class="custom-select w-100" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
+                      <select className="custom-select w-100" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
                         {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
@@ -276,7 +280,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <label className="inputName">End time</label>
                   <fieldset>
-                      <select class="custom-select w-100" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
+                      <select className="custom-select w-100" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
                         {availableTimes.map(time => time)}
                       </select>
                     </fieldset>
