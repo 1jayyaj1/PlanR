@@ -6,14 +6,14 @@ import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFoot
 import { Steps, message } from 'antd';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import 'react-datepicker/dist/react-datepicker.min.css';
 
 const Step = Steps.Step;
 
 const steps = [{
   title: 'Basic info',
 }, {
-  title: 'Time & date',
+  title: 'Schedule',
 }, {
   title: 'Summary',
 }];
@@ -27,6 +27,7 @@ var events =
       recurrenceSelectorSwitch: "",
       recurrence: "",
       weeklyOcurrence: "",
+      allDay: "",
       calendarInfo: 
         {
           title: 'Woohoo2',
@@ -60,6 +61,7 @@ class App extends Component {
       capacity: "",
       recurrenceSelectorSwitch: "",
       recurrence: "",
+      allDay: "",
       weeklyOcurrence: "",
       events: events
     }
@@ -93,6 +95,10 @@ class App extends Component {
 
   onRadioBtnClick(rSelected) {
     this.setState({ rSelected });
+  }
+
+  onRadioBtnClick(allDay) {
+    this.setState({ allDay });
   }
 
   onCheckboxBtnClick(selected) {
@@ -153,18 +159,14 @@ class App extends Component {
 
   createEvent() {
     var sDate = moment(this.state.startDate).format()
-    var sTime = this.state.startTime
-    var sDateTime = sDate.replace(/00:00{1}/, sTime);
     var eDate = moment(this.state.endDate).format()
-    var eTime = this.state.endTime
-    var eDateTime = eDate.replace(/00:00{1}/, eTime);
     var event = {
       title: this.state.name,
       allDay: false,
-      start:  new Date(sDateTime) ,
-      end: new Date(eDateTime)
+      start:  new Date(sDate) ,
+      end: new Date(eDate)
     }
-    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, recurrenceSelectorSwitch: this.state.recurrenceSelectorSwitch, recurrence: this.state.rSelected, weeklyOcurrence: this.state.cSelected, calendarInfo: event }
+    var obj = {capacity: this.state.capacity, description: this.state.description, location: this.state.location, recurrenceSelectorSwitch: this.state.recurrenceSelectorSwitch, recurrence: this.state.rSelected, allDay: this.state.allDay, weeklyOcurrence: this.state.cSelected, calendarInfo: event }
     this.setState({events: this.state.events.concat(obj)});
     console.log(obj);
   }
@@ -212,121 +214,50 @@ class App extends Component {
         </fieldset>;
     }
     else if (this.state.step === 1) {
-      wizardContent = 
+      if (this.state.recurrenceSelectorSwitch === "recurring"){
+        wizardContent = 
         <fieldset> 
           <Row>
             <Col xs="12" sm="12" md="12" lg="12">
-              <label className="inputName">Date</label>
+              <label className="inputName">Date & time</label>
                 <div className="input-daterange input-group" id="datepicker-example-2">
                   <span className="input-group-append" id="startIcon">
                     <span className="input-group-text" id="startIcon">
                       <i className="fa fa-calendar"></i>
                     </span>
                   </span>
-                  <DatePicker selected={this.state.startDate} onChange={this.handleChangeStart} className="input-sm form-control startDate" name="start" placeholderText="Start date"/>
-                  <DatePicker selected={this.state.endDate} onChange={this.handleChangeEnd} className="input-sm form-control endDate" name="end" placeholderText="End date"/>
+                  <DatePicker
+                    className="input-sm form-control startDate"
+                    name="start"
+                    placeholderText="Start date"
+                    selected={this.state.startDate}
+                    onChange={this.handleChangeStart}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    minTime={moment().hours(9).minutes(0)}
+                    maxTime={moment().hours(18).minutes(0)}
+                    dateFormat="LLL"
+                  />
+                  <DatePicker
+                    className="input-sm form-control startDate"
+                    name="end"
+                    placeholderText="End date"
+                    selected={this.state.endDate}
+                    onChange={this.handleChangeEnd}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    minTime={moment().hours(9).minutes(0)}
+                    maxTime={moment().hours(18).minutes(0)}
+                    dateFormat="LLL"
+                  />
                   <span className="input-group-prepend" id="endIcon">
                     <span className="input-group-text" id="endIcon">
                       <i className="fa fa-calendar"></i>
                     </span>
                   </span>
                 </div>
-            </Col>
-          </Row><br/>
-          <Row>
-            <Col xs="10" sm="10" md="10" lg="10">
-              <Row className="startTime">
-                <Col xs="6" sm="6" md="6" lg="6">
-                  <label className="inputName">Start time</label>
-                    <fieldset>
-                      <select class="custom-select w-100" required="" name="startTime" value={this.state.startTime} onChange={this.handleChange}>
-                        <option value="">When will it start?</option>
-                        <option value="09:00">9:00 AM</option>
-                        <option value="09:15">9:15 AM</option>
-                        <option value="09:30">9:30 AM</option>
-                        <option value="09:45">9:45 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="10:15">10:15 AM</option>
-                        <option value="10:30">10:30 AM</option>
-                        <option value="10:45">10:45 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="11:15">11:15 AM</option>
-                        <option value="11:30">11:30 AM</option>
-                        <option value="11:45">11:45 AM</option>
-                        <option value="12:00">12:00 PM</option>
-                        <option value="12:15">12:15 PM</option>
-                        <option value="12:30">12:30 PM</option>
-                        <option value="12:45">12:45 PM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="13:15">1:15 PM</option>
-                        <option value="13:30">1:30 PM</option>
-                        <option value="13:45">1:45 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="14:15">2:15 PM</option>
-                        <option value="14:30">2:30 PM</option>
-                        <option value="14:45">2:45 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="15:15">3:15 PM</option>
-                        <option value="15:30">3:30 PM</option>
-                        <option value="15:45">3:45 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                        <option value="16:15">4:15 PM</option>
-                        <option value="16:30">4:30 PM</option>
-                        <option value="16:45">4:45 PM</option>
-                        <option value="17:00">5:00 PM</option>
-                        <option value="17:15">5:15 PM</option>
-                        <option value="17:30">5:30 PM</option>
-                        <option value="17:45">5:45 PM</option>
-                        <option value="18:00">6:00 PM</option>
-                      </select>
-                    </fieldset>
-                </Col>
-                <Col xs="6" sm="6" md="6" lg="6">
-                  <label className="inputName">End time</label>
-                  <fieldset>
-                      <select class="custom-select w-100" required="" name="endTime" value={this.state.endTime} onChange={this.handleChange}>
-                        <option value="">When will it end?</option>
-                        <option value="09:00">9:00 AM</option>
-                        <option value="09:15">9:15 AM</option>
-                        <option value="09:30">9:30 AM</option>
-                        <option value="09:45">9:45 AM</option>
-                        <option value="10:00">10:00 AM</option>
-                        <option value="10:15">10:15 AM</option>
-                        <option value="10:30">10:30 AM</option>
-                        <option value="10:45">10:45 AM</option>
-                        <option value="11:00">11:00 AM</option>
-                        <option value="11:15">11:15 AM</option>
-                        <option value="11:30">11:30 AM</option>
-                        <option value="11:45">11:45 AM</option>
-                        <option value="12:00">12:00 PM</option>
-                        <option value="12:15">12:15 PM</option>
-                        <option value="12:30">12:30 PM</option>
-                        <option value="12:45">12:45 PM</option>
-                        <option value="13:00">1:00 PM</option>
-                        <option value="13:15">1:15 PM</option>
-                        <option value="13:30">1:30 PM</option>
-                        <option value="13:45">1:45 PM</option>
-                        <option value="14:00">2:00 PM</option>
-                        <option value="14:15">2:15 PM</option>
-                        <option value="14:30">2:30 PM</option>
-                        <option value="14:45">2:45 PM</option>
-                        <option value="15:00">3:00 PM</option>
-                        <option value="15:15">3:15 PM</option>
-                        <option value="15:30">3:30 PM</option>
-                        <option value="15:45">3:45 PM</option>
-                        <option value="16:00">4:00 PM</option>
-                        <option value="16:15">4:15 PM</option>
-                        <option value="16:30">4:30 PM</option>
-                        <option value="16:45">4:45 PM</option>
-                        <option value="17:00">5:00 PM</option>
-                        <option value="17:15">5:15 PM</option>
-                        <option value="17:30">5:30 PM</option>
-                        <option value="17:45">5:45 PM</option>
-                        <option value="18:00">6:00 PM</option>
-                      </select>
-                    </fieldset>
-                </Col>
-              </Row>
             </Col>
           </Row><br/>
           <Row className="recurrenceLabel">
@@ -353,6 +284,66 @@ class App extends Component {
             </Col>
           </Row>
         </fieldset>;
+      }
+      else if (this.state.recurrenceSelectorSwitch === "non-recurring"){
+        wizardContent = 
+        <fieldset> 
+          <Row>
+            <Col xs="12" sm="12" md="12" lg="12">
+              <label className="inputName">Date & time</label>
+                <div className="input-daterange input-group" id="datepicker-example-2">
+                  <span className="input-group-append" id="startIcon">
+                    <span className="input-group-text" id="startIcon">
+                      <i className="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                  <DatePicker
+                    className="input-sm form-control startDate"
+                    name="start"
+                    placeholderText="Start date"
+                    selected={this.state.startDate}
+                    onChange={this.handleChangeStart}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    minTime={moment().hours(9).minutes(0)}
+                    maxTime={moment().hours(18).minutes(0)}
+                    dateFormat="LLL"
+                  />
+                  <DatePicker
+                    className="input-sm form-control startDate"
+                    name="end"
+                    placeholderText="End date"
+                    selected={this.state.endDate}
+                    onChange={this.handleChangeEnd}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    minTime={moment().hours(9).minutes(0)}
+                    maxTime={moment().hours(18).minutes(0)}
+                    dateFormat="LLL"
+                  />
+                  <span className="input-group-prepend" id="endIcon">
+                    <span className="input-group-text" id="endIcon">
+                      <i className="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                </div>
+            </Col>
+          </Row><br/>
+          <Row className="allDayLabel">
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Type of event</label>
+              <fieldset>
+                <div class="custom-control custom-toggle d-block my-2">
+                  <input type="checkbox" id="customToggle1" name="customToggle1" class="custom-control-input"/>
+                  <label class="custom-control-label" for="customToggle1">Will your event last all day?</label>
+                </div>
+              </fieldset>
+            </Col>
+          </Row>
+        </fieldset>;
+      }
     }  else {
       if (this.state.recurrenceSelectorSwitch === "non-recurring"){
         wizardContent = 
@@ -365,6 +356,7 @@ class App extends Component {
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
                 <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
                 <li><span>Type of event:</span> <span>Non-recurring</span></li>
+                <li><span>All-day event:</span> <span>{this.state.allDay}</span></li>
                 <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {this.state.startTime} to {this.state.endTime}</span></li>
                 <li><span>Location:</span> <span>{this.state.location}</span></li>
                 <li><span>Description:</span> <span>{this.state.description}</span></li>
@@ -386,7 +378,7 @@ class App extends Component {
                 <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
                 <li><span>Type of event:</span> <span>Recurring</span></li>
                 <li><span>Day of the week:</span> <span>{this.state.cSelected.join(", ")}</span></li>
-                <li><span>Time:</span> <span>From {this.state.startTime} to {this.state.endTime}</span></li>
+                <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("HH:mm")}</span></li>
                 <li><span>Recurring basis:</span> <span>{this.state.rSelected} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
                 <li><span>Location:</span> <span>{this.state.location}</span></li>
                 <li><span>Description:</span> <span>{this.state.description}</span></li>

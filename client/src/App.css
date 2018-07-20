@@ -48,6 +48,14 @@
   color: #495057 !important;
 }
 
+.custom-control-label {
+  font-size: 12pt;
+  padding-left: 19% !important;
+}
+.custom-toggle {
+  padding-left: 0px !important;
+}
+
 .dateSelector {
   padding-left: 3% !important;
   font-size: 15pt;
@@ -61,6 +69,10 @@
 }
 
 .occurenceLabel {
+  font-size: 15pt;
+}
+
+.allDayLabel {
   font-size: 15pt;
 }
 
