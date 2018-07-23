@@ -51,13 +51,13 @@ class App extends Component {
       viewModal: false,
       step: 0,
       name: { value: "", valid: true },
-      description: "",
+      description: { value: "", valid: true },
       startTime: "",
       endTime: "",
-      location: "",
-      capacity: "",
+      location: { value: "", valid: true },
+      capacity: { value: "", valid: true },
       daysSelected: [],
-      isRecurrent: false,
+      isRecurrent: { value: "", valid: true },
       recurrence: "",
       allDay: "",
       events: events
@@ -123,11 +123,62 @@ class App extends Component {
     });
   }
 
-  nextStep() {
-    const step = this.state.step + 1;
-    this.setState({ step });
+  nextStep(event) {
+    event.preventDefault();
+    if (this.state.step == 0) {
+    var recurrenceValid = this.state.isRecurrent;
+    var nameValid = this.state.name;
+    var capacityValid = this.state.capacity;
+    var locationValid = this.state.location;
+    var descriptionValid = this.state.description;
+    var valid = true;
+      if(recurrenceValid.value == "" || nameValid.value == "" || capacityValid.value == "" || locationValid.value == "" || descriptionValid.value == "" || nameValid.valid == false || capacityValid.valid == false || locationValid.valid == false || descriptionValid.valid == false){
+        if (recurrenceValid.value == "") {
+          valid = false;
+          this.setState({
+            isRecurrent: {value: recurrenceValid.value, valid: valid}
+          });
+        }
+        if (nameValid.value == "") {
+          valid = false;
+          this.setState({
+            name: {value: nameValid.value, valid: valid}
+          });
+        }
+        if (capacityValid.value == "") {
+          valid = false;
+          this.setState({
+            capacity: {value: capacityValid.value, valid: valid}
+          });
+        }
+        if (locationValid.value == "") {
+          valid = false;
+          this.setState({
+            location: {value: locationValid.value, valid: valid}
+          });
+        }
+        if (descriptionValid.value == "") {
+          valid = false;
+          this.setState({
+            description: {value: descriptionValid.value, valid: valid}
+          });
+        }
+      }
+        else {
+          const step = this.state.step + 1;
+          this.setState({ step });
+        }
+      }
+    else if (this.state.step == 1){
+      if (TO JAY: FILL IN HERE CONDITION FOR START AND END DATE){
+        
+      }
+      else {
+        const step = this.state.step + 1;
+        this.setState({ step });
+      }
+    }
   }
-
   prevStep() {
     const step = this.state.step - 1;
     this.setState({ step });
@@ -136,7 +187,13 @@ class App extends Component {
   handleChange(event) {
     const target = event.target;
     var valid = true;
-    if (target.name === "name" && !/^[a-zA-Z]*$/.test(target.value)) {
+    if (target.name === "name" && !/^[a-zA-Z- ]*$/.test(target.value)) {
+      valid = false;
+    }
+    else if (target.name === "capacity" && /\D+/.test(target.value)) {
+      valid = false;
+    }
+    else if (target.name === "location" && /[^A-Za-z0-9- ]+/.test(target.value)) {
       valid = false;
     }
     this.setState({
@@ -176,38 +233,44 @@ class App extends Component {
             <Col xs="6" sm="6" md="6" lg="6">
               <Row>
                   <label>Name</label>
-                  <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
+                  <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
+                  <div className="invalid-feedback">Characters only and can't be empty</div>
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input name="capacity" value={this.state.capacity} onChange={this.handleChange} className="form-control" placeholder="How many people?" />
+                  <Input name="capacity" value={this.state.capacity.value} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
+                  <div className="invalid-feedback">Numbers only and can't be empty</div>
               </Row>
               <Row>
                   <label>Location</label>
-                  <Input name="location" value={this.state.location} onChange={this.handleChange} className="form-control" placeholder="Where will it take place?" />
-              </Row>
+                  <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
+                  <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+              </Row> 
               <Row>
                   <label>Recurrence</label>
                   <fieldset className="inputRecurrence">
-                      <select className="custom-select w-100" name="isRecurrent" value={this.state.isRecurrent} onChange={this.handleChange}>
-                        <option value="">Will it be a recurring event?</option>
+                      <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="isRecurrent" value={this.state.isRecurrent.value} onChange={this.handleChange}>
+                        <option disabled='disabled' value="">Will it be a recurring event?</option>
                         <option value="recurring">Yes</option>
                         <option value="non-recurring">No</option>
                       </select>
+                      <div className="invalid-feedback">Recurrence type is required</div>
                   </fieldset>
               </Row>
             </Col>
             <Col xs="6" sm="6" md="6" lg="6">
               <Row  className="rightInputInBasicInfo">
                 <label>Description</label>
-                  <Input name="description" value={this.state.description} onChange={this.handleChange} className="inputDescription" placeholder="What is your event about?" />
+                  <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                  <div className="invalid-feedback">Can't be empty</div>
               </Row>
             </Col>
           </Row>
         </fieldset>;
     }
+    
     else if (this.state.step === 1) {
-      if (this.state.recurrenceSelectorSwitch === "recurring"){
+      if (this.state.isRecurrent.value === "recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -278,7 +341,7 @@ class App extends Component {
           </Row>
         </fieldset>;
       }
-      else if (this.state.recurrenceSelectorSwitch === "non-recurring"){
+      else if (this.state.isRecurrent.value === "non-recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
@@ -338,43 +401,43 @@ class App extends Component {
         </fieldset>;
       }
     }  else {
-      if (this.state.isRecurrent === "non-recurring"){
+      if (this.state.isRecurrent.value === "non-recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
             <Col xs="12" sm="12" md="12" lg="12">
               <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name}</label>
+              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
               <ul style={{fontSize: '15px'}}>
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
+                <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                 <li><span>Type of event:</span> <span>Non-recurring</span></li>
                 <li><span>All-day event:</span> <span>{this.state.allDay}</span></li>
-                <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {this.state.startTime} to {this.state.endTime}</span></li>
-                <li><span>Location:</span> <span>{this.state.location}</span></li>
-                <li><span>Description:</span> <span>{this.state.description}</span></li>
+                <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                <li><span>Description:</span> <span>{this.state.description.value}</span></li>
               </ul> 
               <hr/>
             </Col>
           </Row>
         </fieldset>;
       }
-      else if (this.state.isRecurrent === "recurring"){
+      else if (this.state.isRecurrent.value === "recurring"){
         wizardContent = 
         <fieldset> 
           <Row>
             <Col xs="12" sm="12" md="12" lg="12">
               <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name}</label>
+              <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
               <ul style={{fontSize: '15px'}}>
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                <li><span>Capacity:</span> <span>{this.state.capacity}</span></li>
+                <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                 <li><span>Type of event:</span> <span>Recurring</span></li>
                 <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
-                <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("HH:mm")}</span></li>
+                <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
                 <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
-                <li><span>Location:</span> <span>{this.state.location}</span></li>
-                <li><span>Description:</span> <span>{this.state.description}</span></li>
+                <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                <li><span>Description:</span> <span>{this.state.description.value}</span></li>
               </ul> 
               <hr/>
             </Col>
@@ -479,7 +542,7 @@ class App extends Component {
                             }
                             {
                               this.state.step < steps.length - 1
-                              && <Button className="" onClick={() => this.nextStep()}>Next</Button>
+                              && <Button className="" type="submit" onClick={this.nextStep}>Next</Button>
                             }
                             {
                               this.state.step === steps.length - 1

@@ -42,6 +42,10 @@
   color: #495057 !important;
 }
 
+.invalid-feedback {
+  font-size: 10pt !important;
+}
+
 .checkButtons {
   background-color: #e9ecef !important;
   border: 1px solid #ced4da !important;
@@ -82,10 +86,6 @@
 
 .startTime {
   font-size: 15pt;
-}
-
-.inputDescription {
-  height:199pt;
 }
 
 .inputName {
