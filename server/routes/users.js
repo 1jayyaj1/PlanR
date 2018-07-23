@@ -31,8 +31,9 @@ router.post('/', function(req, res, next) {
         console.error(err);
         if (err.code === 11000) {
           res.status(500).send("This user already exists in the database")
+        } else {
+          res.status(500).send("Unable to create user in database")
         }
-        res.status(500).send("Unable to create user in database")
       })
     } else {
       res.status(400).send("Invalid JSON object or invalid field values")
