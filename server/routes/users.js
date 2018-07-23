@@ -22,7 +22,7 @@ router.get('/:userId', function(req, res, next) {
           if (users.length == 0) {
             return res.sendStatus(404);
           } else {
-            return res.send(users)
+            return res.send(users[0])
           }
         })
         .catch(err => {
