@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 let User =  require('../models/user');
 
+const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+
 // for debugging only. will be removed in the future for security reasons
 router.get('/', function(req, res, next) {
   User.find()
@@ -35,7 +37,6 @@ router.get('/:userId', function(req, res, next) {
 router.put('/:userId', function(req, res, next) {
   const body = req.body;
   const id = req.params.userId;
-  const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
   try {
     if (body.name == null || !/^[a-zA-Z ]+$/.test(body.name)) {
       return res.sendStatus(400);
@@ -71,7 +72,6 @@ router.put('/:userId', function(req, res, next) {
 
 router.post('/', function(req, res, next) {
   const body = req.body;
-  const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
   try {
     if (/^[a-zA-Z ]+$/.test(body.name) && emailRegex.test(body.email)) {
       var user = new User({
@@ -99,5 +99,21 @@ router.post('/', function(req, res, next) {
     res.sendStatus(400)
   }
 });
+
+router.delete('/:userId', function(req, res, next) {
+  const id = req.params.userId;
+  User.findByIdAndRemove(id)
+  .then(user => {
+      if (!user) {
+        return res.status(404).send("User not found with id " + id);
+      }
+      res.sendStatus(200)
+  }).catch(err => {
+      if (err.code === 11000) {
+        return res.status(404).send("User not found with id " + id);                
+      }
+      return res.status(500).send("Unable to delete user " + id)
+  });
+})
 
 module.exports = router;
