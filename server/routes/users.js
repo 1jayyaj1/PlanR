@@ -11,6 +11,25 @@ router.get('/', function(req, res, next) {
       })
 });
 
+router.get('/:userId', function(req, res, next) {
+  try {
+    User.find({"_id" : req.params.userId})
+        .exec()
+        .then(users => {
+          if (users.length == 0) {
+            res.sendStatus(404);
+          } else {
+            res.send(users)
+          }
+        })
+        .catch(docs => {
+          res.sendStatus(404);
+        })
+  } catch {
+    res.sendStatus(404);
+  }
+});
+
 router.post('/', function(req, res, next) {
   const body = req.body;
   const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
