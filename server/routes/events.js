@@ -49,12 +49,83 @@ router.delete('/:eventId', function(req, res, next) {
                 }
                 res.sendStatus(200);
             })
-            .except(err => {
+            .catch(err => {
                 if (err.code == 11000) {
                     return res.status(404).send("Event not found with id " + id);
                 }
                 return res.status(500).send("Unable to delete event with id " + id);
             })
+    } catch {
+        res.sendStatus(500);
+    }
+});
+
+router.put('/:eventId', function(req, res, next) {
+    const body = req.body;
+    const id = req.params.eventId;
+    var updateField = {};
+    try {
+        if (body.name != null) {
+            if (/^[a-zA-Z- ]+$/.test(body.name)) {
+                updateField.name = body.name;
+            } else {
+                res.sendStatus(400);
+            }
+        }
+        if (body.capacity != null) { 
+            updateField.capacity = Number(body.capacity);
+        }
+        if (body.location != null) {
+            if (/^[0-9a-zA-Z- ]+$/.test(body.location)) {
+                updateField.location = body.location;
+            } else {
+                res.sendStatus(400);
+            }
+        }
+        if (body.isRecurrent != null) { 
+            updateField.isRecurrent = Boolean(body.isRecurrent);
+        }
+        if (body.startDate != null && body.endDate != null) {
+            var startDate = new Date(body.startDate);
+            var endDate = new Date(body.endDate);
+            if (startDate >= endDate) {
+                updateField.startDate = body.startDate;
+                updateField.endDate = body.endDate;
+            } else {
+                res.sendStatus(400);
+            }
+        }
+        if (body.allDay != null) { 
+            updateField.allDay = Boolean(body.allDay);
+        }
+        if (body.recurrenceType != null) { 
+            if (types.includes(body.recurrenceType)) {
+                updateField.recurrenceType = body.recurrenceType;
+            } else {
+                res.sendStatus(400);
+            }
+        }
+        if (body.daysSelected != null) { 
+            if (body.daysSelected.every(x => days.includes(x))) {
+                updateField.daysSelected = body.daysSelected;
+            } else {
+                res.sendStatus(400);
+            }
+        }
+        Event.findByIdAndUpdate(id, updateField, {new: true})
+        .then(event => {
+            if (!event) {
+                return res.status(404).send("Event not found with id " + id);
+            }
+            res.send(event);
+        })
+        .catch(err => {
+            console.log(err);
+            if (err.code === 11000) {
+                return res.status(404).send("Event not found with id " + id);
+            }
+            res.sendStatus(500);
+        })
     } catch {
         res.sendStatus(500);
     }
