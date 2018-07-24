@@ -35,7 +35,28 @@ router.get('/:eventId', function(req, res, next) {
             return res.sendStatus(404);
             })
     } catch {
-        res.sendStatus(404);
+        res.sendStatus(500);
+    }
+});
+
+router.delete('/:eventId', function(req, res, next) {
+    const id = req.params.eventId;
+    try {
+        Event.findByIdAndRemove(id)
+            .then(event => {
+                if (!event) {
+                    return res.status(404).send("Event not found with id " + id);
+                }
+                res.sendStatus(200);
+            })
+            .except(err => {
+                if (err.code == 11000) {
+                    return res.status(404).send("Event not found with id " + id);
+                }
+                return res.status(500).send("Unable to delete event with id " + id);
+            })
+    } catch {
+        res.sendStatus(500);
     }
 });
 
@@ -100,6 +121,6 @@ router.post('/', function(req, res, next) {
     } catch {
         res.sendStatus(400)
     }
-  });
+});
 
   module.exports = router;
