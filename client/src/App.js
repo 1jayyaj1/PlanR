@@ -170,13 +170,13 @@ class App extends Component {
         }
       }
     else if (this.state.step == 1){
-      if (TO JAY: FILL IN HERE CONDITION FOR START AND END DATE){
+      // if (TO JAY: FILL IN HERE CONDITION FOR START AND END DATE){
         
-      }
-      else {
-        const step = this.state.step + 1;
-        this.setState({ step });
-      }
+      // }
+      // else {
+      //   const step = this.state.step + 1;
+      //   this.setState({ step });
+      // }
     }
   }
   prevStep() {
