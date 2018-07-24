@@ -93,7 +93,7 @@ router.post('/', function(req, res, next) {
         res.status(500).send("Unable to create user in database")
       })
     } else {
-      res.status(400).send("Invalid JSON object or invalid field values")
+      res.sendStatus(400)
     }
   } catch {
     res.sendStatus(400)
