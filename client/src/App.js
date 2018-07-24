@@ -7,6 +7,7 @@ import { Steps} from 'antd';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
+const axios = require('axios');
 
 const Step = Steps.Step;
 
@@ -52,8 +53,6 @@ class App extends Component {
       step: 0,
       name: { value: "", valid: true },
       description: { value: "", valid: true },
-      startTime: "",
-      endTime: "",
       location: { value: "", valid: true },
       capacity: { value: "", valid: true },
       daysSelected: [],
@@ -211,16 +210,34 @@ class App extends Component {
       end: new Date(eDate)
     }
     var newEvent = {
-      capacity: this.state.capacity, 
-      description: this.state.description, 
-      location: this.state.location, 
-      isRecurrent: this.state.isRecurrent, 
+      capacity: this.state.capacity.value, 
+      description: this.state.description.value, 
+      location: this.state.location.value, 
+      isRecurrent: this.state.isRecurrent.value, 
       daysSelected: this.state.daysSelected, 
       recurrence: this.state.recurrence,
       allDay: this.state.allDay,
       calendarInfo: event 
     }
+
+
     this.setState({events: this.state.events.concat(newEvent)});
+  }
+
+  // kept here only for testing purposes
+  componentDidMount() {
+    axios.get('/users')
+    .then(function (response) {
+      // handle success
+      console.log(response);
+    })
+    .catch(function (error) {
+      // handle error
+      console.log(error);
+    })
+    .then(function () {
+      // always executed
+    });
   }
 
   render() {

@@ -2,19 +2,6 @@ let mongoose = require('mongoose')
     Schema = mongoose.Schema;
     
 let eventSchema = Schema({
-    name: {
-        type: String,
-        required: true,
-        lowercase: true
-    },
-    startDate: {
-        type: Date,
-        required: true
-    },
-    endDate: {
-        type: Date,
-        required: true
-    },
     capacity: {
         type: Number,
         required: true
@@ -35,13 +22,28 @@ let eventSchema = Schema({
         type: Boolean,
         required: true
     },
-    recurrenceType: {
+    recurrence: {
         type: String,
         required: true
     },
     daysSelected: {
         type: Array,
         required: true
+    },
+    calendarInfo: {
+        title: {
+            type: String,
+            required: true
+        },
+        allDay: false,
+        start: {
+            type: Date,
+            required: true
+        },
+        end: {
+            type: Date,
+            required: true
+        }
     }
 })
 

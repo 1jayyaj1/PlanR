@@ -64,54 +64,58 @@ router.put('/:eventId', function(req, res, next) {
     const body = req.body;
     const id = req.params.eventId;
     var updateField = {};
+    updateField.calendarInfo = {};
     try {
-        if (body.name != null) {
-            if (/^[a-zA-Z- ]+$/.test(body.name)) {
-                updateField.name = body.name;
+        if (body.calendarInfo != null) {
+            if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
+                updateField.calendarInfo.title = body.calendarInfo.title;
             } else {
-                res.sendStatus(400);
+                return res.sendStatus(400);
+            }
+            var startDate = new Date(body.calendarInfo.start);
+            var endDate = new Date(body.calendarInfo.end);
+            if (startDate <= endDate) {
+                updateField.calendarInfo.start = startDate;
+                updateField.calendarInfo.end = endDate;
+            } else {
+                return res.sendStatus(400);
             }
         }
+        
         if (body.capacity != null) { 
             updateField.capacity = Number(body.capacity);
         }
+
         if (body.location != null) {
             if (/^[0-9a-zA-Z- ]+$/.test(body.location)) {
                 updateField.location = body.location;
             } else {
-                res.sendStatus(400);
+                return res.sendStatus(400);
             }
         }
+
         if (body.isRecurrent != null) { 
             updateField.isRecurrent = Boolean(body.isRecurrent);
         }
-        if (body.startDate != null && body.endDate != null) {
-            var startDate = new Date(body.startDate);
-            var endDate = new Date(body.endDate);
-            if (startDate >= endDate) {
-                updateField.startDate = body.startDate;
-                updateField.endDate = body.endDate;
-            } else {
-                res.sendStatus(400);
-            }
-        }
+
         if (body.allDay != null) { 
             updateField.allDay = Boolean(body.allDay);
         }
-        if (body.recurrenceType != null) { 
-            if (types.includes(body.recurrenceType)) {
-                updateField.recurrenceType = body.recurrenceType;
+        if (body.recurrence != null) { 
+            if (types.includes(body.recurrence)) {
+                updateField.recurrence = body.recurrence;
             } else {
-                res.sendStatus(400);
+                return res.sendStatus(400);
             }
         }
         if (body.daysSelected != null) { 
             if (body.daysSelected.every(x => days.includes(x))) {
                 updateField.daysSelected = body.daysSelected;
             } else {
-                res.sendStatus(400);
+                return res.sendStatus(400);
             }
         }
+
         Event.findByIdAndUpdate(id, updateField, {new: true})
         .then(event => {
             if (!event) {
@@ -124,23 +128,23 @@ router.put('/:eventId', function(req, res, next) {
             if (err.code === 11000) {
                 return res.status(404).send("Event not found with id " + id);
             }
-            res.sendStatus(500);
+            return res.sendStatus(500);
         })
     } catch {
-        res.sendStatus(500);
+        return res.sendStatus(500);
     }
 });
 
 router.post('/', function(req, res, next) {
     const body = req.body;
     try {
-        var startDate = new Date(body.startDate);
-        var endDate = new Date(body.endDate);
+        var startDate = new Date(body.calendarInfo.start);
+        var endDate = new Date(body.calendarInfo.end);
         var capacity = Number(body.capacity);
         var isRecurrent = Boolean(body.isRecurrent);
         var allDay = Boolean(body.allDay);
         var error = false;
-        if (!/^[a-zA-Z- ]+$/.test(body.name)) {
+        if (!/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
             error = true;
         }
 
@@ -152,7 +156,7 @@ router.post('/', function(req, res, next) {
             error = true;
         }
 
-        if (!types.includes(body.recurrenceType)) {
+        if (!types.includes(body.recurrence)) {
             error = true;
         }
 
@@ -162,16 +166,19 @@ router.post('/', function(req, res, next) {
 
         if (!error) {
             var event = new Event({
-                name: body.name,
-                startDate: startDate,
-                endDate: endDate,
                 capacity: capacity,
                 location: body.location,
                 isRecurrent: isRecurrent,
                 description: body.description,
                 allDay: allDay,
-                recurrenceType: body.recurrenceType,
-                daysSelected: body.daysSelected
+                recurrence: body.recurrence,
+                daysSelected: body.daysSelected,
+                calendarInfo: {
+                    title: body.calendarInfo.title,
+                    allDay: false,
+                    start: startDate,
+                    end: endDate
+                }
             });
 
             event.save()
