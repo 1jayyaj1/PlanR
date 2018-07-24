@@ -3,7 +3,7 @@ import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
-import { Steps, message } from 'antd';
+import { Steps} from 'antd';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
@@ -391,9 +391,9 @@ class App extends Component {
             <Col xs="8" sm="8" md="8" lg="8">
               <label className="inputName">Type of event</label>
               <fieldset>
-                <div class="custom-control custom-toggle d-block my-2">
-                  <input type="checkbox" id="customToggle1" name="customToggle1" class="custom-control-input"/>
-                  <label class="custom-control-label" for="customToggle1">Will your event last all day?</label>
+                <div className="custom-control custom-toggle d-block my-2">
+                  <input type="checkbox" id="customToggle1" name="customToggle1" className="custom-control-input"/>
+                  <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
                 </div>
               </fieldset>
             </Col>
@@ -618,35 +618,35 @@ class App extends Component {
         </div>
 
         {/*<---------------------FEEDBACK--------------------->*/}
-        <div class="contact section-invert py-4">
-          <h3 class="section-title text-center m-5">Contact Us</h3>
-          <div class="container py-4">
-            <div class="row justify-content-md-center px-4">
-              <div class="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
+        <div className="contact section-invert py-4">
+          <h3 className="section-title text-center m-5">Contact Us</h3>
+          <div className="container py-4">
+            <div className="row justify-content-md-center px-4">
+              <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
                 <form>
-                  <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                      <div class="form-group">
-                        <label for="contactFormFullName">Full Name</label>
-                        <input type="email" class="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
+                  <div className="row">
+                    <div className="col-md-6 col-sm-12">
+                      <div className="form-group">
+                        <label htmlFor="contactFormFullName">Full Name</label>
+                        <input type="email" className="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
                       </div>
                     </div>
-                    <div class="col-md-6 col-sm-12">
-                      <div class="form-group">
-                        <label for="contactFormEmail">Email address</label>
-                        <input type="email" class="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <div class="form-group">
-                          <label for="exampleInputMessage1">Message</label>
-                          <textarea id="exampleInputMessage1" class="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
+                    <div className="col-md-6 col-sm-12">
+                      <div className="form-group">
+                        <label htmlFor="contactFormEmail">Email address</label>
+                        <input type="email" className="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
                       </div>
                     </div>
                   </div>
-                  <input class="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
+                  <div className="row">
+                    <div className="col">
+                      <div className="form-group">
+                          <label htmlFor="exampleInputMessage1">Message</label>
+                          <textarea id="exampleInputMessage1" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
                 </form>
               </div>
             </div>
