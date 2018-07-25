@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form } from 'reactstrap';
+import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form, Alert } from 'reactstrap';
 import { Steps} from 'antd';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
@@ -55,6 +57,7 @@ class App extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.createEvent = this.createEvent.bind(this);
         this.componentWillMount = this.componentWillMount.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChangeStart(date) {
@@ -196,6 +199,30 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        
+        var data = {
+            contactFormFullName: event.target[0].value, 
+            contactFormEmail: event.target[1].value, 
+            contactFormMessage: event.target[2].value
+        }
+
+        axios.post('/feedback', data)
+        .then(toast.success('We have received your message. Thank you!😊', {
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            }))
+        .catch(function (error) {
+            console.log(error);
+        });
+
     }
 
     render() {
@@ -588,26 +615,26 @@ class App extends Component {
                 <div className="container py-4">
                     <div className="row justify-content-md-center px-4">
                     <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-                        <form>
+                        <form onSubmit={this.handleSubmit}>
                         <div className="row">
                             <div className="col-md-6 col-sm-12">
                             <div className="form-group">
                                 <label htmlFor="contactFormFullName">Full Name</label>
-                                <input type="email" className="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
+                                <input className="form-control" id="contactFormFullName" name="contactFormFullName" placeholder="Enter your full name"></input>
                             </div>
                             </div>
                             <div className="col-md-6 col-sm-12">
                             <div className="form-group">
                                 <label htmlFor="contactFormEmail">Email address</label>
-                                <input type="email" className="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
+                                <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" placeholder="Enter your email address"></input>
                             </div>
                             </div>
                         </div>
                         <div className="row">
                             <div className="col">
                             <div className="form-group">
-                                <label htmlFor="exampleInputMessage1">Message</label>
-                                <textarea id="exampleInputMessage1" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
+                                <label htmlFor="contactFormMessage">Message</label>
+                                <textarea id="contactFormMessage" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="contactFormMessage"></textarea>
                             </div>
                             </div>
                         </div>
@@ -617,6 +644,8 @@ class App extends Component {
                     </div>
                 </div>
                 </div>
+
+                <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggable={false} pauseOnHover={false}/>
 
                 {/*<----------------------- FOOTER ----------------------->*/}                 
                 <footer>
