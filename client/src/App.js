@@ -217,11 +217,13 @@ class App extends Component {
             hideProgressBar: true,
             closeOnClick: true,
             pauseOnHover: false,
-            draggable: false,
+            draggablePercent: 60,
             }))
         .catch(function (error) {
             console.log(error);
         });
+        
+        document.getElementById("contactForm").reset();
 
     }
 
@@ -615,7 +617,7 @@ class App extends Component {
                 <div className="container py-4">
                     <div className="row justify-content-md-center px-4">
                     <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-                        <form onSubmit={this.handleSubmit}>
+                        <form onSubmit={this.handleSubmit} id="contactForm">
                         <div className="row">
                             <div className="col-md-6 col-sm-12">
                             <div className="form-group">
@@ -645,7 +647,7 @@ class App extends Component {
                 </div>
                 </div>
 
-                <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggable={false} pauseOnHover={false}/>
+                <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
 
                 {/*<----------------------- FOOTER ----------------------->*/}                 
                 <footer>
