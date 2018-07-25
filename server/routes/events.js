@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
         .then(docs => {
           res.send(docs)
         })
-        .except(err => {
+        .catch(err => {
             console.log(err);
             res.sendStatus(500)
         })
@@ -81,7 +81,7 @@ router.put('/:eventId', function(req, res, next) {
                 return res.sendStatus(400);
             }
         }
-        
+
         if (body.capacity != null) { 
             updateField.capacity = Number(body.capacity);
         }
@@ -94,20 +94,24 @@ router.put('/:eventId', function(req, res, next) {
             }
         }
 
-        if (body.isRecurrent != null) { 
-            updateField.isRecurrent = Boolean(body.isRecurrent);
-        }
-
-        if (body.allDay != null) { 
-            updateField.allDay = Boolean(body.allDay);
-        }
-        if (body.recurrence != null) { 
-            if (types.includes(body.recurrence)) {
-                updateField.recurrence = body.recurrence;
-            } else {
-                return res.sendStatus(400);
+        if (isRecurrent) {
+            if (body.isRecurrent != null) { 
+                updateField.isRecurrent = Boolean(body.isRecurrent);
+            }
+    
+            if (body.recurrence != null) { 
+                if (types.includes(body.recurrence)) {
+                    updateField.recurrence = body.recurrence;
+                } else {
+                    return res.sendStatus(400);
+                }
+            }
+        } else {
+            if (body.allDay != null) { 
+                updateField.allDay = Boolean(body.allDay);
             }
         }
+
         if (body.daysSelected != null) { 
             if (body.daysSelected.every(x => days.includes(x))) {
                 updateField.daysSelected = body.daysSelected;
@@ -156,30 +160,48 @@ router.post('/', function(req, res, next) {
             error = true;
         }
 
-        if (!types.includes(body.recurrence)) {
-            error = true;
-        }
-
-        if (!body.daysSelected.every(x => days.includes(x))) {
-            error = true;
+        if (isRecurrent) {
+            if (!types.includes(body.recurrence)) {
+                error = true;
+            }
+    
+            if (!body.daysSelected.every(x => days.includes(x))) {
+                error = true;
+            }
         }
 
         if (!error) {
-            var event = new Event({
-                capacity: capacity,
-                location: body.location,
-                isRecurrent: isRecurrent,
-                description: body.description,
-                allDay: allDay,
-                recurrence: body.recurrence,
-                daysSelected: body.daysSelected,
-                calendarInfo: {
-                    title: body.calendarInfo.title,
-                    allDay: false,
-                    start: startDate,
-                    end: endDate
-                }
-            });
+            var event;
+            if (isRecurrent) {
+                event = new Event({
+                    capacity: capacity,
+                    location: body.location,
+                    isRecurrent: isRecurrent,
+                    description: body.description,
+                    allDay: allDay,
+                    recurrence: body.recurrence,
+                    daysSelected: body.daysSelected,
+                    calendarInfo: {
+                        title: body.calendarInfo.title,
+                        allDay: false,
+                        start: startDate,
+                        end: endDate
+                    }
+                });
+            } else {
+                event = new Event({
+                    capacity: capacity,
+                    location: body.location,
+                    isRecurrent: isRecurrent,
+                    description: body.description,
+                    calendarInfo: {
+                        title: body.calendarInfo.title,
+                        allDay: false,
+                        start: startDate,
+                        end: endDate
+                    }
+                });
+            }
 
             event.save()
                 .then(event => {

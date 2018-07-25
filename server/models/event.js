@@ -20,15 +20,15 @@ let eventSchema = Schema({
     },
     allDay: {
         type: Boolean,
-        required: true
+        required: false
     },
     recurrence: {
         type: String,
-        required: true
+        required: false
     },
     daysSelected: {
         type: Array,
-        required: true
+        required: false
     },
     calendarInfo: {
         title: {

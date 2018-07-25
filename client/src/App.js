@@ -19,25 +19,6 @@ const steps = [{
   title: 'Summary',
 }];
 
-var events =
-  [
-    {
-      capacity: "",
-      location: "",
-      description: "",
-      isRecurrent: "",
-      daysSelected: "",
-      allDay: "",
-      calendarInfo: 
-        {
-          title: 'Dummy event',
-          allDay: false,
-          start: new Date('2018-07-17T10:24:00'),
-          end: new Date('2018-07-17T13:27:00')
-        }
-    }
-]
-
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
 class App extends Component {
@@ -54,12 +35,12 @@ class App extends Component {
       name: { value: "", valid: true },
       description: { value: "", valid: true },
       location: { value: "", valid: true },
-      capacity: { value: "", valid: true },
+      capacity: { value: 0, valid: true },
       daysSelected: [],
       isRecurrent: { value: "", valid: true },
       recurrence: "",
-      allDay: "",
-      events: events
+      allDay: false,
+      events: []
     }
 
     this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -73,6 +54,7 @@ class App extends Component {
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.createEvent = this.createEvent.bind(this);
+    this.componentWillMount = this.componentWillMount.bind(this);
   }
 
   handleChangeStart(date) {
@@ -131,7 +113,7 @@ class App extends Component {
     var locationValid = this.state.location;
     var descriptionValid = this.state.description;
     var valid = true;
-      if(recurrenceValid.value == "" || nameValid.value == "" || capacityValid.value == "" || locationValid.value == "" || descriptionValid.value == "" || nameValid.valid == false || capacityValid.valid == false || locationValid.valid == false || descriptionValid.valid == false){
+      if (recurrenceValid.value == "" || nameValid.value == "" || capacityValid.value == "" || locationValid.value == "" || descriptionValid.value == "" || nameValid.valid == false || capacityValid.valid == false || locationValid.valid == false || descriptionValid.valid == false){
         if (recurrenceValid.value == "") {
           valid = false;
           this.setState({
@@ -168,7 +150,10 @@ class App extends Component {
           this.setState({ step });
         }
       }
-    else if (this.state.step == 1){
+    else if (this.state.step == 1) {
+
+      const step = this.state.step + 1;
+      this.setState({ step });
       // if (TO JAY: FILL IN HERE CONDITION FOR START AND END DATE){
         
       // }
@@ -213,31 +198,41 @@ class App extends Component {
       capacity: this.state.capacity.value, 
       description: this.state.description.value, 
       location: this.state.location.value, 
-      isRecurrent: this.state.isRecurrent.value, 
+      isRecurrent: this.state.isRecurrent.value == "recurring", 
       daysSelected: this.state.daysSelected, 
       recurrence: this.state.recurrence,
       allDay: this.state.allDay,
       calendarInfo: event 
     }
 
+    axios.post('/events', newEvent)
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
 
     this.setState({events: this.state.events.concat(newEvent)});
   }
 
   // kept here only for testing purposes
-  componentDidMount() {
-    axios.get('/users')
+  componentWillMount() {
+    let myComponent = this;
+    axios.get('/events')
     .then(function (response) {
       // handle success
-      console.log(response);
+      response.data.forEach(event => {
+        event.calendarInfo.start = new Date(event.calendarInfo.start);
+        event.calendarInfo.end = new Date(event.calendarInfo.end);
+      });
+      // console.log(response.data);
+      myComponent.setState({events: response.data});
     })
     .catch(function (error) {
-      // handle error
+      // handle errorcalendarInfo
       console.log(error);
     })
-    .then(function () {
-      // always executed
-    });
   }
 
   render() {
@@ -255,7 +250,7 @@ class App extends Component {
               </Row>
               <Row>
                   <label>Capacity</label>
-                  <Input name="capacity" value={this.state.capacity.value} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
+                  <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
                   <div className="invalid-feedback">Numbers only and can't be empty</div>
               </Row>
               <Row>
@@ -358,7 +353,7 @@ class App extends Component {
           </Row>
         </fieldset>;
       }
-      else if (this.state.isRecurrent.value === "non-recurring"){
+      else {
         wizardContent = 
         <fieldset> 
           <Row>
@@ -418,7 +413,7 @@ class App extends Component {
         </fieldset>;
       }
     }  else {
-      if (this.state.isRecurrent.value === "non-recurring"){
+      if (this.state.isRecurrent.value === "non-recurring") {
         wizardContent = 
         <fieldset> 
           <Row>
@@ -427,7 +422,7 @@ class App extends Component {
               <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
               <ul style={{fontSize: '15px'}}>
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
+                <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
                 <li><span>Type of event:</span> <span>Non-recurring</span></li>
                 <li><span>All-day event:</span> <span>{this.state.allDay}</span></li>
                 <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
@@ -439,7 +434,7 @@ class App extends Component {
           </Row>
         </fieldset>;
       }
-      else if (this.state.isRecurrent.value === "recurring"){
+      else if (this.state.isRecurrent.value === "recurring") {
         wizardContent = 
         <fieldset> 
           <Row>
@@ -462,6 +457,8 @@ class App extends Component {
         </fieldset>;
       }
     }
+
+    var events = this.state.events.map(x => x.calendarInfo);
 
     return (
       <div>
@@ -521,7 +518,7 @@ class App extends Component {
                         defaultView='week'
                         onSelectEvent={() => this.toggleViewModal()}
                         onSelectSlot={(date) => this.toggleCreateModal(date)}
-                        events={this.state.events.map(calendarInput => calendarInput.calendarInfo)}
+                        events={events}
                           startAccessor='start'
                           endAccessor='end'>
                       </BigCalendar>
