@@ -54,6 +54,7 @@ class App extends Component {
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.createEvent = this.createEvent.bind(this);
+    this.weekBetweenStartEnd = this.weekBetweenStartEnd.bind(this);
     this.componentWillMount = this.componentWillMount.bind(this);
   }
 
@@ -103,6 +104,59 @@ class App extends Component {
       viewModal: !this.state.viewModal
     });
   }
+
+  weekBetweenStartEnd() {
+    var endBound = new Date(moment(this.state.endDate).format('LLL'));
+    var startBound = new Date(moment(this.state.startDate).format('LLL'));
+    // var endBound = new Date("June 13, 2014 08:11:00");
+    // var startBound = new Date("October 19, 2014 11:13:00");
+    var diff =(endBound.getTime() - startBound.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 7);
+    var weeks = Math.abs(Math.round(diff));
+    var days = this.state.daysSelected;
+    var recurrenceWeeks;
+    if (this.state.recurrence == "weekly") {
+      recurrenceWeeks = 1;
+    }
+    else if (this.state.recurrence == "biweekly") {
+      recurrenceWeeks = 2;
+    }
+    else if (this.state.recurrence == "triweekly") {
+      recurrenceWeeks = 3;
+    }
+    else if (this.state.recurrence == "monthly") {
+      recurrenceWeeks = 4
+    }
+    for (var z = 0; z < days.length; z++) {
+      if (days[z] == "Monday") {
+        days[z] = 1;
+      }
+      else if (days[z] == "Tuesday") {
+        days[z] = 2;
+      }
+      else if (days[z] == "Wednesday") {
+        days[z] = 3;
+      }
+      else if (days[z] == "Thursday") {
+        days[z] = 4;
+      }
+      else if (days[z] == "Friday") {
+        days[z] = 5;
+      }
+    }
+    // for (var i = 0; i < week; i++) {
+      for (var z = 0; z < days.length; z++) {
+        const dayINeed = days[z]; 
+        var today = moment(this.state.startDate).isoWeekday();
+        if (today <= dayINeed) { 
+          console.log(moment().isoWeekday(dayINeed));
+        } else {
+          console.log(moment().add(recurrenceWeeks, 'weeks').isoWeekday(dayINeed));
+        }
+      }
+    // }
+  }
+
 
   nextStep(event) {
     event.preventDefault();
@@ -186,8 +240,67 @@ class App extends Component {
   }
 
   createEvent() {
-    var sDate = moment(this.state.startDate).format()
-    var eDate = moment(this.state.endDate).format()
+    var endBound = new Date(moment(this.state.endDate).format('LLL'));
+    var startBound = new Date(moment(this.state.startDate).format('LLL'));
+    // var endBound = new Date("June 13, 2014 08:11:00");
+    // var startBound = new Date("October 19, 2014 11:13:00");
+    var diff =(endBound.getTime() - startBound.getTime()) / 1000;
+    diff /= (60 * 60 * 24 * 7);
+    var weeks = Math.abs(Math.round(diff));
+    var days = this.state.daysSelected;
+    var recurrenceWeeks = 0;
+    if (this.state.recurrence == "Weekly") {
+      recurrenceWeeks = 1;
+    }
+    else if (this.state.recurrence == "Biweekly") {
+      recurrenceWeeks = 2;
+    }
+    else if (this.state.recurrence == "Triweekly") {
+      recurrenceWeeks = 3;
+    }
+    else if (this.state.recurrence == "Monthly") {
+      recurrenceWeeks = 4;
+    }
+    console.log(recurrenceWeeks);
+    for (var z = 0; z < days.length; z++) {
+      if (days[z] == "Monday") {
+        days[z] = 1;
+      }
+      else if (days[z] == "Tuesday") {
+        days[z] = 2;
+      }
+      else if (days[z] == "Wednesday") {
+        days[z] = 3;
+      }
+      else if (days[z] == "Thursday") {
+        days[z] = 4;
+      }
+      else if (days[z] == "Friday") {
+        days[z] = 5;
+      }
+    }
+    var i = 0;
+    loop1:
+    while (true) {
+      for (var z = 0; z < days.length; z++) {
+        const dayINeed = days[z]; 
+        var today = moment(this.state.startDate).isoWeekday();
+        if (today <= dayINeed) { 
+          console.log(moment().isoWeekday(dayINeed));
+        } else {
+          if (new Date (moment().add(recurrenceWeeks + i, 'weeks').isoWeekday(dayINeed)) >= new Date(moment(this.state.endDate))){
+            break loop1;
+          }
+          else {
+          console.log(moment().add(recurrenceWeeks + i, 'weeks').isoWeekday(dayINeed));
+          }
+        }
+      }
+      i += 1;
+    }
+
+    var sDate = moment(this.state.startDate).format();
+    var eDate = moment(this.state.endDate).format();
     var event = {
       title: this.state.name.value,
       allDay: false,
