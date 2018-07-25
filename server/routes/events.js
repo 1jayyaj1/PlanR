@@ -11,11 +11,11 @@ router.get('/', function(req, res, next) {
         .sort()
         .exec()
         .then(docs => {
-          res.send(docs)
+          return res.send(docs)
         })
         .catch(err => {
             console.log(err);
-            res.sendStatus(500)
+            return res.sendStatus(500)
         })
 });
 
@@ -31,11 +31,11 @@ router.get('/:eventId', function(req, res, next) {
             }
             })
             .catch(err => {
-            console.log(err);
-            return res.sendStatus(404);
+                console.log(err);
+                return res.sendStatus(404);
             })
     } catch {
-        res.sendStatus(500);
+        return res.sendStatus(500);
     }
 });
 
@@ -47,7 +47,7 @@ router.delete('/:eventId', function(req, res, next) {
                 if (!event) {
                     return res.status(404).send("Event not found with id " + id);
                 }
-                res.sendStatus(200);
+                return res.sendStatus(200);
             })
             .catch(err => {
                 if (err.code == 11000) {
@@ -56,7 +56,7 @@ router.delete('/:eventId', function(req, res, next) {
                 return res.status(500).send("Unable to delete event with id " + id);
             })
     } catch {
-        res.sendStatus(500);
+        return res.sendStatus(500);
     }
 });
 
@@ -125,7 +125,7 @@ router.put('/:eventId', function(req, res, next) {
             if (!event) {
                 return res.status(404).send("Event not found with id " + id);
             }
-            res.send(event);
+            return res.send(event);
         })
         .catch(err => {
             console.log(err);
@@ -206,20 +206,20 @@ router.post('/', function(req, res, next) {
             event.save()
                 .then(event => {
                     console.log('Created event ' + event._id);
-                    res.sendStatus(200)
+                    return res.sendStatus(200)
                 })
                 .catch(err => {
                     console.error(err);
                     if (err.code === 11000) {
                         return res.status(500).send("This event already exists in the database");
                     }
-                    res.status(500).send("Unable to create event in database")
+                    return res.status(500).send("Unable to create event in database")
                 })
         } else {
             return res.sendStatus(400);
         }
     } catch {
-        res.sendStatus(400)
+        return res.sendStatus(400)
     }
 });
 
