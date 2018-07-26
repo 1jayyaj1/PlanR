@@ -8,7 +8,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
-var session = require('express-session');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 var app = express();
 
@@ -38,11 +39,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+var options = { mongooseConnection: mongoose.connection };
+
 // Use the session middleware
 app.use(session({
-    secret: "cookie_secret",
-    name: "cookie_name",
-    // store: sessionStore, // connect-mongo session store
+    secret: "magical ankur",
+    name: "umba_cookie",
+    store: new MongoStore(options), // connect-mongo session store
     proxy: true,
     resave: true,
     saveUninitialized: true
