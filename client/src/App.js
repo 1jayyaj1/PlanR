@@ -42,7 +42,8 @@ class App extends Component {
             isRecurrent: { value: "", valid: true },
             recurrence: "",
             allDay: false,
-            events: []
+            selectedEvent: {},
+            calendarInfo: {}
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -90,7 +91,20 @@ class App extends Component {
     toggleRegisterModal() {
         this.setState({ registerModal: !this.state.registerModal });
     }
-    toggleViewModal() {
+
+    toggleViewModal(obj) {
+        var thisEvent = {
+            title: obj.title,
+            start:  obj.start,
+            end: obj.end
+        }
+        const test = this;
+        this.state.events.forEach(function(event) {
+            if (thisEvent.title == event.calendarInfo.title && thisEvent.start == event.calendarInfo.start && thisEvent.end == event.calendarInfo.end) {
+                test.setState({ selectedEvent: event, calendarInfo: event.calendarInfo});
+            }
+        });
+
         this.setState({ viewModal: !this.state.viewModal });
     }
 
@@ -501,7 +515,7 @@ class App extends Component {
                                             min={new Date('2018, 1, 7, 09:00')}
                                             max={new Date('2018, 1, 7, 18:00')}
                                             defaultView='week'
-                                            onSelectEvent={() => this.toggleViewModal()}
+                                            onSelectEvent={(obj) => this.toggleViewModal(obj)}
                                             onSelectSlot={(date) => this.toggleCreateModal(date)}
                                             events={events}
                                             startAccessor='start'
@@ -603,7 +617,22 @@ class App extends Component {
                                 {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                 <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                     <ModalBody>
-                                        <h2> Woohoo2 </h2>
+                                        <Row>
+                                            <Col xs="12" sm="12" md="12" lg="12">
+                                            {/* <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i> */}
+                                            <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
+                                            <ul style={{fontSize: '15px'}}>
+                                                <li><span>Title:</span> <span>{this.state.calendarInfo.title}</span></li>
+                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                                                <li><span>Instructor:</span> <span></span></li>
+                                                <li><span>Location:</span> <span>{this.state.selectedEvent.location}</span></li>
+                                                <li><span>Description:</span> <span>{this.state.selectedEvent.description}</span></li>
+                                                <li><span>Recurrence:</span> <span>{this.state.selectedEvent.recurrence}</span></li>
+                                                <li><span>Capacity:</span> <span>{this.state.selectedEvent.capacity}</span></li>
+                                            </ul> 
+                                            <hr/>
+                                            </Col>
+                                        </Row>
                                     </ModalBody>
                                 </Modal>
                             </div>
@@ -622,13 +651,13 @@ class App extends Component {
                             <div className="col-md-6 col-sm-12">
                             <div className="form-group">
                                 <label htmlFor="contactFormFullName">Full Name</label>
-                                <input className="form-control" id="contactFormFullName" name="contactFormFullName" placeholder="Enter your full name"></input>
+                                <input className="form-control" id="contactFormFullName" name="contactFormFullName" required="required" placeholder="Enter your full name"></input>
                             </div>
                             </div>
                             <div className="col-md-6 col-sm-12">
                             <div className="form-group">
                                 <label htmlFor="contactFormEmail">Email address</label>
-                                <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" placeholder="Enter your email address"></input>
+                                <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" required="required" placeholder="Enter your email address"></input>
                             </div>
                             </div>
                         </div>
@@ -636,7 +665,7 @@ class App extends Component {
                             <div className="col">
                             <div className="form-group">
                                 <label htmlFor="contactFormMessage">Message</label>
-                                <textarea id="contactFormMessage" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="contactFormMessage"></textarea>
+                                <textarea id="contactFormMessage" className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." name="contactFormMessage"></textarea>
                             </div>
                             </div>
                         </div>
