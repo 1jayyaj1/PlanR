@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
+var loginRouter = require('./routes/login')
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
@@ -33,7 +34,6 @@ let User =  require('./models/user');
 
 // Miscellaneous
 app.use(logger('dev'));
-// we will remove this for now since most of the object are 1:1 mapping with what the client sends
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -45,30 +45,22 @@ var options = { mongooseConnection: mongoose.connection };
 app.use(session({
     secret: "magical ankur",
     name: "umba_cookie",
-    store: new MongoStore(options), // connect-mongo session store
+    store: new MongoStore(options),
     proxy: true,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        secure: false,
+        httpOnly: false, // so that it's visible from the front end
+        maxAge: 60 * 1000 // short, only for testing 
+    }
 }));
 
-// Access the session as req.session
-app.get('/', function(req, res, next) {
-    if (req.session.views) {
-      req.session.views++
-      res.setHeader('Content-Type', 'text/html')
-      res.write('<p>views: ' + req.session.views + '</p>')
-      res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
-      res.end()
-    } else {
-      req.session.views = 1
-      res.end('welcome to the session demo. refresh!')
-    }
-  })
-
-// app.use('/', indexRouter);
+app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);
+app.use('/login', loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
