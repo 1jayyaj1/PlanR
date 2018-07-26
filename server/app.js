@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
+var session = require('express-session');
 
 var app = express();
 
@@ -37,7 +38,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+// Use the session middleware
+app.use(session({
+    secret: "cookie_secret",
+    name: "cookie_name",
+    // store: sessionStore, // connect-mongo session store
+    proxy: true,
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Access the session as req.session
+app.get('/', function(req, res, next) {
+    if (req.session.views) {
+      req.session.views++
+      res.setHeader('Content-Type', 'text/html')
+      res.write('<p>views: ' + req.session.views + '</p>')
+      res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
+      res.end()
+    } else {
+      req.session.views = 1
+      res.end('welcome to the session demo. refresh!')
+    }
+  })
+
+// app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);

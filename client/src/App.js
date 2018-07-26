@@ -430,16 +430,16 @@ class App extends Component {
                                         <Row>
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group" Style="text-align: center">
-                                                    <label htmlFor="contactFormFullName">Email</label>
-                                                    <input type="email" className="form-control" id="contactFormFullName" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                    <label htmlFor="email">Email</label>
+                                                    <input type="email" className="form-control" id="email" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
                                                 </div>
                                             </div>
                                         </Row>
                                         <Row>
-                                        <div className="col-md-12 col-sm-12">
+                                            <div className="col-md-12 col-sm-12">
                                                 <div className="form-group" Style="text-align: center">
-                                                    <label htmlFor="contactFormFullName">Password</label>
-                                                    <input type="password" className="form-control" id="contactFormFullName" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    <label htmlFor="password">Password</label>
+                                                    <input type="password" className="form-control" id="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
                                                 </div>
                                             </div>
                                         </Row>
@@ -450,7 +450,6 @@ class App extends Component {
                     </div>
                 </div>
             </div>
-            
         )
 
         // return (
