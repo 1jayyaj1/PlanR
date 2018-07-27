@@ -21,13 +21,18 @@ const steps = [{
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+  }
+
 class App extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      events: [],
       createModal : false,
       registerModal: false,
       viewModal: false,
@@ -40,6 +45,8 @@ class App extends Component {
       isRecurrent: { value: "", valid: true },
       recurrence: "",
       allDay: false,
+      startDate: null,
+      endDate: null,
       events: []
     }
 
@@ -50,15 +57,27 @@ class App extends Component {
     this.toggleCreateModal = this.toggleCreateModal.bind(this);
     this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
     this.toggleViewModal = this.toggleViewModal.bind(this);
+    this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
     this.nextStep = this.nextStep.bind(this);
     this.prevStep = this.prevStep.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.createEvent = this.createEvent.bind(this);
-    this.weekBetweenStartEnd = this.weekBetweenStartEnd.bind(this);
     this.componentWillMount = this.componentWillMount.bind(this);
+    this.weekDaysToNumbers = this.weekDaysToNumbers.bind(this);
+    this.splitEvent = this.splitEvent.bind(this);
   }
 
   handleChangeStart(date) {
+    if (this.state.isRecurrent.value == "non-recurring") {
+        var nonRecurStartDate = moment(this.state.startDate);
+        var nonRecurEndDate = moment(date).add(15, "minutes");
+        this.state.startDate = nonRecurStartDate;
+        this.state.endDate = nonRecurEndDate;
+    }
+    if (this.state.allDay == true) {
+        this.state.startDate = moment(date).hours(9).minutes(0);
+        this.state.endDate = moment(date).hours(18).minutes(0);
+    }
     this.setState({
       startDate: date,
     });
@@ -74,8 +93,21 @@ class App extends Component {
     this.setState({ recurrence: selection });
   }
 
-  onRadioBtnClick(allDay) {
-    this.setState({ allDay });
+  onRadioBtnClick() {
+    if (this.state.allDay == false) {
+        if (this.state.startDate == null || this.state.endDate == null) {
+            this.state.startDate = moment().hours(9).minutes(0);
+            this.state.endDate = moment().hours(18).minutes(0);
+        } else {
+            this.state.startDate = moment(this.state.startDate).hours(9).minutes(0);
+            this.state.endDate = moment(this.state.endDate).hours(18).minutes(0);
+        }
+        this.setState({ allDay: true });
+    } else {
+        this.state.startDate = null;
+        this.state.endDate = null;
+        this.setState({ allDay: false });
+    }
   }
 
   updateDaysSelection(selected) {
@@ -99,64 +131,12 @@ class App extends Component {
       registerModal: !this.state.registerModal
     });
   }
+
   toggleViewModal() {
     this.setState({
       viewModal: !this.state.viewModal
     });
   }
-
-  weekBetweenStartEnd() {
-    var endBound = new Date(moment(this.state.endDate).format('LLL'));
-    var startBound = new Date(moment(this.state.startDate).format('LLL'));
-    // var endBound = new Date("June 13, 2014 08:11:00");
-    // var startBound = new Date("October 19, 2014 11:13:00");
-    var diff =(endBound.getTime() - startBound.getTime()) / 1000;
-    diff /= (60 * 60 * 24 * 7);
-    var weeks = Math.abs(Math.round(diff));
-    var days = this.state.daysSelected;
-    var recurrenceWeeks;
-    if (this.state.recurrence == "weekly") {
-      recurrenceWeeks = 1;
-    }
-    else if (this.state.recurrence == "biweekly") {
-      recurrenceWeeks = 2;
-    }
-    else if (this.state.recurrence == "triweekly") {
-      recurrenceWeeks = 3;
-    }
-    else if (this.state.recurrence == "monthly") {
-      recurrenceWeeks = 4
-    }
-    for (var z = 0; z < days.length; z++) {
-      if (days[z] == "Monday") {
-        days[z] = 1;
-      }
-      else if (days[z] == "Tuesday") {
-        days[z] = 2;
-      }
-      else if (days[z] == "Wednesday") {
-        days[z] = 3;
-      }
-      else if (days[z] == "Thursday") {
-        days[z] = 4;
-      }
-      else if (days[z] == "Friday") {
-        days[z] = 5;
-      }
-    }
-    // for (var i = 0; i < week; i++) {
-      for (var z = 0; z < days.length; z++) {
-        const dayINeed = days[z]; 
-        var today = moment(this.state.startDate).isoWeekday();
-        if (today <= dayINeed) { 
-          console.log(moment().isoWeekday(dayINeed));
-        } else {
-          console.log(moment().add(recurrenceWeeks, 'weeks').isoWeekday(dayINeed));
-        }
-      }
-    // }
-  }
-
 
   nextStep(event) {
     event.preventDefault();
@@ -200,24 +180,41 @@ class App extends Component {
         }
       }
         else {
-          const step = this.state.step + 1;
-          this.setState({ step });
+            if (this.state.isRecurrent.value == "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
+                var nonRecurStartDate = moment(this.state.startDate);
+                var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
+                this.state.startDate = nonRecurStartDate;
+                this.state.endDate = nonRecurEndDate;
+            }
+            const step = this.state.step + 1;
+            this.setState({ step });
         }
       }
     else if (this.state.step == 1) {
-
-      const step = this.state.step + 1;
-      this.setState({ step });
-      // if (TO JAY: FILL IN HERE CONDITION FOR START AND END DATE){
-        
-      // }
-      // else {
-      //   const step = this.state.step + 1;
-      //   this.setState({ step });
-      // }
+        if (this.state.isRecurrent.value == "recurring") {
+            if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence == "" || this.state.startDate == null || this.state.endDate == null || this.state.daysSelected.length == 0) {
+                //CODE TO MAKE FIELDS UNVALID RECURRING
+            } else {
+                const step = this.state.step + 1;
+                this.setState({ step });
+            }
+        }
+        else {
+            if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate == null || this.state.endDate == null) {
+                //CODE TO MAKE FIELDS UNVALID NON-RECURRING
+            } else {
+                const step = this.state.step + 1;
+                this.setState({ step });
+            }
+        }
     }
   }
   prevStep() {
+    if (this.state.allDay == true) {
+        this.state.allDay = false;
+        this.state.startDate = null;
+        this.state.endDate = null;
+    }
     const step = this.state.step - 1;
     this.setState({ step });
   }
@@ -239,94 +236,114 @@ class App extends Component {
     });
   }
 
+  weekDaysToNumbers(dayINeed) {
+    var number = 0;
+    if (dayINeed === "Monday") {
+      number = 1;
+    } else if (dayINeed === "Tuesday") {
+      number = 2;
+    } else if (dayINeed === "Wednesday") {
+      number = 3;
+    } else if (dayINeed === "Thursday") {
+      number = 4;
+    } else if (dayINeed === "Friday") {
+      number = 5;
+    }
+    return number
+  }
+
   createEvent() {
-    var endBound = new Date(moment(this.state.endDate).format('LLL'));
-    var startBound = new Date(moment(this.state.startDate).format('LLL'));
-    // var endBound = new Date("June 13, 2014 08:11:00");
-    // var startBound = new Date("October 19, 2014 11:13:00");
-    var diff =(endBound.getTime() - startBound.getTime()) / 1000;
-    diff /= (60 * 60 * 24 * 7);
-    var weeks = Math.abs(Math.round(diff));
-    var days = this.state.daysSelected;
-    var recurrenceWeeks = 0;
-    if (this.state.recurrence == "Weekly") {
-      recurrenceWeeks = 1;
-    }
-    else if (this.state.recurrence == "Biweekly") {
-      recurrenceWeeks = 2;
-    }
-    else if (this.state.recurrence == "Triweekly") {
-      recurrenceWeeks = 3;
-    }
-    else if (this.state.recurrence == "Monthly") {
-      recurrenceWeeks = 4;
-    }
-    console.log(recurrenceWeeks);
-    for (var z = 0; z < days.length; z++) {
-      if (days[z] == "Monday") {
-        days[z] = 1;
+      var sDate = moment(this.state.startDate).format();
+      var eDate = moment(this.state.endDate).format();
+      var event = {
+        title: this.state.name.value,
+        allDay: false,
+        start:  new Date(sDate),
+        end: new Date(eDate)
       }
-      else if (days[z] == "Tuesday") {
-        days[z] = 2;
+      var newEvent = {
+        capacity: this.state.capacity.value, 
+        description: this.state.description.value, 
+        location: this.state.location.value, 
+        isRecurrent: this.state.isRecurrent.value == "recurring", 
+        daysSelected: this.state.daysSelected, 
+        recurrence: this.state.recurrence,
+        allDay: this.state.allDay,
+        calendarInfo: event 
       }
-      else if (days[z] == "Wednesday") {
-        days[z] = 3;
-      }
-      else if (days[z] == "Thursday") {
-        days[z] = 4;
-      }
-      else if (days[z] == "Friday") {
-        days[z] = 5;
-      }
-    }
-    var i = 0;
-    loop1:
-    while (true) {
-      for (var z = 0; z < days.length; z++) {
-        const dayINeed = days[z]; 
-        var today = moment(this.state.startDate).isoWeekday();
-        if (today <= dayINeed) { 
-          console.log(moment().isoWeekday(dayINeed));
-        } else {
-          if (new Date (moment().add(recurrenceWeeks + i, 'weeks').isoWeekday(dayINeed)) >= new Date(moment(this.state.endDate))){
-            break loop1;
-          }
-          else {
-          console.log(moment().add(recurrenceWeeks + i, 'weeks').isoWeekday(dayINeed));
-          }
+
+      axios.post('/events', newEvent)
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+
+      var list = this.splitEvent(newEvent);
+      list = this.state.events.concat(list);
+
+      this.toggleCreateModal();
+      this.setState({events: list});
+  }
+
+  splitEvent(event) {
+    var myComponent = this;
+    var eventList = [];
+    var hours = moment(event.calendarInfo.start).hour();
+    var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');
+    if (event.isRecurrent) {
+        var recurrenceWeeks = 0;
+        if (event.recurrence === "Weekly") {
+            recurrenceWeeks = 1;
         }
-      }
-      i += 1;
+        else if (event.recurrence === "Biweekly") {
+            recurrenceWeeks = 2;
+        }
+        else if (event.recurrence === "Triweekly") {
+            recurrenceWeeks = 3;
+        }
+        else if (event.recurrence === "Monthly") {
+            recurrenceWeeks = 4;
+        }
+        var i = 0;
+        outer:
+        while (true) {
+            for (var z = 0; z < event.daysSelected.length; z++) {
+                var dayINeed = event.daysSelected[z];
+                if (new Date(moment().add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
+                    break outer;
+                } else {
+                    var s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed));
+                    var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
+                    if (s2Date >= moment(event.calendarInfo.start)) {
+                        console.log(i);
+                        var newEvent = {
+                            capacity: event.capacity, 
+                            description: event.description, 
+                            location: event.location, 
+                            isRecurrent: event.isRecurrent === "recurring", 
+                            daysSelected: event.daysSelected, 
+                            recurrence: event.recurrence,
+                            allDay: event.allDay,
+                            calendarInfo: {
+                                title: event.calendarInfo.title,
+                                allDay: false,
+                                start: new Date(s2Date.format()),
+                                end: new Date(e2Date.format())
+                            }
+                        }
+                        eventList = eventList.concat(newEvent);
+                    }
+                }
+            }
+            i += recurrenceWeeks;
+        }
+        return eventList;
+    } else {
+        return [event];
     }
-
-    var sDate = moment(this.state.startDate).format();
-    var eDate = moment(this.state.endDate).format();
-    var event = {
-      title: this.state.name.value,
-      allDay: false,
-      start:  new Date(sDate),
-      end: new Date(eDate)
-    }
-    var newEvent = {
-      capacity: this.state.capacity.value, 
-      description: this.state.description.value, 
-      location: this.state.location.value, 
-      isRecurrent: this.state.isRecurrent.value == "recurring", 
-      daysSelected: this.state.daysSelected, 
-      recurrence: this.state.recurrence,
-      allDay: this.state.allDay,
-      calendarInfo: event 
-    }
-
-    axios.post('/events', newEvent)
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
-    this.setState({events: this.state.events.concat(newEvent)});
+    
   }
 
   // kept here only for testing purposes
@@ -339,8 +356,13 @@ class App extends Component {
         event.calendarInfo.start = new Date(event.calendarInfo.start);
         event.calendarInfo.end = new Date(event.calendarInfo.end);
       });
-      // console.log(response.data);
-      myComponent.setState({events: response.data});
+
+      var eventList = response.data.map(x => {
+        return myComponent.splitEvent(x)
+      });
+
+      eventList = flatten(eventList);
+      myComponent.setState({events: eventList});
     })
     .catch(function (error) {
       // handle errorcalendarInfo
@@ -417,7 +439,7 @@ class App extends Component {
                     timeFormat="HH:mm"
                     timeIntervals={15}
                     minTime={moment().hours(9).minutes(0)}
-                    maxTime={moment().hours(18).minutes(0)}
+                    maxTime={moment().hours(17).minutes(45)}
                     dateFormat="LLL"
                   />
                   <DatePicker
@@ -429,7 +451,7 @@ class App extends Component {
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={15}
-                    minTime={moment().hours(9).minutes(0)}
+                    minTime={moment(this.state.startDate).add(15, "minutes")}
                     maxTime={moment().hours(18).minutes(0)}
                     dateFormat="LLL"
                   />
@@ -468,7 +490,18 @@ class App extends Component {
       }
       else {
         wizardContent = 
-        <fieldset> 
+        <fieldset>
+          <Row className="allDayLabel">
+            <Col xs="8" sm="8" md="8" lg="8">
+              <label className="inputName">Type of event</label>
+              <fieldset>
+                <div className="custom-control custom-toggle d-block my-2">
+                  <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
+                  <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                </div>
+              </fieldset>
+            </Col>
+          </Row><br/>
           <Row>
             <Col xs="12" sm="12" md="12" lg="12">
               <label className="inputName">Date & time</label>
@@ -488,7 +521,7 @@ class App extends Component {
                     timeFormat="HH:mm"
                     timeIntervals={15}
                     minTime={moment().hours(9).minutes(0)}
-                    maxTime={moment().hours(18).minutes(0)}
+                    maxTime={moment().hours(17).minutes(45)}
                     dateFormat="LLL"
                   />
                   <DatePicker
@@ -500,7 +533,9 @@ class App extends Component {
                     showTimeSelect
                     timeFormat="HH:mm"
                     timeIntervals={15}
-                    minTime={moment().hours(9).minutes(0)}
+                    minDate={this.state.startDate}
+                    maxDate={this.state.startDate}
+                    minTime={moment(this.state.startDate).add(15, "minutes")}
                     maxTime={moment().hours(18).minutes(0)}
                     dateFormat="LLL"
                   />
@@ -510,17 +545,6 @@ class App extends Component {
                     </span>
                   </span>
                 </div>
-            </Col>
-          </Row><br/>
-          <Row className="allDayLabel">
-            <Col xs="8" sm="8" md="8" lg="8">
-              <label className="inputName">Type of event</label>
-              <fieldset>
-                <div className="custom-control custom-toggle d-block my-2">
-                  <input type="checkbox" id="customToggle1" name="customToggle1" className="custom-control-input"/>
-                  <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
-                </div>
-              </fieldset>
             </Col>
           </Row>
         </fieldset>;
@@ -537,7 +561,6 @@ class App extends Component {
                 <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
                 <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
                 <li><span>Type of event:</span> <span>Non-recurring</span></li>
-                <li><span>All-day event:</span> <span>{this.state.allDay}</span></li>
                 <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
                 <li><span>Location:</span> <span>{this.state.location.value}</span></li>
                 <li><span>Description:</span> <span>{this.state.description.value}</span></li>
