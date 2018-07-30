@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form, Alert } from 'reactstrap';
+import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form} from 'reactstrap';
 import { Steps} from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -49,7 +49,8 @@ class App extends Component {
             recurrence: "",
             allDay: false,
             selectedEvent: {},
-            calendarInfo: {}
+            calendarInfo: {},
+            currentUser: "admin"
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -405,6 +406,21 @@ class App extends Component {
 
     }
 
+    editEventInfo(event) {
+        const target = event.target;
+        var valid = true;
+        if (target.name === "name" && !/^[a-zA-Z- ]*$/.test(target.value)) {
+            valid = false;
+        }
+        else if (target.name === "capacity" && /\D+/.test(target.value)) {
+            valid = false;
+        }
+        else if (target.name === "location" && /[^A-Za-z0-9- ]+/.test(target.value)) {
+            valid = false;
+        }
+        this.setState({ [target.name]: { value: target.value, valid: valid } });
+    }
+
     render() {
 
     let wizardContent;
@@ -745,13 +761,14 @@ class App extends Component {
                                 {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                 <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                     <ModalBody>
-                                        <Row>
+                                        {this.state.currentUser !== "admin" &&
+                                        (<Row>
                                             <Col xs="12" sm="12" md="12" lg="12">
                                             <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
                                             <ul style={{fontSize: '15px'}}>
                                                 <li><span>Title:</span> <span>{this.state.calendarInfo.title}</span></li>
                                                 <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
-                                                <li><span>Instructor:</span> <span></span></li>
+                                                <li><span>Instructor: user</span> <span></span></li>
                                                 <li><span>Location:</span> <span>{this.state.selectedEvent.location}</span></li>
                                                 <li><span>Description:</span> <span>{this.state.selectedEvent.description}</span></li>
                                                 <li><span>Recurrence:</span> <span>{this.state.selectedEvent.recurrence}</span></li>
@@ -759,7 +776,25 @@ class App extends Component {
                                             </ul> 
                                             <hr/>
                                             </Col>
-                                        </Row>
+                                        </Row>)}
+                                        {this.state.currentUser === "admin" &&
+                                        (<Row>
+                                            <Col xs="12" sm="12" md="12" lg="12">
+                                            <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
+                                            <ul style={{fontSize: '15px'}}>
+                                                <li><span>Title:</span><Input name="name" onChange={this.editEventInfo} value={this.state.calendarInfo.title}></Input></li>
+                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                                                <li><span>Instructor: admin</span> <span></span></li>
+                                                <li><span>Location:</span> <Input name="location" onChange={this.editEventInfo} value={this.state.selectedEvent.location}></Input></li>
+                                                <li><span>Description:</span> <Input name="description" onChange={this.editEventInfo} value={this.state.selectedEvent.description}></Input></li>
+                                                <li><span>Recurrence:</span> <Input name="recurrence" onChange={this.editEventInfo} value={this.state.selectedEvent.recurrence}></Input></li>
+                                                <li><span>Capacity:</span> <Input name="capacity" onChange={this.editEventInfo} value={this.state.selectedEvent.capacity}></Input></li>
+                                            </ul> 
+                                            <Button className="" type="submit">Save</Button>
+                                            <Button className="" type="submit">Close</Button>
+                                            <hr/>
+                                            </Col>
+                                        </Row>)}
                                     </ModalBody>
                                 </Modal>
                             </div>
