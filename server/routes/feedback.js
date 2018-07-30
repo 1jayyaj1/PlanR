@@ -2,8 +2,6 @@ var express = require('express');
 var router = express.Router();
 var nodemailer = require('nodemailer');
 
-// Only needed if you don't have a real mail account for testing
-
 router.post('/', function(req, res, next) {
     const body = req.body;
     try {
