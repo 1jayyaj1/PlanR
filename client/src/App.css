@@ -12,6 +12,12 @@
   padding-right: 3%;
 }
 
+.form-control:disabled, .form-control[readonly] {
+  background-color: white !important;
+  opacity: 1;
+  cursor: pointer!important;
+}
+
 .startDate {
     border-radius: 0 !important;
     -moz-border-radius: 0 !important;
