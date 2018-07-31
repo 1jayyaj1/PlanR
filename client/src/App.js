@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, ButtonGroup, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form} from 'reactstrap';
+import { Button, ButtonGroup, Table, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form} from 'reactstrap';
 import { Steps} from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -52,7 +52,8 @@ class App extends Component {
             endDate: null, 
             selectedEvent: {},
             calendarInfo: {},
-            currentUser: "admin"
+            currentUser: "admin",
+            eventData: [],
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -73,28 +74,31 @@ class App extends Component {
         this.splitEvent = this.splitEvent.bind(this);
         this.startTime = this.startTime.bind(this);
         this.minMaxTime = this.minMaxTime.bind(this);
-
-    }
-
-    
+        this.deleteEvent = this.deleteEvent.bind(this);
+        this.handleChangeAdminInactive = this.handleChangeAdminInactive.bind(this)
+;    }
 
     handleChangeStart(date) {
-        if (this.state.isRecurrent.value == "non-recurring") {
+        if (this.state.isRecurrent.value === "non-recurring") {
             var nonRecurStartDate = moment(this.state.startDate);
             var nonRecurEndDate = moment(date).add(15, "minutes");
-            this.state.startDate = nonRecurStartDate;
-            this.state.endDate = nonRecurEndDate;
+            this.setState({ startDate: nonRecurStartDate });
+            this.setState({ endDate: nonRecurEndDate });
         }
 
-        if (this.state.allDay == true) {
-            this.state.startDate = moment(date).hours(9).minutes(0);
-            this.state.endDate = moment(date).hours(18).minutes(0);
+        if (this.state.allDay === true) {
+            this.setState({ startDate: moment(date).hours(9).minutes(0) });
+            this.setState({ endDate: moment(date).hours(18).minutes(0) });
         }
         this.setState({ startDate: date });
     }
 
     handleChangeEnd(date) {
         this.setState({ endDate: date });
+    }
+
+    handleChangeAdminInactive(eventData) {
+        this.setState({ eventData: eventData });
     }
 
     updateRecurence(selection) {
@@ -110,18 +114,18 @@ class App extends Component {
     }
 
     onRadioBtnClick() {
-        if (this.state.allDay == false) {
-            if (this.state.startDate == null || this.state.endDate == null) {
-                this.state.startDate = moment().hours(9).minutes(0);
-                this.state.endDate = moment().hours(18).minutes(0);
+        if (this.state.allDay === false) {
+            if (this.state.startDate === null || this.state.endDate === null) {
+                this.setState({ startDate: moment().hours(9).minutes(0) });
+                this.setState({ endDate: moment().hours(18).minutes(0) });
             } else {
-                this.state.startDate = moment(this.state.startDate).hours(9).minutes(0);
-                this.state.endDate = moment(this.state.endDate).hours(18).minutes(0);
+                this.setState({ startDate: moment(this.state.startDate).hours(9).minutes(0) });
+                this.setState({ endDate: moment(this.state.endDate).hours(18).minutes(0) });
             }
             this.setState({ allDay: true });
         } else {
-            this.state.startDate = null;
-            this.state.endDate = null;
+            this.setState({ startDate: null });
+            this.setState({ endDate: null });
             this.setState({ allDay: false });
         }
     }
@@ -153,7 +157,7 @@ class App extends Component {
         }
         const test = this;
         this.state.events.forEach(function(event) {
-            if (thisEvent.title == event.calendarInfo.title && thisEvent.start == event.calendarInfo.start && thisEvent.end == event.calendarInfo.end) {
+            if (thisEvent.title === event.calendarInfo.title && thisEvent.start === event.calendarInfo.start && thisEvent.end === event.calendarInfo.end) {
                 test.setState({ selectedEvent: event, calendarInfo: event.calendarInfo});
             }
         });
@@ -171,39 +175,39 @@ class App extends Component {
 
     nextStep(event) {
         event.preventDefault();
-        if (this.state.step == 0) {
+        if (this.state.step === 0) {
         var recurrenceValid = this.state.isRecurrent;
         var nameValid = this.state.name;
         var capacityValid = this.state.capacity;
         var locationValid = this.state.location;
         var descriptionValid = this.state.description;
         var valid = true;
-        if (recurrenceValid.value == "" || nameValid.value == "" || capacityValid.value == "" || locationValid.value == "" || descriptionValid.value == "" || nameValid.valid == false || capacityValid.valid == false || locationValid.valid == false || descriptionValid.valid == false){
-            if (recurrenceValid.value == "") {
+        if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
+            if (recurrenceValid.value === "") {
             valid = false;
             this.setState({
                 isRecurrent: {value: recurrenceValid.value, valid: valid}
             });
             }
-            if (nameValid.value == "") {
+            if (nameValid.value === "") {
             valid = false;
             this.setState({
                 name: {value: nameValid.value, valid: valid}
             });
             }
-            if (capacityValid.value == "") {
+            if (capacityValid.value === "") {
             valid = false;
             this.setState({
                 capacity: {value: capacityValid.value, valid: valid}
             });
             }
-            if (locationValid.value == "") {
+            if (locationValid.value === "") {
             valid = false;
             this.setState({
                 location: {value: locationValid.value, valid: valid}
             });
             }
-            if (descriptionValid.value == "") {
+            if (descriptionValid.value === "") {
             valid = false;
             this.setState({
                 description: {value: descriptionValid.value, valid: valid}
@@ -211,19 +215,19 @@ class App extends Component {
             }
         }
             else {
-                if (this.state.isRecurrent.value == "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
+                if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
                     var nonRecurStartDate = moment(this.state.startDate);
                     var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
-                    this.state.startDate = nonRecurStartDate;
-                    this.state.endDate = nonRecurEndDate;
+                    this.setState({ startDate: nonRecurStartDate });
+                    this.setState({ endDate: nonRecurEndDate });
                 }
                 const step = this.state.step + 1;
                 this.setState({ step });
             }
         }
-        else if (this.state.step == 1) {
-            if (this.state.isRecurrent.value == "recurring") {
-                if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence == "" || this.state.startDate == null || this.state.endDate == null || this.state.daysSelected.length == 0) {
+        else if (this.state.step === 1) {
+            if (this.state.isRecurrent.value === "recurring") {
+                if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence === "" || this.state.startDate === null || this.state.endDate === null || this.state.daysSelected.length === 0) {
                     //CODE TO MAKE FIELDS UNVALID RECURRING
                 } else {
                     const step = this.state.step + 1;
@@ -231,7 +235,7 @@ class App extends Component {
                 }
             }
             else {
-                if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate == null || this.state.endDate == null) {
+                if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
                     //CODE TO MAKE FIELDS UNVALID NON-RECURRING
                 } else {
                     const step = this.state.step + 1;
@@ -242,10 +246,10 @@ class App extends Component {
     }
     
     prevStep() {
-        if (this.state.allDay == true) {
-            this.state.allDay = false;
-            this.state.startDate = null;
-            this.state.endDate = null;
+        if (this.state.allDay === true) {
+            this.setState({ allDay: false });
+            this.setState({ startDate: null });
+            this.setState({ endDate: null });
         }
         const step = this.state.step - 1;
         this.setState({ step });
@@ -296,7 +300,7 @@ class App extends Component {
           capacity: this.state.capacity.value, 
           description: this.state.description.value, 
           location: this.state.location.value, 
-          isRecurrent: this.state.isRecurrent.value == "recurring", 
+          isRecurrent: this.state.isRecurrent.value === "recurring", 
           daysSelected: this.state.daysSelected, 
           recurrence: this.state.recurrence,
           allDay: this.state.allDay,
@@ -328,9 +332,18 @@ class App extends Component {
           step: 0,
         });
         this.toggleCreateModal();
-        this.eventCreationAlertDismiss();
     }
 
+    deleteEvent(eventId) {
+        axios.delete('/events'/eventId)
+        .then(res => {
+            console.log(res);
+            console.log(res.data);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
       
     splitEvent(event) {
         var myComponent = this;
@@ -390,6 +403,12 @@ class App extends Component {
         }
         
       }
+
+    componentDidMount() {
+    fetch('/events')
+        .then(response => response.json())
+        .then(eventData => this.setState({ eventData }));
+    }
 
     // kept here only for testing purposes
     componentWillMount() {
@@ -694,7 +713,7 @@ class App extends Component {
                 <div className="welcome d-flex justify-content-center flex-column">
                     <div className="container">
                         <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-                        <a className="navbar-brand" href="#">
+                        <a className="navbar-brand">
                             Umba
                         </a>
                         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -703,13 +722,13 @@ class App extends Component {
                         <div className="collapse navbar-collapse" id="navbarNavDropdown">
                             <ul className="navbar-nav">
                             <li className="nav-item active">
-                                <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+                                <a className="nav-link">Home <span className="sr-only">(current)</span></a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">My profile</a>
+                                <a className="nav-link">My profile</a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="#">Log Out</a>
+                                <a className="nav-link">Log Out</a>
                             </li>
                             </ul>
                         </div>
@@ -760,7 +779,7 @@ class App extends Component {
                                 </Row>
                 
                                 {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                                <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className="createModal" className={this.props.className}>
+                                <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
                                     <ModalBody>
                                         <h2> New Event </h2>
                                         <Form>
@@ -886,9 +905,123 @@ class App extends Component {
                         </div>
                     </div>
                 </div>
-
+                
                 <div className="contact section-invert py-4">
-                    <h3 className="section-title text-center m-5">Contact Us</h3>
+                    <Row>
+                        <div className="col-md-12 col-sm-12">
+                            <h1 className="adminName">Admin</h1>
+                        </div>
+                    </Row>
+                    <Row>
+                        <div className="col-md-12 col-sm-12">
+                            <h3 className="adminInactiveName">Inactive Events</h3>
+                        </div>
+                    </Row>
+                    <Row className="unpublishedTable">
+                        <div className="col-md-12 col-sm-12">
+                            <Table>
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Capacity</th>
+                                    <th>Recurrence</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {
+                                this.state.eventData.map(function(event){
+                                    return <tr key={event._id}>
+                                    <th>{event.calendarInfo.title}</th>
+                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                    <td>{event.location}</td>
+                                    <td>{event.capacity}</td>
+                                    <td>{event.recurrence}</td>
+                                    <td><Button outline color="success">Activate</Button></td>
+                                    <td><Button outline color="warning">Edit</Button></td>
+                                    <td><Button outline color="danger">Delete</Button></td>
+                                </tr>;
+                                })
+                                }
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Row>
+                    <Row>
+                        <div className="col-md-12 col-sm-12">
+                            <h3 className="adminInactiveName">Active Events</h3>
+                        </div>
+                    </Row>
+                    <Row className="publishedTable">
+                        <div className="col-md-12 col-sm-12">
+                            <Table>
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Current Capacity</th>
+                                    <th>Recurrence</th>
+                                    <th>Registration Start</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th>Zumba</th>
+                                    <td>Monday, August 13 2018</td>
+                                    <td>Tuesday, November 13 2018</td>
+                                    <td>12:00PM-12:30PM</td>
+                                    <td>Gym</td>
+                                    <td>0/30</td>
+                                    <td>Weekly</td>
+                                    <td>Friday, August 3 2018</td>
+                                    <td><Button outline color="success">Announce</Button></td>
+                                    <td><Button outline color="warning">Edit</Button></td>
+                                    <td><Button outline color="danger">Delete</Button></td>
+                                </tr>
+                                <tr>
+                                    <th>Zumba</th>
+                                    <td>Monday, August 13 2018</td>
+                                    <td>Tuesday, November 13 2018</td>
+                                    <td>12:00PM-12:30PM</td>
+                                    <td>Gym</td>
+                                    <td>0/30</td>
+                                    <td>Weekly</td>
+                                    <td>Friday, August 3 2018</td>
+                                    <td><Button outline color="success">Announce</Button></td>
+                                    <td><Button outline color="warning">Edit</Button></td>
+                                    <td><Button outline color="danger">Delete</Button></td>
+                                </tr>
+                                <tr>
+                                    <th>Zumba</th>
+                                    <td>Monday, August 13 2018</td>
+                                    <td>Tuesday, November 13 2018</td>
+                                    <td>12:00PM-12:30PM</td>
+                                    <td>Gym</td>
+                                    <td>0/30</td>
+                                    <td>Weekly</td>
+                                    <td>Friday, August 3 2018</td>
+                                    <td><Button outline color="success">Announce</Button></td>
+                                    <td><Button outline color="warning">Edit</Button></td>
+                                    <td><Button outline color="danger">Delete</Button></td>
+                                </tr>
+                                </tbody>
+                            </Table>
+                        </div>
+                    </Row>
+                    <Row className="createEventButton">
+                        <div className="col-md-12 col-sm-12">
+                            <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                        </div>
+                    </Row>
+                    {/* <h3 className="section-title text-center m-5">Contact Us</h3>
                     <div className="container py-4">
                         <div className="row justify-content-md-center px-4">
                             <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
@@ -919,7 +1052,7 @@ class App extends Component {
                                 </form>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
@@ -927,23 +1060,23 @@ class App extends Component {
                 <footer>
                     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                         <div className="container">
-                            <a className="navbar-brand" href="#">Ericsson</a>
+                            <a className="navbar-brand">Ericsson</a>
                             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                 <span className="navbar-toggler-icon"></span>
                             </button>
                             <div className="collapse navbar-collapse" id="navbarNav">
                                 <ul className="navbar-nav ml-auto">
                                 <li className="nav-item active">
-                                    <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+                                    <a className="nav-link">Home <span className="sr-only">(current)</span></a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#">Our Services</a>
+                                    <a className="nav-link">Our Services</a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#">My profile</a>
+                                    <a className="nav-link">My profile</a>
                                 </li>
                                 <li className="nav-item">
-                                    <a className="nav-link" href="#">Contact Us</a>
+                                    <a className="nav-link">Contact Us</a>
                                 </li>
                                 </ul>
                             </div>

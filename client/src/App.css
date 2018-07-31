@@ -150,6 +150,33 @@
   margin-top: 24px;
 }
 
+.adminName {
+  padding-left: 10%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
+
+.adminInactiveName {
+  padding-left: 10%;
+  padding-bottom: 1%;
+}
+
+.unpublishedTable {
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-bottom: 2%;
+}
+
+.publishedTable {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.createEventButton {
+  padding-left: 10%;
+  padding-bottom: 1%;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
