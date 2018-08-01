@@ -36,9 +36,11 @@ class App extends Component {
 
         this.state = {
             events: [],
+            eventData: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
+            activateModal: false,
             step: 0,
             name: { value: "", valid: true },
             description: { value: "", valid: true },
@@ -48,8 +50,10 @@ class App extends Component {
             isRecurrent: { value: "", valid: true },
             recurrence: "",
             allDay: false,
+            activateToday: false,
             startDate: null, 
-            endDate: null, 
+            endDate: null,
+            activationDay: null, 
             selectedEvent: {},
             calendarInfo: {},
             currentUser: "admin",
@@ -57,12 +61,16 @@ class App extends Component {
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
+        this.handleChangeAdminInactive = this.handleChangeAdminInactive.bind(this);
+        this.handleChangeActivationDate = this.handleChangeActivationDate.bind(this);
         this.updateRecurence = this.updateRecurence.bind(this);
         this.updateDaysSelection = this.updateDaysSelection.bind(this);
         this.toggleCreateModal = this.toggleCreateModal.bind(this);
         this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
         this.toggleViewModal = this.toggleViewModal.bind(this);
+        this.toggleActivateModal = this.toggleActivateModal.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
+        this.onRadioBtnActivateClick = this.onRadioBtnActivateClick.bind(this);
         this.nextStep = this.nextStep.bind(this);
         this.prevStep = this.prevStep.bind(this);
         this.handleChange = this.handleChange.bind(this);
@@ -74,7 +82,6 @@ class App extends Component {
         this.startTime = this.startTime.bind(this);
         this.minMaxTime = this.minMaxTime.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
-        this.handleChangeAdminInactive = this.handleChangeAdminInactive.bind(this)
 ;    }
 
     handleChangeStart(date) {
@@ -96,11 +103,14 @@ class App extends Component {
         this.setState({ endDate: date });
     }
 
+    handleChangeActivationDate(date) {
+        this.setState({ activationDay: date });
+    }
+
     handleChangeAdminInactive(eventData) {
         this.setState({ 
-            events: this.state.events.concat([eventData])
+            eventData: this.state.eventData.concat([eventData])
         })
-        console.log(this.state.events);
     }
 
     updateRecurence(selection) {
@@ -132,6 +142,16 @@ class App extends Component {
         }
     }
 
+    onRadioBtnActivateClick() {
+        if (this.state.activateToday === false) {
+            this.setState({ activateToday: true });
+            this.setState({ activationDay: moment() });
+        } else {
+            this.setState({ activateToday: false });
+            this.setState({ activationDay: null });
+        }
+    }
+
     updateDaysSelection(selected) {
         const index = this.state.daysSelected.indexOf(selected);
         if (index < 0) {
@@ -149,6 +169,10 @@ class App extends Component {
 
     toggleRegisterModal() {
         this.setState({ registerModal: !this.state.registerModal });
+    }
+
+    toggleActivateModal() {
+        this.setState({ activateModal: !this.state.activateModal });
     }
 
     toggleViewModal(obj) {
@@ -316,8 +340,8 @@ class App extends Component {
         .catch(function (error) {
           console.log(error);
         });
+        this.handleChangeAdminInactive(newEvent);
         var list = this.splitEvent(newEvent);
-        this.handleChangeAdminInactive(list);
         list = this.state.events.concat(list);
         this.setState({
           events: list,
@@ -337,9 +361,12 @@ class App extends Component {
     }
 
     deleteEvent(index, eventId) {
-        var array = [...this.state.events]; // make a separate copy of the array
-        array.splice(index, 1);
-        this.setState({events: array});
+        var adminArray = [...this.state.eventData]; // make a separate copy of the array
+        var calArray = [...this.state.events]; // make a separate copy of the array
+        adminArray.splice(index, 1);
+        calArray.splice(index, 1);
+        this.setState({eventData: adminArray});
+        this.setState({events: calArray});
         axios.delete('/events/' + eventId)
         .then(res => {
             console.log(res);
@@ -426,6 +453,7 @@ class App extends Component {
 
             eventList = flatten(eventList);
             myComponent.setState({events: eventList});
+            myComponent.setState({eventData: response.data});
         })
         .catch(function (error) {
             console.log(error);
@@ -442,7 +470,7 @@ class App extends Component {
       }
 
       axios.post('/feedback', data)
-      .then(toast.success('We have received your message. Thank you!😊', {
+      .then(toast.success('We have received your message. Thank you! 😊', {
           position: "top-center",
           autoClose: 4000,
           hideProgressBar: true,
@@ -704,6 +732,7 @@ class App extends Component {
         }
 
         var events = this.state.events.map(x => x.calendarInfo);
+        var eventData = this.state.eventData.map(x => x.calendarInfo);
 
         return(
             <div>
@@ -900,6 +929,51 @@ class App extends Component {
                                         </Row>)}
                                     </ModalBody>
                                 </Modal>
+
+                                {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
+                                <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
+                                    <ModalHeader>
+                                    <h2>Registration set-up</h2>
+                                    </ModalHeader>
+                                    <ModalBody>
+                                    <Row className="allDayLabel">
+                                        <Col xs="8" sm="8" md="8" lg="8">
+                                        <fieldset>
+                                            <div className="custom-control custom-toggle d-block my-2">
+                                            <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
+                                            <label className="custom-control-label" htmlFor="customToggle1">Today</label>
+                                            </div>
+                                        </fieldset>
+                                        </Col>
+                                    </Row><br/>
+                                    <Row>
+                                        <Col xs="12" sm="12" md="12" lg="12">
+                                            <div className="input-daterange input-group" id="datepicker-example-2">
+                                            <span className="input-group-append" id="startIcon">
+                                                <span className="input-group-text" id="startIcon">
+                                                <i className="fa fa-calendar"></i>
+                                                </span>
+                                            </span>
+                                            <DatePicker
+                                                className="input-sm form-control activationDate"
+                                                placeholderText="Activation date"
+                                                selected={this.state.activationDay}
+                                                onChange={this.handleChangeActivationDate}
+                                                showTimeSelect
+                                                timeFormat="HH:mm"
+                                                timeIntervals={15}
+                                                minDate={moment()}
+                                                dateFormat="LLL"
+                                                readOnly
+                                            />
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row className="activateButtonRow pull-right">
+                                        <Button color="success">Activate</Button>
+                                    </Row>
+                                    </ModalBody>
+                                </Modal>
                             </div>
                         </div>
                     </div>
@@ -932,7 +1006,7 @@ class App extends Component {
                                 </thead>
                                 <tbody>
                                 {
-                                this.state.events.map((event, index) => {
+                                this.state.eventData.map((event, index) => {
                                     return <tr key={index + 1}>
                                     <th>{event.calendarInfo.title}</th>
                                     <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
@@ -941,7 +1015,7 @@ class App extends Component {
                                     <td>{event._id}</td>
                                     <td>{event.capacity}</td>
                                     <td>{event.recurrence}</td>
-                                    <td><Button outline color="success">Activate</Button></td>
+                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
                                     <td><Button outline color="warning">Edit</Button></td>
                                     <td><Button outline color="danger" onClick={() => {this.deleteEvent(index, event._id)}}>Delete</Button></td>
                                 </tr>;

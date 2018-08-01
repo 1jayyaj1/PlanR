@@ -23,6 +23,11 @@
     -moz-border-radius: 0 !important;
 }
 
+.activationDate {
+  border-radius: 0 !important;
+  -moz-border-radius: 0 !important;
+}
+
 .endDate {
   border-radius: 0 !important;
   -moz-border-radius: 0 !important;
@@ -175,6 +180,12 @@
 .createEventButton {
   padding-left: 10%;
   padding-bottom: 1%;
+}
+
+.activateButtonRow {
+  padding-right: 5%;
+  padding-bottom: 1%;
+  padding-top: 3%;
 }
 
 @keyframes App-logo-spin {
