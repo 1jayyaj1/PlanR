@@ -53,7 +53,6 @@ class App extends Component {
             selectedEvent: {},
             calendarInfo: {},
             currentUser: "admin",
-            eventData: [],
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -98,7 +97,10 @@ class App extends Component {
     }
 
     handleChangeAdminInactive(eventData) {
-        this.setState({ eventData: eventData });
+        this.setState({ 
+            events: this.state.events.concat([eventData])
+        })
+        console.log(this.state.events);
     }
 
     updateRecurence(selection) {
@@ -314,8 +316,8 @@ class App extends Component {
         .catch(function (error) {
           console.log(error);
         });
-  
         var list = this.splitEvent(newEvent);
+        this.handleChangeAdminInactive(list);
         list = this.state.events.concat(list);
         this.setState({
           events: list,
@@ -334,8 +336,11 @@ class App extends Component {
         this.toggleCreateModal();
     }
 
-    deleteEvent(eventId) {
-        axios.delete('/events'/eventId)
+    deleteEvent(index, eventId) {
+        var array = [...this.state.events]; // make a separate copy of the array
+        array.splice(index, 1);
+        this.setState({events: array});
+        axios.delete('/events/' + eventId)
         .then(res => {
             console.log(res);
             console.log(res.data);
@@ -402,12 +407,6 @@ class App extends Component {
             return [event];
         }
         
-      }
-
-    componentDidMount() {
-    fetch('/events')
-        .then(response => response.json())
-        .then(eventData => this.setState({ eventData }));
     }
 
     // kept here only for testing purposes
@@ -933,18 +932,18 @@ class App extends Component {
                                 </thead>
                                 <tbody>
                                 {
-                                this.state.eventData.map(function(event){
-                                    return <tr key={event._id}>
+                                this.state.events.map((event, index) => {
+                                    return <tr key={index + 1}>
                                     <th>{event.calendarInfo.title}</th>
                                     <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
                                     <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
                                     <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                    <td>{event.location}</td>
+                                    <td>{event._id}</td>
                                     <td>{event.capacity}</td>
                                     <td>{event.recurrence}</td>
                                     <td><Button outline color="success">Activate</Button></td>
                                     <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger">Delete</Button></td>
+                                    <td><Button outline color="danger" onClick={() => {this.deleteEvent(index, event._id)}}>Delete</Button></td>
                                 </tr>;
                                 })
                                 }
