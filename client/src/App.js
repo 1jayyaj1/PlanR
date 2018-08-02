@@ -79,6 +79,7 @@ class App extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.weekDaysToNumbers = this.weekDaysToNumbers.bind(this);
         this.splitEvent = this.splitEvent.bind(this);
+        this.editEventInfo = this.editEventInfo.bind(this);
         this.startTime = this.startTime.bind(this);
         this.minMaxTime = this.minMaxTime.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
@@ -183,7 +184,8 @@ class App extends Component {
         }
         const test = this;
         this.state.events.forEach(function(event) {
-            if (thisEvent.title === event.calendarInfo.title && thisEvent.start === event.calendarInfo.start && thisEvent.end === event.calendarInfo.end) {
+            if (thisEvent.title == event.calendarInfo.title && thisEvent.start == event.calendarInfo.start && thisEvent.end == event.calendarInfo.end) {
+                console.log(event);
                 test.setState({ selectedEvent: event, calendarInfo: event.calendarInfo});
             }
         });
@@ -488,17 +490,26 @@ class App extends Component {
 
     editEventInfo(event) {
         const target = event.target;
+        console.log(target);
         var valid = true;
-        if (target.name === "name" && !/^[a-zA-Z- ]*$/.test(target.value)) {
-            valid = false;
+        if (target.name === "name") {
+            if (!/^[a-zA-Z- ]*$/.test(target.value)) valid = false;
+            this.setState({ calendarInfo: { title: target.value } });
         }
-        else if (target.name === "capacity" && /\D+/.test(target.value)) {
-            valid = false;
+        else if (target.name === "capacity") {
+            if (/\D+/.test(target.value)) valid = false;
+            this.setState({ selectedEvent: { [target.name]: target.value } });
         }
-        else if (target.name === "location" && /[^A-Za-z0-9- ]+/.test(target.value)) {
-            valid = false;
+        else if (target.name === "location") {
+            if (/[^A-Za-z0-9- ]+/.test(target.value)) valid = false;
+            this.setState({ selectedEvent: { [target.name]: target.value } });
         }
-        this.setState({ [target.name]: { value: target.value, valid: valid } });
+        else if (target.name === "recurrence") {
+            this.setState({ selectedEvent: { [target.name]: target.value } });
+        }
+        else if (target.name === "description") {
+            this.setState({ selectedEvent: { [target.name]: target.value } });
+        }
     }
 
     render() {
@@ -899,11 +910,12 @@ class App extends Component {
                                             <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
                                             <ul style={{fontSize: '15px'}}>
                                                 <li><span>Title:</span> <span>{this.state.calendarInfo.title}</span></li>
-                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
                                                 <li><span>Instructor: user</span> <span></span></li>
                                                 <li><span>Location:</span> <span>{this.state.selectedEvent.location}</span></li>
                                                 <li><span>Description:</span> <span>{this.state.selectedEvent.description}</span></li>
-                                                <li><span>Recurrence:</span> <span>{this.state.selectedEvent.recurrence}</span></li>
+                                                {String(this.state.selectedEvent.isRecurrent) === "true" &&
+                                                <li><span>Recurrence:</span> <span>{this.state.selectedEvent.recurrence}</span></li>} 
                                                 <li><span>Capacity:</span> <span>{this.state.selectedEvent.capacity}</span></li>
                                             </ul> 
                                             <hr/>
@@ -915,17 +927,64 @@ class App extends Component {
                                             <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
                                             <ul style={{fontSize: '15px'}}>
                                                 <li><span>Title:</span><Input name="name" onChange={this.editEventInfo} value={this.state.calendarInfo.title}></Input></li>
-                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
                                                 <li><span>Instructor: admin</span> <span></span></li>
                                                 <li><span>Location:</span> <Input name="location" onChange={this.editEventInfo} value={this.state.selectedEvent.location}></Input></li>
                                                 <li><span>Description:</span> <Input name="description" onChange={this.editEventInfo} value={this.state.selectedEvent.description}></Input></li>
-                                                <li><span>Recurrence:</span> <Input name="recurrence" onChange={this.editEventInfo} value={this.state.selectedEvent.recurrence}></Input></li>
+                                                <li><span>Recurrence:</span></li>
+                                                <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="recurrence" value={this.state.selectedEvent.recurrence} onChange={this.editEventInfo}>
+                                                    <option value="recurring">Yes</option>
+                                                    <option value="non-recurring">No</option>
+                                                </select>
                                                 <li><span>Capacity:</span> <Input name="capacity" onChange={this.editEventInfo} value={this.state.selectedEvent.capacity}></Input></li>
                                             </ul> 
-                                            <Button className="" type="submit">Save</Button>
-                                            <Button className="" type="submit">Close</Button>
+                                            
                                             <hr/>
                                             </Col>
+                                            <Col xs="12" sm="12" md="12" lg="12">
+                                            <label className="inputName">Date & time</label>
+                                                <div className="input-daterange input-group" id="datepicker-example-2">
+                                                <span className="input-group-append" id="startIcon">
+                                                    <span className="input-group-text" id="startIcon">
+                                                    <i className="fa fa-calendar"></i>
+                                                    </span>
+                                                </span>
+                                                <DatePicker
+                                                    className="input-sm form-control startDate"
+                                                    name="start"
+                                                    placeholderText="Start date"
+                                                    selected={moment(this.state.calendarInfo.start)}
+                                                    onChange={this.handleChangeStart}
+                                                    showTimeSelect
+                                                    timeFormat="HH:mm"
+                                                    timeIntervals={15}
+                                                    minTime={moment().hours(9).minutes(0)}
+                                                    maxTime={moment().hours(17).minutes(45)}
+                                                    dateFormat="LLL"
+                                                />
+                                                <DatePicker
+                                                    className="input-sm form-control startDate"
+                                                    name="end"
+                                                    placeholderText="End date"
+                                                    selected={moment(this.state.calendarInfo.end)}
+                                                    onChange={this.handleChangeEnd}
+                                                    showTimeSelect
+                                                    timeFormat="HH:mm"
+                                                    timeIntervals={15}
+                                                    minTime={moment(this.state.startDate).add(15, "minutes")}
+                                                    maxTime={moment().hours(18).minutes(0)}
+                                                    dateFormat="LLL"
+                                                />
+                                                <span className="input-group-prepend" id="endIcon">
+                                                    <span className="input-group-text" id="endIcon">
+                                                    <i className="fa fa-calendar"></i>
+                                                    </span>
+                                                </span>
+                                                </div>
+                                            </Col>
+                                            <hr/>
+                                            <Col>
+                                            <Button className="" type="submit">Save</Button>
+                                            <Button className="" type="submit">Close</Button></Col>
                                         </Row>)}
                                     </ModalBody>
                                 </Modal>
