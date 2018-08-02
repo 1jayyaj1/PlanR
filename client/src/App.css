@@ -182,10 +182,19 @@
   padding-bottom: 1%;
 }
 
+.deleteMessage {
+  padding-left: 5%;
+}
+
 .activateButtonRow {
   padding-right: 5%;
   padding-bottom: 1%;
   padding-top: 3%;
+}
+
+.deleteButtonRow {
+  padding-right: 5%;
+  padding-bottom: 1%;
 }
 
 @keyframes App-logo-spin {

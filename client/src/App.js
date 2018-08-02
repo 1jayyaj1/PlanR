@@ -41,6 +41,7 @@ class App extends Component {
             registerModal: false,
             viewModal: false,
             activateModal: false,
+            deleteModal: false,
             step: 0,
             name: { value: "", valid: true },
             description: { value: "", valid: true },
@@ -69,6 +70,8 @@ class App extends Component {
         this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
         this.toggleViewModal = this.toggleViewModal.bind(this);
         this.toggleActivateModal = this.toggleActivateModal.bind(this);
+        this.toggleDeleteModal = this.toggleDeleteModal.bind(this);
+        this.toggleEditModal = this.toggleEditModal.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
         this.onRadioBtnActivateClick = this.onRadioBtnActivateClick.bind(this);
         this.nextStep = this.nextStep.bind(this);
@@ -174,6 +177,14 @@ class App extends Component {
 
     toggleActivateModal() {
         this.setState({ activateModal: !this.state.activateModal });
+    }
+
+    toggleDeleteModal() {
+        this.setState({ deleteModal: !this.state.deleteModal });
+    }
+
+    toggleEditModal() {
+        this.setState({ editModal: !this.state.editModal });
     }
 
     toggleViewModal(obj) {
@@ -513,9 +524,9 @@ class App extends Component {
     }
 
     render() {
-        let wizardContent;
+        let wizardContentCreate;
         if (this.state.step === 0) {
-          wizardContent = 
+          wizardContentCreate = 
             <fieldset>
               <Row className="basicInfo">
                 <Col xs="6" sm="6" md="6" lg="6">
@@ -559,7 +570,7 @@ class App extends Component {
         
         else if (this.state.step === 1) {
           if (this.state.isRecurrent.value === "recurring"){
-            wizardContent = 
+            wizardContentCreate = 
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
@@ -612,10 +623,10 @@ class App extends Component {
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName">Recurrence</label>
                   <ButtonGroup>
-                    <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
-                    <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
-                    <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
-                    <Button className="radioButtons" Style="font-size: 12pt;" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
                   </ButtonGroup>
                 </Col>
               </Row><br/>
@@ -623,18 +634,18 @@ class App extends Component {
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName">Weekly Occurence</label>
                   <ButtonGroup name="weeklyOcurrence">
-                    <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
-                    <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
-                    <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
-                    <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
-                    <Button className="checkButtons" Style="font-size: 11.5pt;" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
                   </ButtonGroup>
                 </Col>
               </Row>
             </fieldset>;
           }
           else {
-            wizardContent = 
+            wizardContentCreate = 
             <fieldset>
               <Row className="allDayLabel">
                 <Col xs="8" sm="8" md="8" lg="8">
@@ -699,7 +710,7 @@ class App extends Component {
           }
         }  else {
           if (this.state.isRecurrent.value === "non-recurring") {
-            wizardContent = 
+            wizardContentCreate = 
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
@@ -719,7 +730,7 @@ class App extends Component {
             </fieldset>;
           }
           else if (this.state.isRecurrent.value === "recurring") {
-            wizardContent = 
+            wizardContentCreate = 
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
@@ -741,6 +752,238 @@ class App extends Component {
             </fieldset>;
           }
         }
+            
+        let wizardContentEdit;
+        if (this.state.step === 0) {
+          wizardContentEdit = 
+            <fieldset>
+              <Row className="basicInfo">
+                <Col xs="6" sm="6" md="6" lg="6">
+                  <Row>
+                      <label>Name</label>
+                      <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
+                      <div className="invalid-feedback">Characters only and can't be empty</div>
+                  </Row>
+                  <Row>
+                      <label>Capacity</label>
+                      <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
+                      <div className="invalid-feedback">Numbers only and can't be empty</div>
+                  </Row>
+                  <Row>
+                      <label>Location</label>
+                      <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
+                      <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+                  </Row> 
+                  <Row>
+                      <label>Recurrence</label>
+                      <fieldset className="inputRecurrence">
+                          <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="isRecurrent" value={this.state.isRecurrent.value} onChange={this.handleChange}>
+                            <option disabled='disabled' value="">Will it be a recurring event?</option>
+                            <option value="recurring">Yes</option>
+                            <option value="non-recurring">No</option>
+                          </select>
+                          <div className="invalid-feedback">Recurrence type is required</div>
+                      </fieldset>
+                  </Row>
+                </Col>
+                <Col xs="6" sm="6" md="6" lg="6">
+                  <Row  className="rightInputInBasicInfo">
+                    <label>Description</label>
+                      <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                      <div className="invalid-feedback">Can't be empty</div>
+                  </Row>
+                </Col>
+              </Row>
+            </fieldset>;
+        }
+        
+        else if (this.state.step === 1) {
+          if (this.state.isRecurrent.value === "recurring"){
+            wizardContentEdit = 
+            <fieldset> 
+              <Row>
+                <Col xs="12" sm="12" md="12" lg="12">
+                  <label className="inputName">Date & time</label>
+                    <div className="input-daterange input-group" id="datepicker-example-2">
+                      <span className="input-group-append" id="startIcon">
+                        <span className="input-group-text" id="startIcon">
+                          <i className="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                      <DatePicker
+                        className="input-sm form-control startDate"
+                        name="start"
+                        placeholderText="Start date"
+                        selected={this.state.startDate}
+                        onChange={this.handleChangeStart}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        minDate={moment()}
+                        minTime={moment().hours(9).minutes(0)}
+                        maxTime={moment().hours(17).minutes(45)}
+                        dateFormat="LLL"
+                        readOnly
+                      />
+                      <DatePicker
+                        className="input-sm form-control startDate"
+                        name="end"
+                        placeholderText="End date"
+                        selected={this.state.endDate}
+                        onChange={this.handleChangeEnd}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        minDate={this.minMaxTime()}
+                        minTime={this.startTime()}
+                        maxTime={moment().hours(18).minutes(0)}
+                        dateFormat="LLL"
+                        readOnly
+                      />
+                      <span className="input-group-prepend" id="endIcon">
+                        <span className="input-group-text" id="endIcon">
+                          <i className="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                    </div>
+                </Col>
+              </Row><br/>
+              <Row className="recurrenceLabel">
+                <Col xs="10" sm="10" md="10" lg="10">
+                  <label className="inputName">Recurrence</label>
+                  <ButtonGroup>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                  </ButtonGroup>
+                </Col>
+              </Row><br/>
+              <Row className="occurenceLabel">
+                <Col xs="10" sm="10" md="10" lg="10">
+                  <label className="inputName">Weekly Occurence</label>
+                  <ButtonGroup name="weeklyOcurrence">
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                  </ButtonGroup>
+                </Col>
+              </Row>
+            </fieldset>;
+          }
+          else {
+            wizardContentEdit = 
+            <fieldset>
+              <Row className="allDayLabel">
+                <Col xs="8" sm="8" md="8" lg="8">
+                  <label className="inputName">Type of event</label>
+                  <fieldset>
+                    <div className="custom-control custom-toggle d-block my-2">
+                      <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
+                      <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                    </div>
+                  </fieldset>
+                </Col>
+              </Row><br/>
+              <Row>
+                <Col xs="12" sm="12" md="12" lg="12">
+                  <label className="inputName">Date & time</label>
+                    <div className="input-daterange input-group" id="datepicker-example-2">
+                      <span className="input-group-append" id="startIcon">
+                        <span className="input-group-text" id="startIcon">
+                          <i className="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                      <DatePicker
+                        className="input-sm form-control startDate"
+                        name="start"
+                        placeholderText="Start date"
+                        selected={this.state.startDate}
+                        onChange={this.handleChangeStart}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        minDate={moment()}
+                        minTime={moment().hours(9).minutes(0)}
+                        maxTime={moment().hours(17).minutes(45)}
+                        dateFormat="LLL"
+                        readOnly
+                      />
+                      <DatePicker
+                        className="input-sm form-control startDate"
+                        name="end"
+                        placeholderText="End date"
+                        selected={this.state.endDate}
+                        onChange={this.handleChangeEnd}
+                        showTimeSelect
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        minDate={this.minMaxTime()}
+                        maxDate={this.minMaxTime()}
+                        minTime={this.startTime()}
+                        maxTime={moment().hours(18).minutes(0)}
+                        dateFormat="LLL"
+                        readOnly
+                      />
+                      <span className="input-group-prepend" id="endIcon">
+                        <span className="input-group-text" id="endIcon">
+                          <i className="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                    </div>
+                </Col>
+              </Row>
+            </fieldset>;
+          }
+        }  else {
+          if (this.state.isRecurrent.value === "non-recurring") {
+            wizardContentEdit = 
+            <fieldset> 
+              <Row>
+                <Col xs="12" sm="12" md="12" lg="12">
+                  <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                  <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
+                  <ul style={{fontSize: '15px'}}>
+                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                    <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
+                    <li><span>Type of event:</span> <span>Non-recurring</span></li>
+                    <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
+                  </ul> 
+                  <hr/>
+                </Col>
+              </Row>
+            </fieldset>;
+          }
+          else if (this.state.isRecurrent.value === "recurring") {
+            wizardContentEdit = 
+            <fieldset> 
+              <Row>
+                <Col xs="12" sm="12" md="12" lg="12">
+                  <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                  <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
+                  <ul style={{fontSize: '15px'}}>
+                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                    <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
+                    <li><span>Type of event:</span> <span>Recurring</span></li>
+                    <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
+                    <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                    <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
+                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
+                  </ul> 
+                  <hr/>
+                </Col>
+              </Row>
+            </fieldset>;
+          }
+        }
+
+
+
 
         var events = this.state.events.map(x => x.calendarInfo);
         var eventData = this.state.eventData.map(x => x.calendarInfo);
@@ -828,7 +1071,7 @@ class App extends Component {
                                                         {steps.map(item => <Step key={item.title} title={item.title} />)}
                                                     </Steps>
                                                     <div className="steps-content">
-                                                        {wizardContent}
+                                                        {wizardContentCreate}
                                                     </div>
                                                     <div className="steps-action">
                                                         {
@@ -1033,6 +1276,58 @@ class App extends Component {
                                     </Row>
                                     </ModalBody>
                                 </Modal>
+                                {/*<----------------------- EVENT EDIT MODAL ----------------------->*/}
+                                <Modal isOpen={this.state.editModal} toggle={this.toggleEditModal} className={this.props.className}>
+                                    <ModalBody>
+                                        <h2> New Event </h2>
+                                        <Form>
+                                            <Row>
+                                                <Col xs="12" sm="12" md="12" lg="12">
+                                                    <Steps current={this.state.step}>
+                                                        {steps.map(item => <Step key={item.title} title={item.title} />)}
+                                                    </Steps>
+                                                    <div className="steps-content">
+                                                        {wizardContentEdit}
+                                                    </div>
+                                                    <div className="steps-action">
+                                                        {
+                                                            this.state.step > 0
+                                                            && (<Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
+                                                        }
+                                                        {
+                                                            this.state.step < steps.length - 1
+                                                            && <Button className="" type="submit" onClick={this.nextStep}>Next</Button>
+                                                        }
+                                                        {
+                                                            this.state.step === steps.length - 1
+                                                            && <Button type="button" onClick={() => this.createEvent()}>Edit</Button>
+                                                        }
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </Form>
+                                    </ModalBody>
+                                </Modal>
+                                {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
+                                {
+                                this.state.eventData.map((event, index) => {
+                                    return <div key={index + 1}>
+                                    <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
+                                        <ModalHeader>
+                                        <h2>Delete event</h2>
+                                        </ModalHeader>
+                                        <ModalBody>
+                                        <Row className="allDayLabel">
+                                        <p className="deleteMessage">Are you sure you wish to delete this event?</p>
+                                        </Row><br/>
+                                        <Row className="deleteButtonRow pull-right">
+                                            <Button color="danger" onClick={() => {this.deleteEvent(index, event._id)}}>Delete</Button>
+                                        </Row>
+                                        </ModalBody>
+                                    </Modal>
+                                    </div>;
+                                    })
+                                    }
                             </div>
                         </div>
                     </div>
@@ -1071,12 +1366,12 @@ class App extends Component {
                                     <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
                                     <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
                                     <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                    <td>{event._id}</td>
+                                    <td>{event.location}</td>
                                     <td>{event.capacity}</td>
                                     <td>{event.recurrence}</td>
                                     <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
-                                    <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger" onClick={() => {this.deleteEvent(index, event._id)}}>Delete</Button></td>
+                                    <td><Button outline color="warning" onClick={() => {this.toggleEditModal()}}>Edit</Button></td>
+                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
                                 </tr>;
                                 })
                                 }
