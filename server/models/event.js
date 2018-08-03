@@ -30,6 +30,10 @@ let eventSchema = Schema({
         type: Array,
         required: false
     },
+    activationDay: {
+        type: Date,
+        required: false
+    },
     calendarInfo: {
         title: {
             type: String,

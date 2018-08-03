@@ -65,6 +65,7 @@ router.put('/:eventId', function(req, res, next) {
     const id = req.params.eventId;
     var updateField = {};
     updateField.calendarInfo = {};
+    var activationDay = new Date(body.activationDay);
     try {
         if (body.calendarInfo != null) {
             if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
@@ -86,6 +87,10 @@ router.put('/:eventId', function(req, res, next) {
             updateField.capacity = Number(body.capacity);
         }
 
+        if (body.activationDay != null) { 
+            updateField.activationDay = activationDay;
+        }
+
         if (body.location != null) {
             if (/^[0-9a-zA-Z- ]+$/.test(body.location)) {
                 updateField.location = body.location;
@@ -94,7 +99,7 @@ router.put('/:eventId', function(req, res, next) {
             }
         }
 
-        if (isRecurrent) {
+        if (body.isRecurrent === true) {
             if (body.isRecurrent != null) { 
                 updateField.isRecurrent = Boolean(body.isRecurrent);
             }
@@ -120,7 +125,7 @@ router.put('/:eventId', function(req, res, next) {
             }
         }
 
-        Event.findByIdAndUpdate(id, updateField, {new: true})
+        Event.findByIdAndUpdate(id, updateField.calendarInfo, {new: true})
         .then(event => {
             if (!event) {
                 return res.status(404).send("Event not found with id " + id);
@@ -144,6 +149,7 @@ router.post('/', function(req, res, next) {
     try {
         var startDate = new Date(body.calendarInfo.start);
         var endDate = new Date(body.calendarInfo.end);
+        var activationDay = new Date(body.activationDay);
         var capacity = Number(body.capacity);
         var isRecurrent = Boolean(body.isRecurrent);
         var allDay = Boolean(body.allDay);
@@ -160,7 +166,7 @@ router.post('/', function(req, res, next) {
             error = true;
         }
 
-        if (isRecurrent) {
+        if (body.isRecurrent === true) {
             if (!types.includes(body.recurrence)) {
                 error = true;
             }
@@ -172,7 +178,7 @@ router.post('/', function(req, res, next) {
 
         if (!error) {
             var event;
-            if (isRecurrent) {
+            if (body.isRecurrent === true) {
                 event = new Event({
                     capacity: capacity,
                     location: body.location,
@@ -181,6 +187,7 @@ router.post('/', function(req, res, next) {
                     allDay: allDay,
                     recurrence: body.recurrence,
                     daysSelected: body.daysSelected,
+                    activationDay: activationDay,
                     calendarInfo: {
                         title: body.calendarInfo.title,
                         allDay: false,
@@ -194,6 +201,7 @@ router.post('/', function(req, res, next) {
                     location: body.location,
                     isRecurrent: isRecurrent,
                     description: body.description,
+                    activationDay: activationDay,
                     calendarInfo: {
                         title: body.calendarInfo.title,
                         allDay: false,
