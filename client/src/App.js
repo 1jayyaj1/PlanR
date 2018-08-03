@@ -82,10 +82,10 @@ class App extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.weekDaysToNumbers = this.weekDaysToNumbers.bind(this);
         this.splitEvent = this.splitEvent.bind(this);
-        this.editEventInfo = this.editEventInfo.bind(this);
         this.startTime = this.startTime.bind(this);
         this.minMaxTime = this.minMaxTime.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
+        this.handleRecurrenceChange = this.handleRecurrenceChange.bind(this);
 ;    }
 
     handleChangeStart(date) {
@@ -188,16 +188,25 @@ class App extends Component {
     }
 
     toggleViewModal(obj) {
-        var thisEvent = {
-            title: obj.title,
-            start:  obj.start,
-            end: obj.end
-        }
         const test = this;
-        this.state.events.forEach(function(event) {
-            if (thisEvent.title == event.calendarInfo.title && thisEvent.start == event.calendarInfo.start && thisEvent.end == event.calendarInfo.end) {
-                console.log(event);
-                test.setState({ selectedEvent: event, calendarInfo: event.calendarInfo});
+        this.state.eventData.forEach(function(event) {
+            if (obj.title == event.calendarInfo.title) {
+                test.setState({
+                    name: {value: event.calendarInfo.title, valid: true}, 
+                    capacity: {value: event.capacity, valid: true}, 
+                    description: {value: event.description, valid: true},
+                    location: {value: event.location, valid: true},
+                    isRecurrent: {value: event.isRecurrent, valid: true}, 
+                    daysSelected: event.daysSelected,
+                    recurrence: event.recurrence,
+                    allDay: event.allDay,
+                    startDate: moment(event.calendarInfo.start),
+                    endDate: moment(event.calendarInfo.end),
+                    calendarInfo: event.calendarInfo
+                })
+                if (event.recurrence === "") {
+                    test.setState({ recurrence: "non-recurring" })
+                }
             }
         });
 
@@ -308,6 +317,10 @@ class App extends Component {
             valid = false;
         }
         this.setState({ [target.name]: { value: target.value, valid: valid } });
+    }
+
+    handleRecurrenceChange(event) {
+        this.setState({ recurrence: event.target.value  });
     }
 
     weekDaysToNumbers(dayINeed) {
@@ -497,30 +510,6 @@ class App extends Component {
       
       document.getElementById("contactForm").reset();
 
-    }
-
-    editEventInfo(event) {
-        const target = event.target;
-        console.log(target);
-        var valid = true;
-        if (target.name === "name") {
-            if (!/^[a-zA-Z- ]*$/.test(target.value)) valid = false;
-            this.setState({ calendarInfo: { title: target.value } });
-        }
-        else if (target.name === "capacity") {
-            if (/\D+/.test(target.value)) valid = false;
-            this.setState({ selectedEvent: { [target.name]: target.value } });
-        }
-        else if (target.name === "location") {
-            if (/[^A-Za-z0-9- ]+/.test(target.value)) valid = false;
-            this.setState({ selectedEvent: { [target.name]: target.value } });
-        }
-        else if (target.name === "recurrence") {
-            this.setState({ selectedEvent: { [target.name]: target.value } });
-        }
-        else if (target.name === "description") {
-            this.setState({ selectedEvent: { [target.name]: target.value } });
-        }
     }
 
     render() {
@@ -1155,34 +1144,62 @@ class App extends Component {
                                                 <li><span>Title:</span> <span>{this.state.calendarInfo.title}</span></li>
                                                 <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
                                                 <li><span>Instructor: user</span> <span></span></li>
-                                                <li><span>Location:</span> <span>{this.state.selectedEvent.location}</span></li>
-                                                <li><span>Description:</span> <span>{this.state.selectedEvent.description}</span></li>
-                                                {String(this.state.selectedEvent.isRecurrent) === "true" &&
-                                                <li><span>Recurrence:</span> <span>{this.state.selectedEvent.recurrence}</span></li>} 
-                                                <li><span>Capacity:</span> <span>{this.state.selectedEvent.capacity}</span></li>
+                                                <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                                                <li><span>Description:</span> <span>{this.state.description.value}</span></li>
+                                                {this.state.isRecurrent.value &&
+                                                <li><span>Recurrence:</span> <span>{this.state.recurrence}</span></li>} 
+                                                <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                                             </ul> 
                                             <hr/>
                                             </Col>
                                         </Row>)}
                                         {this.state.currentUser === "admin" &&
                                         (<Row>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                            <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
-                                            <ul style={{fontSize: '15px'}}>
-                                                <li><span>Title:</span><Input name="name" onChange={this.editEventInfo} value={this.state.calendarInfo.title}></Input></li>
-                                                <li><span>Instructor: admin</span> <span></span></li>
-                                                <li><span>Location:</span> <Input name="location" onChange={this.editEventInfo} value={this.state.selectedEvent.location}></Input></li>
-                                                <li><span>Description:</span> <Input name="description" onChange={this.editEventInfo} value={this.state.selectedEvent.description}></Input></li>
-                                                <li><span>Recurrence:</span></li>
-                                                <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="recurrence" value={this.state.selectedEvent.recurrence} onChange={this.editEventInfo}>
-                                                    <option value="recurring">Yes</option>
-                                                    <option value="non-recurring">No</option>
-                                                </select>
-                                                <li><span>Capacity:</span> <Input name="capacity" onChange={this.editEventInfo} value={this.state.selectedEvent.capacity}></Input></li>
-                                            </ul> 
+                                           <fieldset>
+                                            <Row className="basicInfo">
+                                                <Col xs="6" sm="6" md="6" lg="6">
+                                                <Row>
+                                                    <label>Name</label>
+                                                    <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
+                                                    <div className="invalid-feedback">Characters only and can't be empty</div>
+                                                </Row>
+                                                <Row>
+                                                    <label>Capacity</label>
+                                                    <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
+                                                    <div className="invalid-feedback">Numbers only and can't be empty</div>
+                                                </Row>
+                                                <Row>
+                                                    <label>Location</label>
+                                                    <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
+                                                    <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+                                                </Row> 
+                                                <Row>
+                                                    <label>Recurrence</label>
+                                                    <fieldset className="inputRecurrence">
+                                                        <select className="custom-select w-100" name="recurrence" value={this.state.recurrence} onChange={this.handleRecurrenceChange}>
+                                                            <option disabled='disabled' value="">Will it be a recurring event?</option>
+                                                            <option value="non-recurring">No</option>
+                                                            <option value="Weekly">Weekly</option>
+                                                            <option value="Biweekly">Biweekly</option>
+                                                            <option value="Triweekly">Triweekly</option>
+                                                        </select>
+                                                    </fieldset>
+                                                </Row>
+                                                </Col>
+                                                <Col xs="6" sm="6" md="6" lg="6">
+                                                <Row  className="rightInputInBasicInfo">
+                                                    <label>Description</label>
+                                                    <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                                                    <div className="invalid-feedback">Can't be empty</div>
+                                                </Row>
+                                                </Col>
+                                            </Row>
+                                            </fieldset>
                                             
-                                            <hr/>
-                                            </Col>
+                                            <div className="custom-control custom-toggle d-block my-2">
+                                            <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
+                                            <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                                            </div>
                                             <Col xs="12" sm="12" md="12" lg="12">
                                             <label className="inputName">Date & time</label>
                                                 <div className="input-daterange input-group" id="datepicker-example-2">
@@ -1195,27 +1212,32 @@ class App extends Component {
                                                     className="input-sm form-control startDate"
                                                     name="start"
                                                     placeholderText="Start date"
-                                                    selected={moment(this.state.calendarInfo.start)}
+                                                    selected={this.state.startDate}
                                                     onChange={this.handleChangeStart}
                                                     showTimeSelect
                                                     timeFormat="HH:mm"
                                                     timeIntervals={15}
+                                                    minDate={moment()}
                                                     minTime={moment().hours(9).minutes(0)}
                                                     maxTime={moment().hours(17).minutes(45)}
                                                     dateFormat="LLL"
+                                                    readOnly
                                                 />
                                                 <DatePicker
                                                     className="input-sm form-control startDate"
                                                     name="end"
                                                     placeholderText="End date"
-                                                    selected={moment(this.state.calendarInfo.end)}
+                                                    selected={this.state.endDate}
                                                     onChange={this.handleChangeEnd}
                                                     showTimeSelect
                                                     timeFormat="HH:mm"
                                                     timeIntervals={15}
-                                                    minTime={moment(this.state.startDate).add(15, "minutes")}
+                                                    minDate={this.minMaxTime()}
+                                                    maxDate={this.minMaxTime()}
+                                                    minTime={this.startTime()}
                                                     maxTime={moment().hours(18).minutes(0)}
                                                     dateFormat="LLL"
+                                                    readOnly
                                                 />
                                                 <span className="input-group-prepend" id="endIcon">
                                                     <span className="input-group-text" id="endIcon">
