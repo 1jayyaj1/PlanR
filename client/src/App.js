@@ -188,6 +188,7 @@ class App extends Component {
         this.state.eventData.forEach(function(event) {
             if (obj.title == event.calendarInfo.title) {
                 test.setState({
+                    eventId: event._id,
                     name: {value: event.calendarInfo.title, valid: true}, 
                     capacity: {value: event.capacity, valid: true}, 
                     description: {value: event.description, valid: true},
@@ -416,6 +417,53 @@ class App extends Component {
         var list = this.splitEvent(newEvent);
         list = this.state.events.concat(list);
         this.toggleActivateModal();
+    }
+
+    editEvent (eventId) {
+        var sDate = moment(this.state.startDate).format();
+        var eDate = moment(this.state.endDate).format();
+        var event = {
+          title: this.state.name.value,
+          allDay: false,
+          start:  new Date(sDate),
+          end: new Date(eDate)
+        }
+        var newEvent = {
+          capacity: this.state.capacity.value, 
+          description: this.state.description.value, 
+          location: this.state.location.value, 
+          isRecurrent: this.state.isRecurrent.value === "recurring", 
+          daysSelected: this.state.daysSelected, 
+          recurrence: this.state.recurrence,
+          allDay: this.state.allDay,
+          calendarInfo: event 
+        }
+  
+        axios.put('/events/' + eventId)
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+        this.handleChangeAdminInactive(newEvent);
+        var list = this.splitEvent(newEvent);
+        list = this.state.events.concat(list);
+        this.setState({
+          events: list,
+          name: { value: "", valid: true },
+          description: { value: "", valid: true },
+          location: { value: "", valid: true },
+          capacity: { value: 0, valid: true },
+          daysSelected: [],
+          isRecurrent: { value: "", valid: true },
+          recurrence: "",
+          allDay: false,
+          startDate: null,
+          endDate: null,
+          step: 0,
+        });
+        this.toggleCreateModal();
     }
 
     deleteEvent(index, eventId) {
@@ -1002,10 +1050,6 @@ class App extends Component {
                                             </Row>
                                             </fieldset>
                                             
-                                            <div className="custom-control custom-toggle d-block my-2">
-                                            <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
-                                            <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
-                                            </div>
                                             <Col xs="12" sm="12" md="12" lg="12">
                                             <label className="inputName">Date & time</label>
                                                 <div className="input-daterange input-group" id="datepicker-example-2">
@@ -1054,7 +1098,7 @@ class App extends Component {
                                             </Col>
                                             <hr/>
                                             <Col>
-                                            <Button className="" type="submit">Save</Button>
+                                            <Button color="danger" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>
                                             <Button className="" type="submit">Close</Button></Col>
                                         </Row>)}
                                     </ModalBody>
