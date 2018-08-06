@@ -1,4 +1,5 @@
 var express = require('express');
+var mongoose = require('mongoose');
 var router = express.Router();
 let Event =  require('../models/event');
 
@@ -24,11 +25,11 @@ router.get('/:eventId', function(req, res, next) {
         Event.find({"_id" : req.params.eventId})
             .exec()
             .then(events => {
-            if (events.length == 0) {
-                return res.sendStatus(404);
-            } else {
-                return res.send(events[0])
-            }
+                if (events.length == 0) {
+                    return res.sendStatus(404);
+                } else {
+                    return res.send(events[0])
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -65,79 +66,79 @@ router.put('/:eventId', function(req, res, next) {
     const id = req.params.eventId;
     var updateField = {};
     updateField.calendarInfo = {};
-    var activationDay = new Date(body.activationDay);
     try {
-        if (body.calendarInfo != null) {
-            if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
-                updateField.calendarInfo.title = body.calendarInfo.title;
+        var parentId = null;
+        var newList = null;
+        Event.find()
+        .exec()
+        .then(events => {
+            if (events.length == 0) {
+                return res.sendStatus(404);
             } else {
-                return res.sendStatus(400);
-            }
-            var startDate = new Date(body.calendarInfo.start);
-            var endDate = new Date(body.calendarInfo.end);
-            if (startDate <= endDate) {
-                updateField.calendarInfo.start = startDate;
-                updateField.calendarInfo.end = endDate;
-            } else {
-                return res.sendStatus(400);
-            }
-        }
+                var found = null;
+                events.map(x => {
+                    x.data.forEach(y => {
+                        if (y._id == id) {
+                            found = true;
+                            // the event associated with the eventId has been found, validate & update the necessary fields
+                            if (body.calendarInfo) {
+                                if (body.calendarInfo.title) {
+                                    y.calendarInfo.allDay = body.calendarInfo.allDay;
+                                    if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
+                                        y.calendarInfo.title = body.calendarInfo.title;
+                                    } else {
+                                        return res.sendStatus(404);
+                                    }
+                                    var startDate = new Date(body.calendarInfo.start);
+                                    var endDate = new Date(body.calendarInfo.end);
+                                    if (startDate <= endDate) {
+                                        y.calendarInfo.start = startDate;
+                                        y.calendarInfo.end = endDate;
+                                    } else {
+                                        return res.sendStatus(400);
+                                    }
+                                }
+                            }
+                            if (body.capacity) {
+                                y.capacity = body.capacity;
+                            }
+                            if (body.location) {
+                                y.location = body.location;
+                            }
+                            if (body.description) {
+                                y.description = body.description;
+                            }
+                            if (body.activationDay) {
+                                y.activationDay = new Date(body.activationDay);
+                            }
+                        }
+                    });
 
-        if (body.capacity != null) { 
-            updateField.capacity = Number(body.capacity);
-        }
-
-        if (body.activationDay != null) { 
-            updateField.activationDay = activationDay;
-        }
-
-        if (body.location != null) {
-            if (/^[0-9a-zA-Z- ]+$/.test(body.location)) {
-                updateField.location = body.location;
-            } else {
-                return res.sendStatus(400);
+                    if (found) {
+                        parentId = x._id;
+                        newList = x.data;
+                    }
+                });
+                
+                Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
+                .then(event => {
+                    if (!event) {
+                        return res.status(404).send("Event not found with id " + id);
+                    }
+                    return res.send(event);
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.code === 11000) {
+                        return res.status(404).send("Event not found with id " + id);
+                    }
+                    return res.sendStatus(500);
+                })
             }
-        }
-
-        if (body.isRecurrent === true) {
-            if (body.isRecurrent != null) { 
-                updateField.isRecurrent = Boolean(body.isRecurrent);
-            }
-    
-            if (body.recurrence != null) { 
-                if (types.includes(body.recurrence)) {
-                    updateField.recurrence = body.recurrence;
-                } else {
-                    return res.sendStatus(400);
-                }
-            }
-        } else {
-            if (body.allDay != null) { 
-                updateField.allDay = Boolean(body.allDay);
-            }
-        }
-
-        if (body.daysSelected != null) { 
-            if (body.daysSelected.every(x => days.includes(x))) {
-                updateField.daysSelected = body.daysSelected;
-            } else {
-                return res.sendStatus(400);
-            }
-        }
-
-        Event.findByIdAndUpdate(id, updateField.calendarInfo, {new: true})
-        .then(event => {
-            if (!event) {
-                return res.status(404).send("Event not found with id " + id);
-            }
-            return res.send(event);
         })
         .catch(err => {
             console.log(err);
-            if (err.code === 11000) {
-                return res.status(404).send("Event not found with id " + id);
-            }
-            return res.sendStatus(500);
+            return res.sendStatus(404);
         })
     } catch {
         return res.sendStatus(500);
@@ -165,13 +166,13 @@ router.post('/', function(req, res, next) {
                 if (!/^[0-9a-zA-Z- ]+$/.test(e.location)) {
                     return false;
                 }
-            
+
                 return true;
             });
 
         
         if (body.length == filtered.length) {
-            var events = new Event(filtered);
+            var events = new Event({ data: filtered });
 
             events.save()
             .then(event => {
@@ -194,4 +195,4 @@ router.post('/', function(req, res, next) {
     }
 });
 
-  module.exports = router;
+module.exports = router;
