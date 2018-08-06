@@ -147,87 +147,50 @@ router.put('/:eventId', function(req, res, next) {
 router.post('/', function(req, res, next) {
     const body = req.body;
     try {
-        var startDate = new Date(body.calendarInfo.start);
-        var endDate = new Date(body.calendarInfo.end);
-        var activationDay = new Date(body.activationDay);
-        var capacity = Number(body.capacity);
-        var isRecurrent = Boolean(body.isRecurrent);
-        var allDay = Boolean(body.allDay);
-        var error = false;
-        if (!/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
-            error = true;
-        }
+        var filtered = 
+            body.filter(e => {
+                var startDate = new Date(e.calendarInfo.start);
+                var endDate = new Date(e.calendarInfo.end);
+                var activationDay = new Date(e.activationDay);
+                var capacity = Number(e.capacity);
 
-        if (startDate >= endDate) {
-            error = true;
-        }
+                if (!/^[a-zA-Z- ]+$/.test(e.calendarInfo.title)) {
+                    return false;
+                }
+        
+                if (startDate >= endDate) {
+                    return false;
+                }
+        
+                if (!/^[0-9a-zA-Z- ]+$/.test(e.location)) {
+                    return false;
+                }
+            
+                return true;
+            });
 
-        if (!/^[0-9a-zA-Z- ]+$/.test(body.location)) {
-            error = true;
-        }
+        
+        if (body.length == filtered.length) {
+            var events = new Event(filtered);
 
-        if (body.isRecurrent === true) {
-            if (!types.includes(body.recurrence)) {
-                error = true;
-            }
-    
-            if (!body.daysSelected.every(x => days.includes(x))) {
-                error = true;
-            }
-        }
+            events.save()
+            .then(event => {
+                console.log('Created event(s) ' + event._id);
+                return res.sendStatus(200);
+            })
+            .catch(err => {
+                console.error(err);
+                if (err.code === 11000) {
+                    return res.status(500).send("Event(s) already exists in the database");
+                }
+                return res.status(500).send("Unable to create event(s) in database");
+            })
 
-        if (!error) {
-            var event;
-            if (body.isRecurrent === true) {
-                event = new Event({
-                    capacity: capacity,
-                    location: body.location,
-                    isRecurrent: isRecurrent,
-                    description: body.description,
-                    allDay: allDay,
-                    recurrence: body.recurrence,
-                    daysSelected: body.daysSelected,
-                    activationDay: activationDay,
-                    calendarInfo: {
-                        title: body.calendarInfo.title,
-                        allDay: false,
-                        start: startDate,
-                        end: endDate
-                    }
-                });
-            } else {
-                event = new Event({
-                    capacity: capacity,
-                    location: body.location,
-                    isRecurrent: isRecurrent,
-                    description: body.description,
-                    activationDay: activationDay,
-                    calendarInfo: {
-                        title: body.calendarInfo.title,
-                        allDay: false,
-                        start: startDate,
-                        end: endDate
-                    }
-                });
-            }
-
-            event.save()
-                .then(event => {
-                    console.log('Created event ' + event._id);
-                    return res.sendStatus(200)
-                })
-                .catch(err => {
-                    console.error(err);
-                    if (err.code === 11000) {
-                        return res.status(500).send("This event already exists in the database");
-                    }
-                    return res.status(500).send("Unable to create event in database")
-                })
         } else {
             return res.sendStatus(400);
         }
     } catch {
-        return res.sendStatus(400)
+        return res.sendStatus(400);
     }
 });
 
