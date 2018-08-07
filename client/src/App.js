@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
+import Workbook from 'react-excel-workbook'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -69,6 +70,14 @@ class App extends Component {
             activationDay: null, 
             selectedEvent: {},
             calendarInfo: {},
+            dateValidNonRecurr: 'black',
+            dateValid: 'black',
+            recurrenceValid: 'black',
+            daysSelectedValid: 'black',
+            dateValidLabelNonRecurr: 'hidden',
+            dateValidLabel: 'hidden',
+            recurrenceValidLabel: 'hidden',
+            daysSelectedValidLabel: 'hidden',
             currentUser: "admin",
         }
 
@@ -285,8 +294,38 @@ class App extends Component {
         else if (this.state.step === 1) {
             if (this.state.isRecurrent.value === "recurring") {
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence === "" || this.state.startDate === null || this.state.endDate === null || this.state.daysSelected.length === 0) {
-                    //CODE TO MAKE FIELDS UNVALID RECURRING
-                } else {
+                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
+                        this.setState({ dateValid: '#c4183c' });
+                        this.setState({ dateValidLabel: 'visible' });
+                    }
+                    if (this.state.recurrence === "") {
+                        this.setState({ recurrenceValid: '#c4183c' });
+                        this.setState({ recurrenceValidLabel: 'visible' });
+                    }
+                    if (this.state.daysSelected.length === 0) {
+                        this.setState({ daysSelectedValid: '#c4183c' });
+                        this.setState({ daysSelectedValidLabel: 'visible' });
+                    }
+                    if (this.state.startDate !== null && this.state.endDate !== null) {
+                        this.setState({ dateValid: 'black' });
+                        this.setState({ dateValidLabel: 'hidden' });
+                    }
+                    if (this.state.recurrence !== "") {
+                        this.setState({ recurrenceValid: 'black' });
+                        this.setState({ recurrenceValidLabel: 'hidden' });
+                    }
+                    if (this.state.daysSelected.length !== 0) {
+                        this.setState({ daysSelectedValid: 'black' });
+                        this.setState({ daysSelectedValidLabel: 'hidden' });
+                    }
+                }
+                else {
+                    this.setState({ dateValid: 'black' });
+                    this.setState({ dateValidLabel: 'hidden' });
+                    this.setState({ recurrenceValid: 'black' });
+                    this.setState({ recurrenceValidLabel: 'hidden' });
+                    this.setState({ daysSelectedValid: 'black' });
+                    this.setState({ daysSelectedValidLabel: 'hidden' });
                     const step = this.state.step + 1;
                     this.setState({ step });
                 }
@@ -294,7 +333,17 @@ class App extends Component {
             else {
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
                     //CODE TO MAKE FIELDS UNVALID NON-RECURRING
+                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
+                        this.setState({ dateValidNonRecurr: '#c4183c' });
+                        this.setState({ dateValidLabelNonRecurr: 'visible' });
+                    }
+                    if (this.state.startDate !== null && this.state.endDate !== null) {
+                        this.setState({ dateValidNonRecurr: 'black' });
+                        this.setState({ dateValidLabelNonRecurr: 'hidden' });
+                    }
                 } else {
+                    this.setState({ dateValidNonRecurr: 'black' });
+                    this.setState({ dateValidLabelNonRecurr: 'hidden' });
                     const step = this.state.step + 1;
                     this.setState({ step });
                 }
@@ -640,7 +689,7 @@ class App extends Component {
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
-                  <label className="inputName">Date & time</label>
+                  <label className="inputName" style={{color: this.state.dateValid}}>Date & time</label>
                     <div className="input-daterange input-group" id="datepicker-example-2">
                       <span className="input-group-append" id="startIcon">
                         <span className="input-group-text" id="startIcon">
@@ -682,23 +731,25 @@ class App extends Component {
                           <i className="fa fa-calendar"></i>
                         </span>
                       </span>
+                      <div className="invalid-input" style={{visibility: this.state.dateValidLabel}}>Start and end dates are required</div>
                     </div>
                 </Col>
               </Row><br/>
               <Row className="recurrenceLabel">
                 <Col xs="10" sm="10" md="10" lg="10">
-                  <label className="inputName">Recurrence</label>
+                  <label className="inputName" style={{color: this.state.recurrenceValid}}>Recurrence</label>
                   <ButtonGroup>
                     <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
                     <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
                     <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
                     <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
                   </ButtonGroup>
+                  <div className="invalid-input" style={{visibility: this.state.recurrenceValidLabel}}>Recurrence type is required</div>
                 </Col>
               </Row><br/>
               <Row className="occurenceLabel">
                 <Col xs="10" sm="10" md="10" lg="10">
-                  <label className="inputName">Weekly Occurence</label>
+                  <label className="inputName" style={{color: this.state.daysSelectedValid}}>Weekly Occurence</label>
                   <ButtonGroup name="weeklyOcurrence">
                     <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
                     <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
@@ -706,6 +757,7 @@ class App extends Component {
                     <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
                     <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
                   </ButtonGroup>
+                  <div className="invalid-input" style={{visibility: this.state.daysSelectedValidLabel}}>Weekly occurence is required</div>
                 </Col>
               </Row>
             </fieldset>;
@@ -726,7 +778,7 @@ class App extends Component {
               </Row><br/>
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
-                  <label className="inputName">Date & time</label>
+                  <label className="inputName" style={{color: this.state.dateValidNonRecurr}}>Date & time</label>
                     <div className="input-daterange input-group" id="datepicker-example-2">
                       <span className="input-group-append" id="startIcon">
                         <span className="input-group-text" id="startIcon">
@@ -770,6 +822,7 @@ class App extends Component {
                         </span>
                       </span>
                     </div>
+                    <div className="invalid-input" style={{visibility: this.state.dateValidLabelNonRecurr}}>Start and end dates are required</div>
                 </Col>
               </Row>
             </fieldset>;
@@ -821,7 +874,12 @@ class App extends Component {
 
         return (
             <div>
-                
+                <Workbook filename="example.xlsx" element={<button className="btn btn-lg btn-primary">Try me!</button>}>
+                    <Workbook.Sheet data={data1} name="Sheet A">
+                        <Workbook.Column label="Foo" value="foo"/>
+                        <Workbook.Column label="Bar" value="bar"/>
+                    </Workbook.Sheet>
+                </Workbook>
                 {/*<----------------------- NAVBAR ----------------------->*/}
                 <div className="welcome d-flex justify-content-center flex-column">
                     <div className="container">
@@ -907,15 +965,15 @@ class App extends Component {
                                                     <div className="steps-action">
                                                         {
                                                             this.state.step > 0
-                                                            && (<Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
+                                                            && (<Button color="primary" style={{ marginLeft: 8, marginRight: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
                                                         }
                                                         {
                                                             this.state.step < steps.length - 1
-                                                            && <Button className="" type="submit" onClick={this.nextStep}>Next</Button>
+                                                            && <Button color="primary" className="" type="submit" onClick={this.nextStep}>Next</Button>
                                                         }
                                                         {
                                                             this.state.step === steps.length - 1
-                                                            && <Button type="button" onClick={() => this.createEvent()}>Create</Button>
+                                                            && <Button color="primary" type="button" onClick={() => this.createEvent()}>Create</Button>
                                                         }
                                                     </div>
                                                 </Col>
@@ -1038,6 +1096,10 @@ class App extends Component {
                                             </Row>
                                             </fieldset>
                                             
+                                            <div className="custom-control custom-toggle d-block my-2">
+                                                <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
+                                                <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                                            </div>
                                             <Col xs="12" sm="12" md="12" lg="12">
                                             <label className="inputName">Date & time</label>
                                                 <div className="input-daterange input-group" id="datepicker-example-2">

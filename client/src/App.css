@@ -152,7 +152,7 @@
 }
 
 .steps-action {
-  margin-top: 24px;
+  margin-top: 3%;
 }
 
 .adminName {
@@ -175,6 +175,12 @@
 .publishedTable {
   padding-left: 10%;
   padding-right: 10%;
+}
+
+.invalid-input {
+  color: #c4183c;
+  font-size: 10pt;
+  padding-top: 1%;
 }
 
 .createEventButton {
