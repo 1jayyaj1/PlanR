@@ -6,6 +6,16 @@ let Event =  require('../models/event');
 let types = ["Weekly", "Biweekly", "Triweekly", "Monthly"];
 let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
+function remove(array, element) {
+    const index = array.indexOf(element);
+    
+    if (index !== -1) {
+        array.splice(index, 1);
+    }
+
+    console.log(array);
+}
+
 // for debugging only. will be removed in the future for security reasons
 router.get('/', function(req, res, next) {
     Event.find()
@@ -40,8 +50,8 @@ router.get('/:eventId', function(req, res, next) {
     }
 });
 
-router.delete('/:eventId', function(req, res, next) {
-    const id = req.params.eventId;
+router.delete('/all/:parentId', function(req, res, next) {
+    const id = req.params.parentId;
     try {
         Event.findByIdAndRemove(id)
             .then(event => {
@@ -56,6 +66,57 @@ router.delete('/:eventId', function(req, res, next) {
                 }
                 return res.status(500).send("Unable to delete event with id " + id);
             })
+    } catch {
+        return res.sendStatus(500);
+    }
+});
+
+
+router.delete('/:eventId', function(req, res, next) {
+    const id = req.params.eventId;
+    try {
+        var parentId = null;
+        var newList = null;
+        Event.find()
+        .exec()
+        .then(events => {
+            if (events.length == 0) {
+                return res.sendStatus(404);
+            } else {
+                var found = null;
+                events.map(x => {
+                    x.data.forEach((y, i) => {
+                        if (y._id == id) {
+                            found = i;
+                        }
+                    });
+
+                    if (found) {
+                        parentId = x._id;
+                        newList = x.data.splice(found, 1);
+                    }
+                });
+                
+                Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
+                .then(event => {
+                    if (!event) {
+                        return res.status(404).send("Event not found with id " + id);
+                    }
+                    return res.send(event);
+                })
+                .catch(err => {
+                    console.log(err);
+                    if (err.code === 11000) {
+                        return res.status(404).send("Event not found with id " + id);
+                    }
+                    return res.sendStatus(500);
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            return res.sendStatus(404);
+        })
     } catch {
         return res.sendStatus(500);
     }
