@@ -24,9 +24,22 @@ const steps = [{
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
 function flatten(arr) {
-    return arr.reduce(function (flat, toFlatten) {
-      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    var test = arr.reduce(function (flat, toFlatten) {
+
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
+
+    return test;
+}
+
+function flatten2(l) {
+    var test = l.map(events => {
+        return events.data
+    })
+    
+    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
+
+    return test;
 }
 
 class App extends Component {
@@ -36,7 +49,6 @@ class App extends Component {
 
         this.state = {
             events: [],
-            eventData: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
@@ -86,7 +98,7 @@ class App extends Component {
         this.minMaxTime = this.minMaxTime.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
         this.handleRecurrenceChange = this.handleRecurrenceChange.bind(this);
-;    }
+    }
 
     handleChangeStart(date) {
         if (this.state.isRecurrent.value === "non-recurring") {
@@ -113,7 +125,7 @@ class App extends Component {
 
     handleChangeAdminInactive(eventData) {
         this.setState({ 
-            eventData: this.state.eventData.concat([eventData])
+            event: this.state.events.concat([eventData])
         })
     }
 
@@ -184,10 +196,10 @@ class App extends Component {
     }
 
     toggleViewModal(obj) {
-        const test = this;
-        this.state.eventData.forEach(function(event) {
+        const x = this;
+        this.state.events.forEach(function(event) {
             if (obj.title == event.calendarInfo.title) {
-                test.setState({
+                x.setState({
                     eventId: event._id,
                     name: {value: event.calendarInfo.title, valid: true}, 
                     capacity: {value: event.capacity, valid: true}, 
@@ -202,7 +214,7 @@ class App extends Component {
                     calendarInfo: event.calendarInfo
                 })
                 if (event.recurrence === "") {
-                    test.setState({ recurrence: "non-recurring" })
+                    x.setState({ recurrence: "non-recurring" })
                 }
             }
         });
@@ -221,54 +233,54 @@ class App extends Component {
     nextStep(event) {
         event.preventDefault();
         if (this.state.step === 0) {
-        var recurrenceValid = this.state.isRecurrent;
-        var nameValid = this.state.name;
-        var capacityValid = this.state.capacity;
-        var locationValid = this.state.location;
-        var descriptionValid = this.state.description;
-        var valid = true;
-        if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
-            if (recurrenceValid.value === "") {
-            valid = false;
-            this.setState({
-                isRecurrent: {value: recurrenceValid.value, valid: valid}
-            });
-            }
-            if (nameValid.value === "") {
-            valid = false;
-            this.setState({
-                name: {value: nameValid.value, valid: valid}
-            });
-            }
-            if (capacityValid.value === "") {
-            valid = false;
-            this.setState({
-                capacity: {value: capacityValid.value, valid: valid}
-            });
-            }
-            if (locationValid.value === "") {
-            valid = false;
-            this.setState({
-                location: {value: locationValid.value, valid: valid}
-            });
-            }
-            if (descriptionValid.value === "") {
-            valid = false;
-            this.setState({
-                description: {value: descriptionValid.value, valid: valid}
-            });
-            }
-        }
-            else {
-                if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
-                    var nonRecurStartDate = moment(this.state.startDate);
-                    var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
-                    this.setState({ startDate: nonRecurStartDate });
-                    this.setState({ endDate: nonRecurEndDate });
+            var recurrenceValid = this.state.isRecurrent;
+            var nameValid = this.state.name;
+            var capacityValid = this.state.capacity;
+            var locationValid = this.state.location;
+            var descriptionValid = this.state.description;
+            var valid = true;
+            if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
+                if (recurrenceValid.value === "") {
+                    valid = false;
+                    this.setState({
+                        isRecurrent: {value: recurrenceValid.value, valid: valid}
+                    });
                 }
-                const step = this.state.step + 1;
-                this.setState({ step });
+                if (nameValid.value === "") {
+                    valid = false;
+                    this.setState({
+                        name: {value: nameValid.value, valid: valid}
+                    });
+                }
+                if (capacityValid.value === "") {
+                    valid = false;
+                    this.setState({
+                        capacity: {value: capacityValid.value, valid: valid}
+                    });
+                }
+                if (locationValid.value === "") {
+                    valid = false;
+                    this.setState({
+                        location: {value: locationValid.value, valid: valid}
+                    });
+                }
+                if (descriptionValid.value === "") {
+                    valid = false;
+                    this.setState({
+                        description: {value: descriptionValid.value, valid: valid}
+                    });
+                }
             }
+                else {
+                    if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
+                        var nonRecurStartDate = moment(this.state.startDate);
+                        var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
+                        this.setState({ startDate: nonRecurStartDate });
+                        this.setState({ endDate: nonRecurEndDate });
+                    }
+                    const step = this.state.step + 1;
+                    this.setState({ step });
+                }
         }
         else if (this.state.step === 1) {
             if (this.state.isRecurrent.value === "recurring") {
@@ -317,7 +329,7 @@ class App extends Component {
     }
 
     handleRecurrenceChange(event) {
-        this.setState({ recurrence: event.target.value  });
+        this.setState({ recurrence: event.target.value });
     }
 
     weekDaysToNumbers(dayINeed) {
@@ -341,44 +353,43 @@ class App extends Component {
         var eDate = moment(this.state.endDate).format();
         var aDate = moment(this.state.startDate).add(1, 'days').format();
         var event = {
-          title: this.state.name.value,
-          allDay: false,
-          start:  new Date(sDate),
-          end: new Date(eDate)
+            title: this.state.name.value,
+            allDay: false,
+            start:  new Date(sDate),
+            end: new Date(eDate)
         }
         var newEvent = {
-          capacity: this.state.capacity.value, 
-          description: this.state.description.value, 
-          location: this.state.location.value, 
-          isRecurrent: this.state.isRecurrent.value === "recurring", 
-          daysSelected: this.state.daysSelected, 
-          recurrence: this.state.recurrence,
-          allDay: this.state.allDay,
-          activationDay: new Date(aDate),
-          calendarInfo: event 
+            capacity: this.state.capacity.value, 
+            description: this.state.description.value, 
+            location: this.state.location.value, 
+            allDay: this.state.allDay,
+            activationDay: new Date(aDate),
+            calendarInfo: event 
         }
-  
-        axios.post('/events', newEvent)
+
+        var events = this.splitEvent(newEvent);
+
+        axios.post('/events', events)
         .then(function (response) {
-          console.log(response);
+            console.log(response);
         })
         .catch(function (error) {
-          console.log(error);
+            console.log(error);
         });
         this.handleChangeAdminInactive(newEvent);
         this.setState({
-          name: { value: "", valid: true },
-          description: { value: "", valid: true },
-          location: { value: "", valid: true },
-          capacity: { value: 0, valid: true },
-          daysSelected: [],
-          isRecurrent: { value: "", valid: true },
-          recurrence: "",
-          allDay: false,
-          startDate: null,
-          endDate: null,
-          activationDay: null,
-          step: 0
+            name: { value: "", valid: true },
+            description: { value: "", valid: true },
+            location: { value: "", valid: true },
+            capacity: { value: 0, valid: true },
+            daysSelected: [],
+            isRecurrent: { value: "", valid: true },
+            recurrence: "",
+            allDay: false,
+            startDate: null,
+            endDate: null,
+            activationDay: null,
+            step: 0
         });
         this.toggleCreateModal();
     }
@@ -388,31 +399,25 @@ class App extends Component {
         var eDate = moment(this.state.endDate).format();
         var aDate = moment(this.state.activationDay).format();
         var event = {
-          title: this.state.name.value,
-          allDay: false,
-          start:  new Date(sDate),
-          end: new Date(eDate)
+            title: this.state.name.value,
+            allDay: false,
+            start:  new Date(sDate),
+            end: new Date(eDate)
         }
         var newEvent = {
-          capacity: this.state.capacity.value, 
-          description: this.state.description.value, 
-          location: this.state.location.value, 
-          isRecurrent: this.state.isRecurrent.value === "recurring", 
-          daysSelected: this.state.daysSelected, 
-          recurrence: this.state.recurrence,
-          allDay: this.state.allDay,
-          activationDay: new Date(aDate),
-          calendarInfo: event 
+            capacity: this.state.capacity.value, 
+            description: this.state.description.value, 
+            location: this.state.location.value, 
+            allDay: this.state.allDay,
+            activationDay: new Date(aDate),
+            calendarInfo: event 
         }
-        console.log(this.state.activationDay);
-        console.log(aDate);
-        console.log(new Date(this.state.activationDay));
         axios.put('/events/' + eventId, {activationDay: new Date(this.state.activationDay)})
         .then(function (response) {
-          console.log(response);
+            console.log(response);
         })
         .catch(function (error) {
-          console.log(error);
+            console.log(error);
         });
         var list = this.splitEvent(newEvent);
         list = this.state.events.concat(list);
@@ -423,55 +428,52 @@ class App extends Component {
         var sDate = moment(this.state.startDate).format();
         var eDate = moment(this.state.endDate).format();
         var event = {
-          title: this.state.name.value,
-          allDay: false,
-          start:  new Date(sDate),
-          end: new Date(eDate)
+            title: this.state.name.value,
+            allDay: false,
+            start:  new Date(sDate),
+            end: new Date(eDate)
         }
         var newEvent = {
-          capacity: this.state.capacity.value, 
-          description: this.state.description.value, 
-          location: this.state.location.value, 
-          isRecurrent: this.state.isRecurrent.value === "recurring", 
-          daysSelected: this.state.daysSelected, 
-          recurrence: this.state.recurrence,
-          allDay: this.state.allDay,
-          calendarInfo: event 
+            capacity: this.state.capacity.value, 
+            description: this.state.description.value, 
+            location: this.state.location.value, 
+            allDay: this.state.allDay,
+            calendarInfo: event 
         }
   
         axios.put('/events/' + eventId)
         .then(function (response) {
-          console.log(response);
+            console.log(response);
         })
         .catch(function (error) {
-          console.log(error);
+            console.log(error);
         });
         this.handleChangeAdminInactive(newEvent);
         var list = this.splitEvent(newEvent);
         list = this.state.events.concat(list);
         this.setState({
-          events: list,
-          name: { value: "", valid: true },
-          description: { value: "", valid: true },
-          location: { value: "", valid: true },
-          capacity: { value: 0, valid: true },
-          daysSelected: [],
-          isRecurrent: { value: "", valid: true },
-          recurrence: "",
-          allDay: false,
-          startDate: null,
-          endDate: null,
-          step: 0,
+            events: list,
+            name: { value: "", valid: true },
+            description: { value: "", valid: true },
+            location: { value: "", valid: true },
+            capacity: { value: 0, valid: true },
+            daysSelected: [],
+            isRecurrent: { value: "", valid: true },
+            recurrence: "",
+            allDay: false,
+            startDate: null,
+            endDate: null,
+            step: 0,
         });
         this.toggleCreateModal();
     }
 
     deleteEvent(index, eventId) {
-        var adminArray = [...this.state.eventData]; // make a separate copy of the array
+        var adminArray = [...this.state.events]; // make a separate copy of the array
         var calArray = [...this.state.events]; // make a separate copy of the array
         adminArray.splice(index, 1);
         calArray.splice(index, 1);
-        this.setState({eventData: adminArray});
+        this.setState({events: adminArray});
         this.setState({events: calArray});
         axios.delete('/events/' + eventId)
         .then(res => {
@@ -518,9 +520,6 @@ class App extends Component {
                                 capacity: event.capacity, 
                                 description: event.description, 
                                 location: event.location, 
-                                isRecurrent: event.isRecurrent === "recurring", 
-                                daysSelected: event.daysSelected, 
-                                recurrence: event.recurrence,
                                 allDay: event.allDay,
                                 activationDay: new Date(moment(this.state.activationDay).format()),
                                 calendarInfo: {
@@ -548,24 +547,14 @@ class App extends Component {
         axios.get('/events')
         .then(function (response) {
             // handle success
-            response.data.forEach(event => {
-                event.calendarInfo.start = new Date(event.calendarInfo.start);
-                event.calendarInfo.end = new Date(event.calendarInfo.end);
-                event.activationDay = new Date(event.activationDay);
+            response.data.forEach(events => {
+                events.data.forEach(event => {
+                    event.calendarInfo.start = new Date(event.calendarInfo.start);
+                    event.calendarInfo.end = new Date(event.calendarInfo.end);
+                    event.activationDay = new Date(event.activationDay);
+                })
             });
-
-            var eventList = response.data.map(x => {
-                return myComponent.splitEvent(x)
-            });
-            eventList = flatten(response.data);
-            for (var i = 0; i < response.data.length; i++) {
-                if (new Date(moment(response.data[i].activationDay).format()) <= new Date(moment().format())) {
-                    myComponent.setState({ 
-                        events: myComponent.state.events.concat([response.data[i]])
-                      })
-                }
-            }
-            myComponent.setState({eventData: response.data});
+            myComponent.setState({events: response.data});
         })
         .catch(function (error) {
             console.log(error);
@@ -576,22 +565,22 @@ class App extends Component {
       event.preventDefault();
       
       var data = {
-          contactFormFullName: event.target[0].value, 
-          contactFormEmail: event.target[1].value, 
-          contactFormMessage: event.target[2].value
+            contactFormFullName: event.target[0].value, 
+            contactFormEmail: event.target[1].value, 
+            contactFormMessage: event.target[2].value
       }
 
       axios.post('/feedback', data)
       .then(toast.success('We have received your message. Thank you! 😊', {
-          position: "top-center",
-          autoClose: 4000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggablePercent: 60,
+            position: "top-center",
+            autoClose: 4000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggablePercent: 60,
           }))
       .catch(function (error) {
-          console.log(error);
+            console.log(error);
       });
       
       document.getElementById("contactForm").reset();
@@ -599,6 +588,8 @@ class App extends Component {
     }
 
     render() {
+        console.log("RENDER");
+        console.log(this.state.events);
         let wizardContentCreate;
         if (this.state.step === 0) {
           wizardContentCreate = 
@@ -828,10 +819,7 @@ class App extends Component {
           }
         }
 
-        var events = this.state.events.map(x => x.calendarInfo);
-        var eventData = this.state.eventData.map(x => x.calendarInfo);
-
-        return(
+        return (
             <div>
                 
                 {/*<----------------------- NAVBAR ----------------------->*/}
@@ -889,7 +877,7 @@ class App extends Component {
                                             defaultView='week'
                                             onSelectEvent={(obj) => this.toggleViewModal(obj)}
                                             onSelectSlot={(date) => this.toggleCreateModal(date)}
-                                            events={events}
+                                            events={flatten2(this.state.events)}
                                             startAccessor='start'
                                             endAccessor='end'>
                                         </BigCalendar>
@@ -1145,10 +1133,11 @@ class App extends Component {
                                     </Row>
                                     <Row className="activateButtonRow pull-right">
                                     {
-                                    this.state.eventData.map((event, index) => {
-                                        return <div key={index + 1}>
-                                        <Button color="success" onClick={() => this.activateEvent(event._id)} >Activate</Button>
-                                        </div>;
+                                        this.state.events.map((events, index) => {
+                                            var event = events.data[0];
+                                            return <div key={index + 1}>
+                                            <Button color="success" onClick={() => this.activateEvent(event._id)} >Activate</Button>
+                                            </div>;
                                         })
                                     }
                                     </Row>
@@ -1156,7 +1145,7 @@ class App extends Component {
                                 </Modal>
                                 {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
                                 {
-                                this.state.eventData.map((event, index) => {
+                                this.state.events.map((event, index) => {
                                     return <div key={index + 1}>
                                     <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
                                         <ModalHeader>
@@ -1206,20 +1195,21 @@ class App extends Component {
                                 </thead>
                                 <tbody>
                                 {
-                                this.state.eventData.map((event, index) => {
-                                    return <tr key={index + 1}>
-                                    <th>{event.calendarInfo.title}</th>
-                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                    <td>{event.location}</td>
-                                    <td>{event.capacity}</td>
-                                    <td>{event.recurrence}</td>
-                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
-                                    <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
-                                </tr>;
-                                })
+                                    this.state.events.map((events, index) => {
+                                        var event = events.data[0];
+                                        return <tr key={index + 1}>
+                                                <th>{event.calendarInfo.title}</th>
+                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                <td>{event.location}</td>
+                                                <td>{event.capacity}</td>
+                                                <td>{event.recurrence}</td>
+                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
+                                                <td><Button outline color="warning">Edit</Button></td>
+                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
+                                            </tr>;
+                                    })
                                 }
                                 </tbody>
                             </Table>

@@ -285,7 +285,7 @@ router.post('/', function(req, res) {
                     return false;
                 }
         
-                if (startDate >= endDate) {
+                if (startDate > endDate) {
                     return false;
                 }
         
@@ -296,7 +296,6 @@ router.post('/', function(req, res) {
                 return true;
             });
 
-        
         if (body.length == filtered.length) {
             var events = new Event({ data: filtered });
 
