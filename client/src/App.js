@@ -34,11 +34,13 @@ function flatten(arr) {
 }
 
 function flatten2(l) {
+    console.log("TESTOUTATOUTATOU")
+    console.log(l);
     var test = l.map(events => {
         return events.data
     })
     
-    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
+    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
 
     return test;
 }
@@ -107,6 +109,7 @@ class App extends Component {
         this.minMaxTime = this.minMaxTime.bind(this);
         this.deleteEvent = this.deleteEvent.bind(this);
         this.handleRecurrenceChange = this.handleRecurrenceChange.bind(this);
+        this.fetchEvents = this.fetchEvents.bind(this);
     }
 
     handleChangeStart(date) {
@@ -134,7 +137,7 @@ class App extends Component {
 
     handleChangeAdminInactive(eventData) {
         this.setState({ 
-            event: this.state.events.concat([eventData])
+            events: this.state.events.concat([eventData])
         })
     }
 
@@ -398,6 +401,7 @@ class App extends Component {
     }
 
     createEvent() {
+        const x = this;
         var sDate = moment(this.state.startDate).format();
         var eDate = moment(this.state.endDate).format();
         var aDate = moment(this.state.startDate).add(1, 'days').format();
@@ -421,26 +425,26 @@ class App extends Component {
         axios.post('/events', events)
         .then(function (response) {
             console.log(response);
+            x.fetchEvents();
+            x.setState({
+                name: { value: "", valid: true },
+                description: { value: "", valid: true },
+                location: { value: "", valid: true },
+                capacity: { value: 0, valid: true },
+                daysSelected: [],
+                isRecurrent: { value: "", valid: true },
+                recurrence: "",
+                allDay: false,
+                startDate: null,
+                endDate: null,
+                activationDay: null,
+                step: 0
+            });
+            x.toggleCreateModal();
         })
         .catch(function (error) {
             console.log(error);
         });
-        this.handleChangeAdminInactive(newEvent);
-        this.setState({
-            name: { value: "", valid: true },
-            description: { value: "", valid: true },
-            location: { value: "", valid: true },
-            capacity: { value: 0, valid: true },
-            daysSelected: [],
-            isRecurrent: { value: "", valid: true },
-            recurrence: "",
-            allDay: false,
-            startDate: null,
-            endDate: null,
-            activationDay: null,
-            step: 0
-        });
-        this.toggleCreateModal();
     }
 
     activateEvent(eventId) {
@@ -590,8 +594,7 @@ class App extends Component {
         }
     }
 
-    // kept here only for testing purposes
-    componentWillMount() {
+    fetchEvents() {
         let myComponent = this;
         axios.get('/events')
         .then(function (response) {
@@ -608,6 +611,11 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
+    }
+
+    // kept here only for testing purposes
+    componentWillMount() {
+        this.fetchEvents();
     }
 
     handleSubmit(event) {
@@ -637,8 +645,6 @@ class App extends Component {
     }
 
     render() {
-        console.log("RENDER");
-        console.log(this.state.events);
         let wizardContentCreate;
         if (this.state.step === 0) {
           wizardContentCreate = 
@@ -874,12 +880,6 @@ class App extends Component {
 
         return (
             <div>
-                <Workbook filename="example.xlsx" element={<button className="btn btn-lg btn-primary">Try me!</button>}>
-                    <Workbook.Sheet data={data1} name="Sheet A">
-                        <Workbook.Column label="Foo" value="foo"/>
-                        <Workbook.Column label="Bar" value="bar"/>
-                    </Workbook.Sheet>
-                </Workbook>
                 {/*<----------------------- NAVBAR ----------------------->*/}
                 <div className="welcome d-flex justify-content-center flex-column">
                     <div className="container">
@@ -1259,18 +1259,20 @@ class App extends Component {
                                 {
                                     this.state.events.map((events, index) => {
                                         var event = events.data[0];
-                                        return <tr key={index + 1}>
-                                                <th>{event.calendarInfo.title}</th>
-                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                <td>{event.location}</td>
-                                                <td>{event.capacity}</td>
-                                                <td>{event.recurrence}</td>
-                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
-                                                <td><Button outline color="warning">Edit</Button></td>
-                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
-                                            </tr>;
+                                        if (event) {
+                                            return <tr key={index + 1}>
+                                                    <th>{event.calendarInfo.title}</th>
+                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                    <td>{event.location}</td>
+                                                    <td>{event.capacity}</td>
+                                                    <td>{event.recurrence}</td>
+                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
+                                                    <td><Button outline color="warning">Edit</Button></td>
+                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
+                                                </tr>;
+                                        } else return
                                     })
                                 }
                                 </tbody>
