@@ -70,37 +70,51 @@ router.delete('/:eventId', function(req, res) {
                 return res.sendStatus(404);
             } else {
                 var found = null;
-                var i = 1;
                 events.map(x => {
-                    x.data.forEach((y) => {
-                        if (y._id == id) {
-                            console.log(y._id);
-                            console.log(id);
+                    for (var i = 0; i < x.data.length; i++) {
+                        if (x.data[i]._id == id) {
                             found = i;
                         }
-                        i++;
-                    });
+                    }
                     if (found != null) {
                         parentId = x._id;
-                        newList = x.data.splice(found, 1);
-
+                        newList = x.data.pull({ _id: id });
                     }
                 });
-                
-                Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
-                .then(event => {
-                    if (!event) {
-                        return res.status(404).send("Event not found with id " + id);
-                    }
-                    return res.send(event);
-                })
-                .catch(err => {
-                    console.log(err);
-                    if (err.code === 11000) {
-                        return res.status(404).send("Event not found with id " + id);
-                    }
-                    return res.sendStatus(500);
-                })
+
+                // if there are no more events, then the whole object must be deleted
+                if (newList.length == 0) {
+                    Event.findByIdAndRemove(parentId)
+                    .exec()
+                    .then(event => {
+                        if (!event) {
+                            return res.status(404).send("Event not found with id " + id);
+                        }
+                        return res.sendStatus(200);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        if (err.code === 11000) {
+                            return res.status(404).send("Event not found with id " + id);
+                        }
+                        return res.sendStatus(500);
+                    })
+                } else {
+                    Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
+                    .then(event => {
+                        if (!event) {
+                            return res.status(404).send("Event not found with id " + id);
+                        }
+                        return res.send(event);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        if (err.code === 11000) {
+                            return res.status(404).send("Event not found with id " + id);
+                        }
+                        return res.sendStatus(500);
+                    })
+                }
             }
         })
         .catch(err => {
