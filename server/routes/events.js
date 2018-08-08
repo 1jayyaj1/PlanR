@@ -74,11 +74,15 @@ router.delete('/:eventId', function(req, res) {
                     for (var i = 0; i < x.data.length; i++) {
                         if (x.data[i]._id == id) {
                             found = i;
+                            console.log(found);
                         }
                     }
                     if (found != null) {
+                        console.log(parentId);
                         parentId = x._id;
+                        console.log(newList);
                         newList = x.data.pull({ _id: id });
+                        console.log(newList);
                     }
                 });
 

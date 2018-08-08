@@ -73,7 +73,6 @@ class App extends Component {
 
         this.state = {
             events: [],
-            eventData: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
