@@ -70,16 +70,20 @@ router.delete('/:eventId', function(req, res) {
                 return res.sendStatus(404);
             } else {
                 var found = null;
+                var i = 1;
                 events.map(x => {
-                    x.data.forEach((y, i) => {
+                    x.data.forEach((y) => {
                         if (y._id == id) {
+                            console.log(y._id);
+                            console.log(id);
                             found = i;
                         }
+                        i++;
                     });
-
-                    if (found) {
+                    if (found != null) {
                         parentId = x._id;
                         newList = x.data.splice(found, 1);
+
                     }
                 });
                 

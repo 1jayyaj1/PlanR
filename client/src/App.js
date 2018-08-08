@@ -45,6 +45,27 @@ function flatten2(l) {
     return test;
 }
 
+function flatten3(l) {
+    console.log("TESTOUTATOUTATOU")
+    console.log(l);
+    var test = l.map(events => {
+        return events.data
+    })
+    
+    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) });
+
+    return test;
+}
+
+function activeChecker(l) {
+    var test = l.map(events => {
+        return events.data
+    })
+    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) });
+
+    return test;
+}
+
 class App extends Component {
 
     constructor(props) {
@@ -52,6 +73,7 @@ class App extends Component {
 
         this.state = {
             events: [],
+            eventData: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
@@ -81,6 +103,7 @@ class App extends Component {
             recurrenceValidLabel: 'hidden',
             daysSelectedValidLabel: 'hidden',
             currentUser: "admin",
+            currentEventId: null
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -174,7 +197,7 @@ class App extends Component {
         if (this.state.activateToday === false) {
             this.setState({ activateToday: true });
             this.setState({ activationDay: moment() });
-        } else {
+        } else if (this.state.activateToday === true) {
             this.setState({ activateToday: false });
             this.setState({ activationDay: null });
         }
@@ -199,12 +222,18 @@ class App extends Component {
         this.setState({ registerModal: !this.state.registerModal });
     }
 
-    toggleActivateModal() {
-        this.setState({ activateModal: !this.state.activateModal });
+    toggleActivateModal(id) {
+        this.setState({ 
+            activateModal: !this.state.activateModal,
+            currentEventId: id
+         });
     }
 
-    toggleDeleteModal() {
-        this.setState({ deleteModal: !this.state.deleteModal });
+    toggleDeleteModal(id) {
+        this.setState({ 
+            deleteModal: !this.state.deleteModal,
+            currentEventId: id
+        });
     }
 
     toggleViewModal(obj) {
@@ -447,7 +476,8 @@ class App extends Component {
         });
     }
 
-    activateEvent(eventId) {
+    activateEvent() {
+        const x = this;
         var sDate = moment(this.state.startDate).format();
         var eDate = moment(this.state.endDate).format();
         var aDate = moment(this.state.activationDay).format();
@@ -465,8 +495,9 @@ class App extends Component {
             activationDay: new Date(aDate),
             calendarInfo: event 
         }
-        axios.put('/events/' + eventId, {activationDay: new Date(this.state.activationDay)})
+        axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
         .then(function (response) {
+            x.fetchEvents();
             console.log(response);
         })
         .catch(function (error) {
@@ -521,17 +552,14 @@ class App extends Component {
         this.toggleCreateModal();
     }
 
-    deleteEvent(index, eventId) {
-        var adminArray = [...this.state.events]; // make a separate copy of the array
-        var calArray = [...this.state.events]; // make a separate copy of the array
-        adminArray.splice(index, 1);
-        calArray.splice(index, 1);
-        this.setState({events: adminArray});
-        this.setState({events: calArray});
-        axios.delete('/events/' + eventId)
+    deleteEvent() {
+        const x = this;
+        axios.delete('/events/' + this.state.currentEventId)
         .then(res => {
+            x.fetchEvents();
             console.log(res);
             console.log(res.data);
+            this.toggleDeleteModal();
         })
         .catch(function (error) {
             console.log(error);
@@ -1194,37 +1222,25 @@ class App extends Component {
                                         </Col>
                                     </Row>
                                     <Row className="activateButtonRow pull-right">
-                                    {
-                                        this.state.events.map((events, index) => {
-                                            var event = events.data[0];
-                                            return <div key={index + 1}>
-                                            <Button color="success" onClick={() => this.activateEvent(event._id)} >Activate</Button>
-                                            </div>;
-                                        })
-                                    }
+                                        <Button color="success" onClick={() => this.activateEvent()} >Activate</Button>  
                                     </Row>
                                     </ModalBody>
                                 </Modal>
                                 {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
-                                {
-                                this.state.events.map((event, index) => {
-                                    return <div key={index + 1}>
-                                    <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
-                                        <ModalHeader>
-                                        <h2>Delete event</h2>
-                                        </ModalHeader>
-                                        <ModalBody>
-                                        <Row className="allDayLabel">
-                                        <p className="deleteMessage">Are you sure you wish to delete this event?</p>
-                                        </Row><br/>
-                                        <Row className="deleteButtonRow pull-right">
-                                            <Button color="danger" onClick={() => {this.deleteEvent(index, event._id)}}>Delete</Button>
-                                        </Row>
-                                        </ModalBody>
-                                    </Modal>
-                                    </div>;
-                                    })
-                                    }
+
+                                <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
+                                    <ModalHeader>
+                                    <h2>Delete event</h2>
+                                    </ModalHeader>
+                                    <ModalBody>
+                                    <Row className="allDayLabel">
+                                    <p className="deleteMessage">Are you sure you wish to delete this event?</p>
+                                    </Row><br/>
+                                    <Row className="deleteButtonRow pull-right">
+                                        <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
+                                    </Row>
+                                    </ModalBody>
+                                </Modal>
                             </div>
                         </div>
                     </div>
@@ -1257,8 +1273,8 @@ class App extends Component {
                                 </thead>
                                 <tbody>
                                 {
-                                    this.state.events.map((events, index) => {
-                                        var event = events.data[0];
+                                    activeChecker(this.state.events).map((events, index) => {
+                                        var event = events;
                                         if (event) {
                                             return <tr key={index + 1}>
                                                     <th>{event.calendarInfo.title}</th>
@@ -1268,9 +1284,9 @@ class App extends Component {
                                                     <td>{event.location}</td>
                                                     <td>{event.capacity}</td>
                                                     <td>{event.recurrence}</td>
-                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal()}}>Activate</Button></td>
+                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id)}}>Activate</Button></td>
                                                     <td><Button outline color="warning">Edit</Button></td>
-                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal()}}>Delete</Button></td>
+                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                 </tr>;
                                         } else return
                                     })
@@ -1300,45 +1316,26 @@ class App extends Component {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <th>Zumba</th>
-                                    <td>Monday, August 13 2018</td>
-                                    <td>Tuesday, November 13 2018</td>
-                                    <td>12:00PM-12:30PM</td>
-                                    <td>Gym</td>
-                                    <td>0/30</td>
-                                    <td>Weekly</td>
-                                    <td>Friday, August 3 2018</td>
-                                    <td><Button outline color="success">Announce</Button></td>
-                                    <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger">Delete</Button></td>
-                                </tr>
-                                <tr>
-                                    <th>Zumba</th>
-                                    <td>Monday, August 13 2018</td>
-                                    <td>Tuesday, November 13 2018</td>
-                                    <td>12:00PM-12:30PM</td>
-                                    <td>Gym</td>
-                                    <td>0/30</td>
-                                    <td>Weekly</td>
-                                    <td>Friday, August 3 2018</td>
-                                    <td><Button outline color="success">Announce</Button></td>
-                                    <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger">Delete</Button></td>
-                                </tr>
-                                <tr>
-                                    <th>Zumba</th>
-                                    <td>Monday, August 13 2018</td>
-                                    <td>Tuesday, November 13 2018</td>
-                                    <td>12:00PM-12:30PM</td>
-                                    <td>Gym</td>
-                                    <td>0/30</td>
-                                    <td>Weekly</td>
-                                    <td>Friday, August 3 2018</td>
-                                    <td><Button outline color="success">Announce</Button></td>
-                                    <td><Button outline color="warning">Edit</Button></td>
-                                    <td><Button outline color="danger">Delete</Button></td>
-                                </tr>
+                                {
+                                    flatten3(this.state.events).map((events, index) => {
+                                        var event = events;
+                                        if (event) {
+                                            return <tr key={index + 1}>
+                                                    <th>{event.calendarInfo.title}</th>
+                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                    <td>{event.location}</td>
+                                                    <td>{event.capacity}</td>
+                                                    <td>{event.recurrence}</td>
+                                                    <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
+                                                    <td><Button outline color="success">Announce</Button></td>
+                                                    <td><Button outline color="warning">Edit</Button></td>
+                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                </tr>;
+                                        } else return
+                                    })
+                                }
                                 </tbody>
                             </Table>
                         </div>
