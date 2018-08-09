@@ -425,7 +425,7 @@ class App extends Component {
                     <div className="container py-4">
                         <div className="row justify-content-md-center px-4">
                             <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
-                                <form>
+                                <form action="/login" method="post">
                                     <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
                                         <Row>
                                             <div className="col-md-12 col-sm-12">

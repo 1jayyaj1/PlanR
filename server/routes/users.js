@@ -37,21 +37,32 @@ router.get('/:userId', function(req, res, next) {
 router.put('/:userId', function(req, res, next) {
     const body = req.body;
     const id = req.params.userId;
+    var updateFields = {};
     try {
-        if (body.name == null || !/^[a-zA-Z ]+$/.test(body.name)) {
-            return res.sendStatus(400);
+        if (body.name) {
+            if (/^[a-zA-Z ]+$/.test(body.name)) {
+                updateFields.name = body.name;
+            } else {
+                return res.sendStatus(400);
+            }
         } 
-        if (body.email == null || !emailRegex.test(body.email)) {
-            return res.sendStatus(400);
+        if (body.email) {
+            if (emailRegex.test(body.email)) {
+                updateFields.email = body.email;
+            } else {
+                return res.sendStatus(400);
+            }
         } 
-        if (body.admin == null) {
-            return res.sendStatus(400);
+        if (body.admin) {
+            updateFields.admin = Boolean(body.admin);
         }
-        User.findByIdAndUpdate(id, {
-            name: body.name,
-            email: body.email,
-            admin: body.admin
-        }, {new: true})
+        if (body.username) {
+            updateFields.username = body.username;
+        }
+        if (body.password) {
+            updateFields.password = body.password;
+        }
+        User.findByIdAndUpdate(id, updateFields, {new: true})
         .then(user => {
             if (!user) {
                 return res.status(404).send("User not found with id " + id);
@@ -77,7 +88,9 @@ router.post('/', function(req, res, next) {
             var user = new User({
                 name: body.name,
                 email: body.email,
-                admin: body.admin
+                admin: body.admin,
+                username: body.username,
+                password: body.password
             });
 
             user.save()
