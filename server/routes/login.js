@@ -5,18 +5,10 @@ let User =  require('../models/user');
 // Access the session as req.session
 router.get('/', function(req, res, next) {
     console.log("HELLO");
-    if (req.session.views) {
-        req.session.views++
-        res.setHeader('Content-Type', 'text/html')
-        res.write('<p>views: ' + req.session.views + '</p>')
-        res.write('<p>expires in: ' + (req.session.cookie.maxAge / 1000) + 's</p>')
-        res.write('<p>admin: ' + req.session.admin + '</p>')
-        res.end()
-    } else {
-        req.session.views = 1;
-        req.session.admin = true;
-        res.end('welcome to the session demo. refresh!')
-    }
+    req.session.views = 1;
+    req.session.admin = true;
+    res.end('welcome to the session demo. refresh!')
+    
 });
 
 router.post('/', function(req, res, next) {

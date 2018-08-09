@@ -56,11 +56,19 @@ app.use(session({
     }
 }));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/events', eventsRouter);
-app.use('/feedback', feedbackRouter);
+// check if logged in, if not, redirect to login
+function loggedIn(req, res, next) {
+    if (!req.session.views) {
+        return res.redirect("/login");
+    }
+    next();
+}
+
 app.use('/login', loginRouter);
+app.use('/', loggedIn, indexRouter);
+app.use('/users', loggedIn, usersRouter);
+app.use('/events',loggedIn, eventsRouter);
+app.use('/feedback', loggedIn, feedbackRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
