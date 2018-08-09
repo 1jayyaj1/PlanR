@@ -154,7 +154,10 @@ class App extends Component {
     }
 
     handleChangeActivationDate(date) {
-        this.setState({ activationDay: date });
+        this.setState({
+            activationDay: date,
+            activateToday: false,
+        });
     }
 
     handleChangeAdminInactive(eventData) {
@@ -222,6 +225,7 @@ class App extends Component {
     }
 
     toggleActivateModal(id) {
+        this.handleChangeActivationDate(null);
         this.setState({ 
             activateModal: !this.state.activateModal,
             currentEventId: id
@@ -502,8 +506,10 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         });
-        var list = this.splitEvent(newEvent);
-        list = this.state.events.concat(list);
+        this.setState({
+            activationDay: null,
+            activateToday: false,
+        });
         this.toggleActivateModal();
     }
 
@@ -570,30 +576,31 @@ class App extends Component {
         var eventList = [];
         var hours = moment(event.calendarInfo.start).hour();
         var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');
-        if (event.isRecurrent) {
+        if (this.state.isRecurrent.value === "recurring") {
             var recurrenceWeeks = 0;
-            if (event.recurrence === "Weekly") {
+            if (this.state.recurrence === "Weekly") {
                 recurrenceWeeks = 1;
             }
-            else if (event.recurrence === "Biweekly") {
+            else if (this.state.recurrence === "Biweekly") {
                 recurrenceWeeks = 2;
             }
-            else if (event.recurrence === "Triweekly") {
+            else if (this.state.recurrence === "Triweekly") {
                 recurrenceWeeks = 3;
             }
-            else if (event.recurrence === "Monthly") {
+            else if (this.state.recurrence === "Monthly") {
                 recurrenceWeeks = 4;
             }
             var i = 0;
             outer:
             while (true) {
-                for (var z = 0; z < event.daysSelected.length; z++) {
-                    var dayINeed = event.daysSelected[z];
+                for (var z = 0; z < this.state.daysSelected.length; z++) {
+                    var dayINeed = this.state.daysSelected[z];
                     if (new Date(moment().add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
                         break outer;
                     } else {
                         var s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed));
                         var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
+                        var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
                             console.log(i);
                             var newEvent = {
@@ -601,7 +608,7 @@ class App extends Component {
                                 description: event.description, 
                                 location: event.location, 
                                 allDay: event.allDay,
-                                activationDay: new Date(moment(this.state.activationDay).format()),
+                                activationDay: new Date(a2Date.format()),
                                 calendarInfo: {
                                     title: event.calendarInfo.title,
                                     allDay: false,
@@ -904,7 +911,6 @@ class App extends Component {
             </fieldset>;
           }
         }
-
         return (
             <div>
                 {/*<----------------------- NAVBAR ----------------------->*/}

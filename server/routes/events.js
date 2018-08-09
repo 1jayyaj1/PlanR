@@ -74,17 +74,15 @@ router.delete('/:eventId', function(req, res) {
                     for (var i = 0; i < x.data.length; i++) {
                         if (x.data[i]._id == id) {
                             found = i;
-                            console.log(found);
                         }
                     }
                     if (found != null) {
-                        console.log(parentId);
                         parentId = x._id;
-                        console.log(newList);
                         newList = x.data.pull({ _id: id });
-                        console.log(newList);
                     }
                 });
+
+                console.log(newList);
 
                 // if there are no more events, then the whole object must be deleted
                 if (newList.length == 0) {
@@ -104,6 +102,7 @@ router.delete('/:eventId', function(req, res) {
                         return res.sendStatus(500);
                     })
                 } else {
+                    console.log("TEST");
                     Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
                     .then(event => {
                         if (!event) {
