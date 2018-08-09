@@ -26,6 +26,22 @@ class App extends Component {
     constructor(props) {
         super(props);
 
+        console.log(document.cookie);
+
+        axios.get('/login')
+        .then(function (_) {
+            axios.get('/info')
+            .then(function (response) {
+                console.log(response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+
         this.state = {
             events: [],
             createModal : false,
@@ -40,7 +56,7 @@ class App extends Component {
             isRecurrent: { value: "", valid: true },
             recurrence: "",
             allDay: false,
-            events: []
+            events: [],
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);

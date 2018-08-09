@@ -5,17 +5,14 @@ let User =  require('../models/user');
 // Access the session as req.session
 router.get('/', function(req, res, next) {
     console.log("HELLO");
-    req.session.views = 1;
+    req.session.logged = true;
     req.session.admin = true;
-    res.end('welcome to the session demo. refresh!')
-    
+    req.session.username = "Jerry";
+    // res.end('welcome to the session demo. refresh!')
+    res.sendStatus(200);
 });
 
 router.post('/', function(req, res, next) {
-    // todo: check first if already logged in or not,OR implement middleware for all pages
-
-
-    // for now: assume not logged in
     try {
         const body = req.body;
         if (!body.username || !body.password) {
@@ -30,6 +27,7 @@ router.post('/', function(req, res, next) {
                     var user = users[0];
                     if (user.password === body.password) {
                         req.session.admin = user.admin;
+                        req.session.logged = true;
                         return res.sendStatus(200);
                     } else {
                         return res.sendStatus(401);

@@ -58,7 +58,7 @@ app.use(session({
 
 // check if logged in, if not, redirect to login
 function loggedIn(req, res, next) {
-    if (!req.session.views) {
+    if (!req.session.logged) {
         return res.redirect("/login");
     }
     next();
@@ -69,6 +69,15 @@ app.use('/', loggedIn, indexRouter);
 app.use('/users', loggedIn, usersRouter);
 app.use('/events',loggedIn, eventsRouter);
 app.use('/feedback', loggedIn, feedbackRouter);
+
+app.get('/info', function(req, res) {
+    var info = {
+        username: req.session.username,
+        admin: req.session.admin
+    };
+
+    return res.send(info);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

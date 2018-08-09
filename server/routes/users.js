@@ -4,16 +4,6 @@ let User =  require('../models/user');
 
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
-// for debugging only. will be removed in the future for security reasons
-router.get('/', function(req, res, next) {
-  User.find()
-      .sort()
-      .exec()
-      .then(docs => {
-        return res.send(docs)
-      })
-});
-
 router.get('/:userId', function(req, res, next) {
   try {
     User.find({"_id" : req.params.userId})
