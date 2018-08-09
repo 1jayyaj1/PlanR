@@ -34,8 +34,6 @@ function flatten(arr) {
 }
 
 function flatten2(l) {
-    console.log("TESTOUTATOUTATOU")
-    console.log(l);
     var test = l.map(events => {
         return events.data
     })
@@ -46,8 +44,6 @@ function flatten2(l) {
 }
 
 function flatten3(l) {
-    console.log("TESTOUTATOUTATOU")
-    console.log(l);
     var test = l.map(events => {
         return events.data
     })
@@ -58,11 +54,17 @@ function flatten3(l) {
 }
 
 function activeChecker(l) {
+    for(var i = 0; i < l.length; i++){
+        if(l[i].data.length > 1) {
+            var subLength = l[i].data.length - 1;
+            l[i].data[0].calendarInfo.end = l[i].data[subLength].calendarInfo.end;
+            l[i].data = l[i].data[0];
+        }
+    }
     var test = l.map(events => {
         return events.data
     })
     test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) });
-
     return test;
 }
 
@@ -501,7 +503,7 @@ class App extends Component {
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
         .then(function (response) {
             x.fetchEvents();
-            console.log(response);
+            console.log("HELLLOOOOO" + response.data);
         })
         .catch(function (error) {
             console.log(error);
