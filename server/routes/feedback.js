@@ -12,11 +12,11 @@ router.post('/', function(req, res, next) {
         nodemailer.createTestAccount((err, account) => {
             // create reusable transporter object using the default SMTP transport
             let transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: "smtp-mail.outlook.com",
                 secure: false,
                 auth: {
-                    user: 'umba.testing@gmail.com',
-                    pass: 'Ericsson123'
+                    user: 'lu.ya.ding@ericsson.com',
+                    //pass: ''
                 },
                 tls: {
                     rejectUnauthorized: false
@@ -25,8 +25,8 @@ router.post('/', function(req, res, next) {
         
             // setup email data with unicode symbols
             let mailOptions = {
-                from: '"Umba" <umba.testing@gmail.com>', // sender address
-                to: 'umba.testing@gmail.com', // list of receivers
+                from: '"Umba" <lu.ya.ding@ericsson.com>', // sender address
+                to: 'lu.ya.ding@ericsson.com', // list of receivers
                 subject: 'Message from ' + fullName, // Subject line
                 text: 'Full Name: ' + fullName + '\nEmail: ' + email + '\nMessage: ' + message, // plain text body
             };

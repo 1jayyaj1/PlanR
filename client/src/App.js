@@ -9,7 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
-import Workbook from 'react-excel-workbook'
+import {CSVLink} from 'react-csv';
+
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -34,8 +35,8 @@ function flatten(arr) {
 }
 
 function flatten2(l) {
-    console.log("TESTOUTATOUTATOU")
-    console.log(l);
+    //console.log("TESTOUTATOUTATOU")
+    //console.log(l);
     var test = l.map(events => {
         return events.data
     })
@@ -46,8 +47,8 @@ function flatten2(l) {
 }
 
 function flatten3(l) {
-    console.log("TESTOUTATOUTATOU")
-    console.log(l);
+    //console.log("TESTOUTATOUTATOU")
+    //console.log(l);
     var test = l.map(events => {
         return events.data
     })
@@ -241,26 +242,30 @@ class App extends Component {
 
     toggleViewModal(obj) {
         const x = this;
-        this.state.events.forEach(function(event) {
-            if (obj.title == event.calendarInfo.title) {
-                x.setState({
-                    eventId: event._id,
-                    name: {value: event.calendarInfo.title, valid: true}, 
-                    capacity: {value: event.capacity, valid: true}, 
-                    description: {value: event.description, valid: true},
-                    location: {value: event.location, valid: true},
-                    isRecurrent: {value: event.isRecurrent, valid: true}, 
-                    daysSelected: event.daysSelected,
-                    recurrence: event.recurrence,
-                    allDay: event.allDay,
-                    startDate: moment(event.calendarInfo.start),
-                    endDate: moment(event.calendarInfo.end),
-                    calendarInfo: event.calendarInfo
-                })
-                if (event.recurrence === "") {
-                    x.setState({ recurrence: "non-recurring" })
+        this.state.events.forEach(function(e) {
+            var dataSet = e.data;
+            dataSet.forEach(function(event){
+                if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) {
+                    x.setState({
+                        eventId: event._id,
+                        name: {value: event.calendarInfo.title, valid: true}, 
+                        capacity: {value: event.capacity, valid: true}, 
+                        description: {value: event.description, valid: true},
+                        location: {value: event.location, valid: true},
+                        isRecurrent: {value: event.isRecurrent, valid: true}, 
+                        daysSelected: event.daysSelected,
+                        recurrence: event.recurrence,
+                        allDay: event.allDay,
+                        startDate: moment(event.calendarInfo.start),
+                        endDate: moment(event.calendarInfo.end),
+                        calendarInfo: event.calendarInfo
+                    })
+                    if (event.recurrence === "") {
+                        x.setState({ recurrence: "non-recurring" })
+                    }
                 }
-            }
+            })
+            
         });
 
         this.setState({ viewModal: !this.state.viewModal });
@@ -537,9 +542,19 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         });
-        this.handleChangeAdminInactive(newEvent);
+        var indices = [];
+        this.state.events.forEach(function (obj, i) {
+            if (obj.calendarInfo.title === newEvent.calendarInfo.title) {
+                indices.push[i];
+            }
+        });
+        indices.forEach(function (index, i) {
+            this.state.events.splice(index, 1);
+        });
+
         var list = this.splitEvent(newEvent);
         list = this.state.events.concat(list);
+
         this.setState({
             events: list,
             name: { value: "", valid: true },
@@ -554,7 +569,6 @@ class App extends Component {
             endDate: null,
             step: 0,
         });
-        this.toggleCreateModal();
     }
 
     deleteEvent() {
@@ -602,7 +616,7 @@ class App extends Component {
                         var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
                         var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
-                            console.log(i);
+                            //console.log(i);
                             var newEvent = {
                                 capacity: event.capacity, 
                                 description: event.description, 
@@ -641,6 +655,7 @@ class App extends Component {
                 })
             });
             myComponent.setState({events: response.data});
+            //console.log(JSON.stringify(Object.values(myComponent.state.events)));
         })
         .catch(function (error) {
             console.log(error);
@@ -1348,9 +1363,10 @@ class App extends Component {
                     <Row className="createEventButton">
                         <div className="col-md-12 col-sm-12">
                             <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                            <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
                         </div>
                     </Row>
-                    {/* <h3 className="section-title text-center m-5">Contact Us</h3>
+                    <h3 className="section-title text-center m-5">Contact Us</h3>
                     <div className="container py-4">
                         <div className="row justify-content-md-center px-4">
                             <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
@@ -1381,7 +1397,7 @@ class App extends Component {
                                 </form>
                             </div>
                         </div>
-                    </div> */}
+                    </div>
                 </div>
 
                 <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
