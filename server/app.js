@@ -59,7 +59,7 @@ app.use(session({
 // check if logged in, if not, redirect to login
 function loggedIn(req, res, next) {
     if (!req.session.logged) {
-        return res.redirect("/login");
+        return res.send(401);
     }
     next();
 }
@@ -71,12 +71,16 @@ app.use('/events',loggedIn, eventsRouter);
 app.use('/feedback', loggedIn, feedbackRouter);
 
 app.get('/info', function(req, res) {
-    var info = {
-        username: req.session.username,
-        admin: req.session.admin
-    };
-
-    return res.send(info);
+    if (!req.session.logged) {
+        return res.send(401);
+    } else {
+        var info = {
+            username: req.session.username,
+            admin: req.session.admin
+        };
+    
+        return res.send(info);
+    }
 });
 
 // catch 404 and forward to error handler

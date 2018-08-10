@@ -26,17 +26,14 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        console.log(document.cookie);
-
-        axios.get('/login')
-        .then(function (_) {
-            axios.get('/info')
-            .then(function (response) {
-                console.log(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+        // on every reload, get user information (which is fine since we only have a single page)
+        var user = {};
+        axios.get('/info')
+        .then(function (response) {
+            if (response.status == 200) {
+                user.username = response.data.username;
+                user.admin = response.data.admin;
+            } 
         })
         .catch(function (error) {
             console.log(error);
@@ -57,6 +54,7 @@ class App extends Component {
             recurrence: "",
             allDay: false,
             events: [],
+            login: user
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -435,267 +433,271 @@ class App extends Component {
             }
         }
 
-        return (
-            <div className="section-invert">
-                <div className="py-4" Style="margin-top: 10%">
-                    <div className="container py-4">
-                        <div className="row justify-content-md-center px-4">
-                            <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
-                                <form action="/login" method="post">
-                                    <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
-                                        <Row>
-                                            <div className="col-md-12 col-sm-12">
-                                                <div className="form-group" Style="text-align: center">
-                                                    <label htmlFor="email">Email</label>
-                                                    <input type="email" className="form-control" id="email" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+        console.log(this.state.login);
+
+        if (!this.state.login.username) {
+            return (
+                <div className="section-invert">
+                    <div className="py-4" Style="margin-top: 10%">
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
+                                    <form action="/login" method="post">
+                                        <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="email">Email</label>
+                                                        <input type="email" className="form-control" id="email" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Row>
-                                        <Row>
-                                            <div className="col-md-12 col-sm-12">
-                                                <div className="form-group" Style="text-align: center">
-                                                    <label htmlFor="password">Password</label>
-                                                    <input type="password" className="form-control" id="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="password">Password</label>
+                                                        <input type="password" className="form-control" id="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </Row>
-                                    <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" Style="margin-top: 12%" type="submit" value="Log in"></input>
-                                </form>
+                                            </Row>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" Style="margin-top: 12%" type="submit" value="Log in"></input>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        )
-
-        // return (
-        //     <div>
-        //         {/*<----------------------- NAVBAR ----------------------->*/}
-        //         <div className="welcome d-flex justify-content-center flex-column">
-        //         <div className="container">
-        //             <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-        //             <a className="navbar-brand" href="#">
-        //                 Umba
-        //             </a>
-        //             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        //                 <span className="navbar-toggler-icon"></span>
-        //             </button>
-        //             <div className="collapse navbar-collapse" id="navbarNavDropdown">
-        //                 <ul className="navbar-nav">
-        //                 <li className="nav-item active">
-        //                     <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <a className="nav-link" href="#">My profile</a>
-        //                 </li>
-        //                 <li className="nav-item">
-        //                     <a className="nav-link" href="#">Log Out</a>
-        //                 </li>
-        //                 </ul>
-        //             </div>
-        //             </nav>
-        //         </div>
-
-        //         {/*<----------------------- MAIN PAGE ----------------------->*/}
-        //         <div className="inner-wrapper mt-auto mb-auto container">
-        //             <div className="row">
-        //             <div className="col-md-7">
-        //                 <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
-        //                 <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
-        //             </div>
-        //             </div>
-        //         </div>
-        //         </div>
-
-        //         {/*<----------------------- CALENDAR PAGE ----------------------->*/}
-        //         <div id="our-services" className="our-services section py-4">
-        //             <h3 className="section-title text-center my-5">Your schedule</h3>
-        //             <div className="container py-4">
-        //                 <div className="row justify-content-md-center px-4">
-        //                     <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
-        //                         <Row>
-        //                             <Col xs="12" sm="12" md="12" lg="12">
-        //                                 <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
-        //                                 <BigCalendar
-        //                                     selectable={true}
-        //                                     min={new Date('2018, 1, 7, 09:00')}
-        //                                     max={new Date('2018, 1, 7, 18:00')}
-        //                                     defaultView='week'
-        //                                     onSelectEvent={() => this.toggleViewModal()}
-        //                                     onSelectSlot={(date) => this.toggleCreateModal(date)}
-        //                                     events={events}
-        //                                     startAccessor='start'
-        //                                     endAccessor='end'>
-        //                                 </BigCalendar>
-        //                                 </div>
-        //                             </Col>
-        //                         </Row>
-        //                         <Row>
-        //                             <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-        //                                 <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
-        //                             </Col>
-        //                         </Row>
-
-        //                         {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-        //                         <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className="createModal" className={this.props.className}>
-        //                             <ModalBody>
-        //                                 <h2> New Event </h2>
-        //                                 <Form>
-        //                                     <Row>
-        //                                         <Col xs="12" sm="12" md="12" lg="12">
-        //                                             <Steps current={this.state.step}>
-        //                                                 {steps.map(item => <Step key={item.title} title={item.title} />)}
-        //                                             </Steps>
-        //                                             <div className="steps-content">
-        //                                                 {wizardContent}
-        //                                             </div>
-        //                                             <div className="steps-action">
-        //                                                 {
-        //                                                     this.state.step > 0
-        //                                                     && (<Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
-        //                                                 }
-        //                                                 {
-        //                                                     this.state.step < steps.length - 1
-        //                                                     && <Button className="" type="submit" onClick={this.nextStep}>Next</Button>
-        //                                                 }
-        //                                                 {
-        //                                                     this.state.step === steps.length - 1
-        //                                                     && <Button type="button" onClick={() => this.createEvent()}>Create</Button>
-        //                                                 }
-        //                                             </div>
-        //                                         </Col>
-        //                                     </Row>
-        //                                 </Form>
-        //                             </ModalBody>
-        //                         </Modal>
-
-        //                         {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
-        //                         <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
-        //                             <ModalHeader>New Event</ModalHeader>
-        //                             <ModalBody>
-        //                                 <form>
-        //                                     <Row>
-        //                                         <Col xs="12" sm="12" md="12" lg="12">
-        //                                         <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-        //                                         <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
-        //                                         <ul style={{fontSize: '15px'}}>
-        //                                             <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-        //                                             <li><span>Type of event:</span> <span>recurrent</span></li>
-        //                                             <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
-        //                                             <li><span>Location:</span> <span>Ericsson gym</span></li>
-        //                                         </ul> 
-        //                                         <hr/>
-        //                                         </Col>
-        //                                     </Row>
-        //                                     <Row>
-        //                                         <Col xs="12" sm="12" md="12" lg="12">
-        //                                         <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-        //                                         <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
-        //                                         <ul style={{fontSize: '15px'}}>
-        //                                             <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
-        //                                             <li><span>Type of event:</span> <span>recurrent</span></li>
-        //                                             <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
-        //                                             <li><span>Location:</span> <span>Ericsson conference room</span></li>
-        //                                         </ul> 
-        //                                         <hr/>
-        //                                         </Col>
-        //                                     </Row>
-        //                                     <Row>
-        //                                         <Col xs="12" sm="12" md="12" lg="12">
-        //                                         <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-        //                                         <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
-        //                                         <ul style={{fontSize: '15px'}}>
-        //                                             <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
-        //                                             <li><span>Type of event:</span> <span>one time</span></li>
-        //                                             <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
-        //                                             <li><span>Location:</span> <span>Ericsson garage</span></li>
-        //                                         </ul> 
-        //                                         <hr/>
-        //                                         </Col>
-        //                                     </Row>
-        //                                 </form>
-        //                             </ModalBody>
-        //                             <ModalFooter>
-        //                                 <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
-        //                             </ModalFooter>
-        //                         </Modal>
-
-        //                         {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
-        //                         <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
-        //                             <ModalBody>
-        //                                 <h2> Woohoo2 </h2>
-        //                             </ModalBody>
-        //                         </Modal>
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //         </div>
-
-        //         {/*<---------------------FEEDBACK--------------------->*/}
-        //         <div className="contact section-invert py-4">
-        //         <h3 className="section-title text-center m-5">Contact Us</h3>
-        //         <div className="container py-4">
-        //             <div className="row justify-content-md-center px-4">
-        //             <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-        //                 <form>
-        //                 <div className="row">
-        //                     <div className="col-md-6 col-sm-12">
-        //                     <div className="form-group">
-        //                         <label htmlFor="contactFormFullName">Full Name</label>
-        //                         <input type="email" className="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
-        //                     </div>
-        //                     </div>
-        //                     <div className="col-md-6 col-sm-12">
-        //                     <div className="form-group">
-        //                         <label htmlFor="contactFormEmail">Email address</label>
-        //                         <input type="email" className="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
-        //                     </div>
-        //                     </div>
-        //                 </div>
-        //                 <div className="row">
-        //                     <div className="col">
-        //                     <div className="form-group">
-        //                         <label htmlFor="exampleInputMessage1">Message</label>
-        //                         <textarea id="exampleInputMessage1" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
-        //                     </div>
-        //                     </div>
-        //                 </div>
-        //                 <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
-        //                 </form>
-        //             </div>
-        //             </div>
-        //         </div>
-        //         </div>
-
-        //         {/*<----------------------- FOOTER ----------------------->*/}                 
-        //         <footer>
-        //             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-        //                 <div className="container">
-        //                     <a className="navbar-brand" href="#">Ericsson</a>
-        //                     <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        //                         <span className="navbar-toggler-icon"></span>
-        //                     </button>
-        //                     <div className="collapse navbar-collapse" id="navbarNav">
-        //                         <ul className="navbar-nav ml-auto">
-        //                         <li className="nav-item active">
-        //                             <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
-        //                         </li>
-        //                         <li className="nav-item">
-        //                             <a className="nav-link" href="#">Our Services</a>
-        //                         </li>
-        //                         <li className="nav-item">
-        //                             <a className="nav-link" href="#">My profile</a>
-        //                         </li>
-        //                         <li className="nav-item">
-        //                             <a className="nav-link" href="#">Contact Us</a>
-        //                         </li>
-        //                         </ul>
-        //                     </div>
-        //                 </div>
-        //             </nav>
-        //         </footer>
-        //     </div>
-        // );
+            )
+        } else {
+            return (
+                <div>
+                    {/*<----------------------- NAVBAR ----------------------->*/}
+                    <div className="welcome d-flex justify-content-center flex-column">
+                    <div className="container">
+                        <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
+                        <a className="navbar-brand" href="#">
+                            Umba
+                        </a>
+                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                            <span className="navbar-toggler-icon"></span>
+                        </button>
+                        <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul className="navbar-nav">
+                            <li className="nav-item active">
+                                <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="#">My profile</a>
+                            </li>
+                            <li className="nav-item">
+                                <a className="nav-link" href="#">Log Out</a>
+                            </li>
+                            </ul>
+                        </div>
+                        </nav>
+                    </div>
+    
+                    {/*<----------------------- MAIN PAGE ----------------------->*/}
+                    <div className="inner-wrapper mt-auto mb-auto container">
+                        <div className="row">
+                        <div className="col-md-7">
+                            <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
+                            <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+    
+                    {/*<----------------------- CALENDAR PAGE ----------------------->*/}
+                    <div id="our-services" className="our-services section py-4">
+                        <h3 className="section-title text-center my-5">Your schedule</h3>
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
+                                    <Row>
+                                        <Col xs="12" sm="12" md="12" lg="12">
+                                            <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
+                                            <BigCalendar
+                                                selectable={true}
+                                                min={new Date('2018, 1, 7, 09:00')}
+                                                max={new Date('2018, 1, 7, 18:00')}
+                                                defaultView='week'
+                                                onSelectEvent={() => this.toggleViewModal()}
+                                                onSelectSlot={(date) => this.toggleCreateModal(date)}
+                                                events={events}
+                                                startAccessor='start'
+                                                endAccessor='end'>
+                                            </BigCalendar>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
+                                            <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
+                                        </Col>
+                                    </Row>
+    
+                                    {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className="createModal" className={this.props.className}>
+                                        <ModalBody>
+                                            <h2> New Event </h2>
+                                            <Form>
+                                                <Row>
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                        <Steps current={this.state.step}>
+                                                            {steps.map(item => <Step key={item.title} title={item.title} />)}
+                                                        </Steps>
+                                                        <div className="steps-content">
+                                                            {wizardContent}
+                                                        </div>
+                                                        <div className="steps-action">
+                                                            {
+                                                                this.state.step > 0
+                                                                && (<Button style={{ marginLeft: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
+                                                            }
+                                                            {
+                                                                this.state.step < steps.length - 1
+                                                                && <Button className="" type="submit" onClick={this.nextStep}>Next</Button>
+                                                            }
+                                                            {
+                                                                this.state.step === steps.length - 1
+                                                                && <Button type="button" onClick={() => this.createEvent()}>Create</Button>
+                                                            }
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </Form>
+                                        </ModalBody>
+                                    </Modal>
+    
+                                    {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
+                                        <ModalHeader>New Event</ModalHeader>
+                                        <ModalBody>
+                                            <form>
+                                                <Row>
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                    <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                                                    <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
+                                                    <ul style={{fontSize: '15px'}}>
+                                                        <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                                                        <li><span>Type of event:</span> <span>recurrent</span></li>
+                                                        <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
+                                                        <li><span>Location:</span> <span>Ericsson gym</span></li>
+                                                    </ul> 
+                                                    <hr/>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                    <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                                                    <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
+                                                    <ul style={{fontSize: '15px'}}>
+                                                        <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
+                                                        <li><span>Type of event:</span> <span>recurrent</span></li>
+                                                        <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
+                                                        <li><span>Location:</span> <span>Ericsson conference room</span></li>
+                                                    </ul> 
+                                                    <hr/>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                    <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                                                    <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
+                                                    <ul style={{fontSize: '15px'}}>
+                                                        <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
+                                                        <li><span>Type of event:</span> <span>one time</span></li>
+                                                        <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
+                                                        <li><span>Location:</span> <span>Ericsson garage</span></li>
+                                                    </ul> 
+                                                    <hr/>
+                                                    </Col>
+                                                </Row>
+                                            </form>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
+                                        </ModalFooter>
+                                    </Modal>
+    
+                                    {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
+                                        <ModalBody>
+                                            <h2> Woohoo2 </h2>
+                                        </ModalBody>
+                                    </Modal>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    {/*<---------------------FEEDBACK--------------------->*/}
+                    <div className="contact section-invert py-4">
+                    <h3 className="section-title text-center m-5">Contact Us</h3>
+                    <div className="container py-4">
+                        <div className="row justify-content-md-center px-4">
+                        <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
+                            <form>
+                            <div className="row">
+                                <div className="col-md-6 col-sm-12">
+                                <div className="form-group">
+                                    <label htmlFor="contactFormFullName">Full Name</label>
+                                    <input type="email" className="form-control" id="contactFormFullName" placeholder="Enter your full name"></input>
+                                </div>
+                                </div>
+                                <div className="col-md-6 col-sm-12">
+                                <div className="form-group">
+                                    <label htmlFor="contactFormEmail">Email address</label>
+                                    <input type="email" className="form-control" id="contactFormEmail" placeholder="Enter your email address"></input>
+                                </div>
+                                </div>
+                            </div>
+                            <div className="row">
+                                <div className="col">
+                                <div className="form-group">
+                                    <label htmlFor="exampleInputMessage1">Message</label>
+                                    <textarea id="exampleInputMessage1" className="form-control mb-4" rows="10" placeholder="Enter your message..." name="message"></textarea>
+                                </div>
+                                </div>
+                            </div>
+                            <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
+                            </form>
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+    
+                    {/*<----------------------- FOOTER ----------------------->*/}                 
+                    <footer>
+                        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                            <div className="container">
+                                <a className="navbar-brand" href="#">Ericsson</a>
+                                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span className="navbar-toggler-icon"></span>
+                                </button>
+                                <div className="collapse navbar-collapse" id="navbarNav">
+                                    <ul className="navbar-nav ml-auto">
+                                    <li className="nav-item active">
+                                        <a className="nav-link" href="#">Home <span className="sr-only">(current)</span></a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#">Our Services</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#">My profile</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link" href="#">Contact Us</a>
+                                    </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </footer>
+                </div>
+            );
+        }
     }
 }
 
