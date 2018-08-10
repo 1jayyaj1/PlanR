@@ -45,6 +45,9 @@ class App extends Component {
             login: { username: "default", admin: false }
         }
 
+        this.username = React.createRef();
+        this.password = React.createRef();
+
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
         this.updateRecurence = this.updateRecurence.bind(this);
@@ -57,6 +60,7 @@ class App extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.createEvent = this.createEvent.bind(this);
         this.componentWillMount = this.componentWillMount.bind(this);
+        this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
     }
 
     handleChangeStart(date) {
@@ -137,6 +141,19 @@ class App extends Component {
     prevStep() {
         const step = this.state.step - 1;
         this.setState({ step });
+    }
+
+    handleLoginSubmit() {
+        console.log(this.username.current.value);
+        console.log(this.password.current.value);
+        // axios.post('/login', { username: this.state.username })
+        // .then(function (response) {
+        //     console.log(response);
+        //     this.setState({events: this.state.events.concat(newEvent)});
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // });
     }
 
     handleChange(event) {
@@ -459,7 +476,7 @@ class App extends Component {
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: center">
                                                         <label htmlFor="username">Email</label>
-                                                        <input type="text" className="form-control" id="username" name="username" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
                                                     </div>
                                                 </div>
                                             </Row>
@@ -467,11 +484,11 @@ class App extends Component {
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: center">
                                                         <label htmlFor="password">Password</label>
-                                                        <input type="password" className="form-control" id="password" name="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
                                                     </div>
                                                 </div>
                                             </Row>
-                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" Style="margin-top: 12%" type="button" value="Log in"></input>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.handleLoginSubmit} Style="margin-top: 12%" type="button" value="Log in"></input>
                                     </form>
                                 </div>
                             </div>
