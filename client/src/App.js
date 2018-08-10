@@ -26,19 +26,6 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        // on every reload, get user information (which is fine since we only have a single page)
-        var user = {};
-        axios.get('/info')
-        .then(function (response) {
-            if (response.status == 200) {
-                user.username = response.data.username;
-                user.admin = response.data.admin;
-            } 
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-
         this.state = {
             events: [],
             createModal : false,
@@ -54,7 +41,7 @@ class App extends Component {
             recurrence: "",
             allDay: false,
             events: [],
-            login: user
+            login: {}
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -189,27 +176,39 @@ class App extends Component {
         axios.post('/events', newEvent)
         .then(function (response) {
             console.log(response);
+            this.setState({events: this.state.events.concat(newEvent)});
         })
         .catch(function (error) {
             console.log(error);
         });
-
-        this.setState({events: this.state.events.concat(newEvent)});
     }
 
     componentWillMount() {
+
+        var user = {};
         let component = this;
-        axios.get('/events')
+        axios.get('/info')
         .then(function (response) {
-            response.data.forEach(event => {
-                event.calendarInfo.start = new Date(event.calendarInfo.start);
-                event.calendarInfo.end = new Date(event.calendarInfo.end);
-            });
-            component.setState({events: response.data});
+            user.username = response.data.username;
+            user.admin = response.data.admin;
+            component.setState({login: user});
+
+            axios.get('/events')
+            .then(function (response) {
+                response.data.forEach(event => {
+                    event.calendarInfo.start = new Date(event.calendarInfo.start);
+                    event.calendarInfo.end = new Date(event.calendarInfo.end);
+                });
+                component.setState({events: response.data});
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
         })
         .catch(function (error) {
-            console.log(error);
-        })
+            console.log("Redirecting to login");
+            component.setState({login: {}});
+        });
     }
 
     render() {
