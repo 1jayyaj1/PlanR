@@ -144,16 +144,20 @@ class App extends Component {
     }
 
     handleLoginSubmit() {
-        console.log(this.username.current.value);
-        console.log(this.password.current.value);
-        // axios.post('/login', { username: this.state.username })
-        // .then(function (response) {
-        //     console.log(response);
-        //     this.setState({events: this.state.events.concat(newEvent)});
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // });
+        const name = this.username.current.value;
+        const password = this.password.current.value;
+        axios.post('/login', { username: name, password: password })
+        .then(function (response) {
+            console.log(response);
+            window.location.reload();
+        })
+        .catch(function (error) {
+            if (error.response.status.toString()[0] == 4) {
+                alert("invalid credentials");
+            } else {
+                console.log(error);
+            }
+        });
     }
 
     handleChange(event) {
@@ -529,7 +533,7 @@ class App extends Component {
                     <div className="inner-wrapper mt-auto mb-auto container">
                         <div className="row">
                         <div className="col-md-7">
-                            <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
+                            <h1 className="welcome-heading display-4 text-white">{"Hello " + this.state.login.username}</h1>
                             <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
                         </div>
                         </div>
