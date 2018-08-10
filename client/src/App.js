@@ -7,6 +7,7 @@ import { Steps} from 'antd';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
+import { BeatLoader, PulseLoader } from 'react-spinners';
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -41,7 +42,7 @@ class App extends Component {
             recurrence: "",
             allDay: false,
             events: [],
-            login: {}
+            login: { username: "default", admin: false }
         }
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -189,6 +190,7 @@ class App extends Component {
         let component = this;
         axios.get('/info')
         .then(function (response) {
+            console.log(response.data.username);
             user.username = response.data.username;
             user.admin = response.data.admin;
             component.setState({login: user});
@@ -434,20 +436,30 @@ class App extends Component {
 
         console.log(this.state.login);
 
-        if (!this.state.login.username) {
+        if (this.state.login.username === "default") {
+            return (
+                <div className='sweet-loading center-screen'>
+                    <PulseLoader
+                        color={'#D73636'} 
+                        loading={true}
+                        size={50}
+                    />
+                </div>
+            )
+        } else if (!this.state.login.username) {
             return (
                 <div className="section-invert">
                     <div className="py-4" Style="margin-top: 10%">
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
-                                    <form action="/login" method="post">
+                                    <form> 
                                         <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="email">Email</label>
-                                                        <input type="email" className="form-control" id="email" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                        <label htmlFor="username">Email</label>
+                                                        <input type="text" className="form-control" id="username" name="username" Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
                                                     </div>
                                                 </div>
                                             </Row>
@@ -455,11 +467,11 @@ class App extends Component {
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: center">
                                                         <label htmlFor="password">Password</label>
-                                                        <input type="password" className="form-control" id="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                        <input type="password" className="form-control" id="password" name="password" Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
                                                     </div>
                                                 </div>
                                             </Row>
-                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" Style="margin-top: 12%" type="submit" value="Log in"></input>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" Style="margin-top: 12%" type="button" value="Log in"></input>
                                     </form>
                                 </div>
                             </div>

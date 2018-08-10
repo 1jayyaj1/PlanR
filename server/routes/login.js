@@ -16,6 +16,7 @@ router.post('/', function(req, res, next) {
     try {
         const body = req.body;
         if (!body.username || !body.password) {
+            console.log(body);
             return res.sendStatus(400);
         }
         User.find({ username: body.username })
@@ -27,6 +28,7 @@ router.post('/', function(req, res, next) {
                     var user = users[0];
                     if (user.password === body.password) {
                         req.session.admin = user.admin;
+                        req.session.username = user.name;
                         req.session.logged = true;
                         return res.sendStatus(200);
                     } else {
