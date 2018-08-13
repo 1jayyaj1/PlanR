@@ -1,22 +1,12 @@
 var express = require('express');
 var router = express.Router();
 let User =  require('../models/user');
-
-// Access the session as req.session
-router.get('/', function(req, res, next) {
-    console.log("HELLO");
-    req.session.logged = true;
-    req.session.admin = true;
-    req.session.username = "Jerry";
-    // res.end('welcome to the session demo. refresh!')
-    res.sendStatus(200);
-});
+var bcrypt = require('bcrypt');
 
 router.post('/', function(req, res, next) {
     try {
         const body = req.body;
         if (!body.username || !body.password) {
-            console.log(body);
             return res.sendStatus(400);
         }
         User.find({ username: body.username })
@@ -26,14 +16,16 @@ router.post('/', function(req, res, next) {
                     return res.sendStatus(404);
                 } else {
                     var user = users[0];
-                    if (user.password === body.password) {
-                        req.session.admin = user.admin;
-                        req.session.username = user.name;
-                        req.session.logged = true;
-                        return res.sendStatus(200);
-                    } else {
-                        return res.sendStatus(401);
-                    }
+                    bcrypt.compare(body.password, user.password, function(err, status) {
+                        if (status == true) {
+                            req.session.admin = user.admin;
+                            req.session.username = user.name;
+                            req.session.logged = true;
+                            return res.sendStatus(200);
+                        } else {
+                            return res.sendStatus(401);
+                        }
+                    });
                 }
             })
             .catch(err => {

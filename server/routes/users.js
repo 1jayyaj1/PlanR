@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 let User =  require('../models/user');
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
@@ -75,26 +77,30 @@ router.post('/', function(req, res, next) {
     const body = req.body;
     try {
         if (/^[a-zA-Z ]+$/.test(body.name) && emailRegex.test(body.email)) {
-            var user = new User({
-                name: body.name,
-                email: body.email,
-                admin: body.admin,
-                username: body.username,
-                password: body.password
-            });
 
-            user.save()
-            .then(doc => {
-                console.log('Created user ' + doc._id);
-                return res.sendStatus(200)
-            })
-            .catch(err => {
-                console.error(err);
-                if (err.code === 11000) {
-                    return res.status(500).send("This user already exists in the database");
-                }
-                return res.status(500).send("Unable to create user in database")
-            })
+            bcrypt.hash(body.password, saltRounds, function(err, hash) {
+                // Store hash in your password DB.
+                var user = new User({
+                    name: body.name,
+                    email: body.email,
+                    admin: body.admin,
+                    username: body.username,
+                    password: hash
+                });
+    
+                user.save()
+                .then(doc => {
+                    console.log('Created user ' + doc._id);
+                    return res.sendStatus(200)
+                })
+                .catch(err => {
+                    console.error(err);
+                    if (err.code === 11000) {
+                        return res.status(500).send("This user already exists in the database");
+                    }
+                    return res.status(500).send("Unable to create user in database")
+                })
+            });
         } else {
             return res.sendStatus(400)
         }

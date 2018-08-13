@@ -11,6 +11,7 @@ var feedbackRouter = require('./routes/feedback');
 var loginRouter = require('./routes/login')
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
+var helmet = require('helmet')
 
 var app = express();
 
@@ -51,7 +52,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: {
         secure: false,
-        httpOnly: false, // so that it's visible from the front end
+        httpOnly: true,
         maxAge: 60 * 1000 // short, only for testing 
     }
 }));
@@ -64,11 +65,13 @@ function loggedIn(req, res, next) {
     next();
 }
 
+app.use(helmet())
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);  //TODO
-app.use('/', loggedIn, indexRouter);
-app.use('/events',loggedIn, eventsRouter);
-app.use('/feedback', loggedIn, feedbackRouter);
+app.use(loggedIn)
+app.use('/', indexRouter);
+app.use('/events', eventsRouter);
+app.use('/feedback', feedbackRouter);
 
 app.get('/info', function(req, res) {
     if (!req.session.logged) {

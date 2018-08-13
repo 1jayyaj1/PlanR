@@ -206,12 +206,10 @@ class App extends Component {
     }
 
     componentWillMount() {
-
         var user = {};
         let component = this;
         axios.get('/info')
         .then(function (response) {
-            console.log(response.data.username);
             user.username = response.data.username;
             user.admin = response.data.admin;
             component.setState({login: user});
