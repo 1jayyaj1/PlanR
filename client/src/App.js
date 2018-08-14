@@ -47,6 +47,9 @@ class App extends Component {
 
         this.username = React.createRef();
         this.password = React.createRef();
+        this.name = React.createRef();
+        this.email = React.createRef();
+        this.confirmPassword = React.createRef();
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
@@ -61,6 +64,8 @@ class App extends Component {
         this.createEvent = this.createEvent.bind(this);
         this.componentWillMount = this.componentWillMount.bind(this);
         this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+        this.displayCreateAccount = this.displayCreateAccount.bind(this);
+        this.createAccount = this.createAccount.bind(this);
     }
 
     handleChangeStart(date) {
@@ -95,6 +100,11 @@ class App extends Component {
     }
     toggleViewModal() {
         this.setState({ viewModal: !this.state.viewModal });
+    }
+
+    displayCreateAccount() {
+        var user = { username: "account", admin: false };
+        this.setState({ login: user });
     }
 
     nextStep(event) {
@@ -141,6 +151,33 @@ class App extends Component {
     prevStep() {
         const step = this.state.step - 1;
         this.setState({ step });
+    }
+
+    createAccount() {
+        const username = this.username.current.value;
+        const password = this.password.current.value;
+        const email = this.email.current.value;
+        const name = this.name.current.value;
+        const confirm = this.confirmPassword.current.value;
+
+        if (password == confirm) {
+            var user = {
+                name: name,
+                username: username,
+                email: email,
+                admin: false,
+                password: password
+            }
+            axios.post('/users', user)
+            .then(function (response) {
+                alert("Cool!");
+            })
+            .catch(function (error) {
+                alert("Oups");
+            })
+        } else {
+            alert("Basterd!");
+        }
     }
 
     handleLoginSubmit() {
@@ -453,8 +490,6 @@ class App extends Component {
             }
         }
 
-        console.log(this.state.login);
-
         if (this.state.login.username === "default") {
             return (
                 <div className='sweet-loading center-screen'>
@@ -463,6 +498,63 @@ class App extends Component {
                         loading={true}
                         size={50}
                     />
+                </div>
+            )
+        } else if (this.state.login.username === "account") {
+            return (
+                <div className="section-invert">
+                    <div className="py-4" Style="margin-top: 10%">
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
+                                    <form> 
+                                        <h3 Style="text-align: center; padding-bottom: 5%"> Create an account </h3>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="name">Full name</label>
+                                                        <input type="text" className="form-control" id="name" ref={this.name} Style="margin-left: 15%; width: 70%" placeholder="Enter your full name"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="name">Email</label>
+                                                        <input type="text" className="form-control" id="email" ref={this.email} Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="username">Username</label>
+                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="password">Password</label>
+                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="confirmPassword">Confirm your password</label>
+                                                        <input type="password" className="form-control" id="confirmPassword" ref={this.confirmPassword} Style="margin-left: 15%; width: 70%" placeholder="Confirm your password"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.createAccount} Style="margin-top: 12%" type="button" value="Create"></input>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )
         } else if (!this.state.login.username) {
@@ -477,8 +569,8 @@ class App extends Component {
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="username">Email</label>
-                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                        <label htmlFor="username">Username</label>
+                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
                                                     </div>
                                                 </div>
                                             </Row>
@@ -494,6 +586,7 @@ class App extends Component {
                                     </form>
                                 </div>
                             </div>
+                            <p onClick={this.displayCreateAccount} Style="text-align: center; color: #007bff; cursor: pointer"> Create an account </p>
                         </div>
                     </div>
                 </div>
