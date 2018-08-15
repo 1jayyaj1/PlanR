@@ -65,9 +65,10 @@ function loggedIn(req, res, next) {
     next();
 }
 
+app.use('/users', usersRouter);  //TODO
+
 app.use(helmet())
 app.use('/login', loginRouter);
-app.use('/users', usersRouter);  //TODO
 app.use(loggedIn)
 app.use('/', indexRouter);
 app.use('/events', eventsRouter);

@@ -82,11 +82,13 @@ class App extends Component {
             viewModal: false,
             activateModal: false,
             deleteModal: false,
+            addAdminModal: false,
             step: 0,
             name: { value: "", valid: true },
             description: { value: "", valid: true },
             location: { value: "", valid: true },
             capacity: { value: 0, valid: true },
+            email: { value: "", valid: true },
             daysSelected: [],
             isRecurrent: { value: "", valid: true },
             recurrence: "",
@@ -105,8 +107,12 @@ class App extends Component {
             dateValidLabel: 'hidden',
             recurrenceValidLabel: 'hidden',
             daysSelectedValidLabel: 'hidden',
-            currentUser: "admin",
             currentEventId: null,
+            nameUserModal: "",
+            userNameModal: "",
+            emailUserModal: "",
+            idUserModal: "",
+            newAdminSearchTable: 'none',
             login: { username: "default", admin: false }
         }
 
@@ -120,6 +126,7 @@ class App extends Component {
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
         this.handleChangeAdminInactive = this.handleChangeAdminInactive.bind(this);
         this.handleChangeActivationDate = this.handleChangeActivationDate.bind(this);
+        this.handleChangeSearchNewAdmin = this.handleChangeSearchNewAdmin.bind(this);
         this.activateEvent = this.activateEvent.bind(this);
         this.updateRecurence = this.updateRecurence.bind(this);
         this.updateDaysSelection = this.updateDaysSelection.bind(this);
@@ -128,6 +135,7 @@ class App extends Component {
         this.toggleViewModal = this.toggleViewModal.bind(this);
         this.toggleActivateModal = this.toggleActivateModal.bind(this);
         this.toggleDeleteModal = this.toggleDeleteModal.bind(this);
+        this.toggleAddAdminModal = this.toggleAddAdminModal.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
         this.onRadioBtnActivateClick = this.onRadioBtnActivateClick.bind(this);
         this.nextStep = this.nextStep.bind(this);
@@ -147,6 +155,8 @@ class App extends Component {
         this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
         this.displayCreateAccount = this.displayCreateAccount.bind(this);
         this.createAccount = this.createAccount.bind(this);
+        this.searchAdminEmail = this.searchAdminEmail.bind(this);
+        this.addAdmin = this.addAdmin.bind(this);
         this.createCSV = this.createCSV.bind(this);
     }
 
@@ -182,6 +192,58 @@ class App extends Component {
         })
     }
 
+    handleChangeSearchNewAdmin(emailAdress) {
+        const target = emailAdress.target;
+        var valid = true;
+        this.setState({ [target.name]: { value: target.value, valid: valid } });
+    }
+
+    searchAdminEmail(email) {
+        let myComponent = this;
+        axios.get('/users/')
+        .then(function (response) {
+            console.log(response.data)
+            var users = response.data
+            var BreakException = {};
+            try {
+                users.forEach(function(user) {
+                    if (email === user.email) {
+                        myComponent.setState({ 
+                            nameUserModal: user.name,
+                            userNameModal: user.username,
+                            emailUserModal: user.email,
+                            idUserModal: user._id,
+                            newAdminSearchTable: 'block',
+                            email: { value: myComponent.state.email.value, valid: true }
+                        });
+                    throw BreakException;
+                    } else{
+                        myComponent.setState({
+                            newAdminSearchTable: 'none',
+                            email: { value: myComponent.state.email.value, valid: false }
+                        });
+                    }
+                });
+            }
+            catch (e) {
+                if (e !== BreakException) throw e;
+                }
+            })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }
+
+    addAdmin() {
+        axios.put('/users/' + this.state.idUserModal, {admin: true})
+        .then(function (response) {
+            console.log(response.data)
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+        this.toggleAddAdminModal();
+    }
     updateRecurence(selection) {
         this.setState({ recurrence: selection });
     }
@@ -286,6 +348,18 @@ class App extends Component {
             
         });
         this.setState({ viewModal: !this.state.viewModal });
+    }
+
+    toggleAddAdminModal() {
+        this.setState({
+            addAdminModal: !this.state.addAdminModal,
+            nameUserModal: "",
+            userNameModal: "",
+            emailUserModal: "",
+            idUserModal: "",
+            newAdminSearchTable: 'none',
+            email: { value: "", valid: true }
+        });
     }
 
     addEventBasket(eventId) {
@@ -1275,16 +1349,56 @@ class App extends Component {
                                         </ModalFooter>
                                     </Modal>
 
+                                    {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.addAdminModal} toggle={this.toggleAddAdminModal} className={this.props.className}>
+                                        <ModalHeader><h2>Add Admin</h2></ModalHeader>
+                                        <ModalBody>
+                                            
+                                                <label htmlFor="contactFormEmail">Search by email</label>
+                                                <Row>
+                                                    <div className="col-md-9 col-sm-9 searchInputEmailAddAdmin">
+                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control" : "form-control is-invalid"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
+                                                        <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist.</div>
+                                                    </div>
+                                                    <div className="col-md-3 col-sm-3 searchButtonEmailAddAdmin">
+                                                        <Button outline color="secondary light searchButtonEmailAddAdminChild" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
+                                                    </div>
+                                                
+                                                    <Col xs="12" sm="12" md="12" lg="12" className="userSelectEventModal" style={{display: this.state.newAdminSearchTable}}>
+                                                    <Table className="userSelectEventTable">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td scope="row" className="userTableTop"><span className="userSelectLabel">Name:</span></td>
+                                                                <td className="userTableTop"><span className="userSelectData">{this.state.nameUserModal}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td scope="row"><span className="userSelectLabel">Username:</span></td>
+                                                                <td><span className="userSelectData">{this.state.userNameModal}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td scope="row"><span className="userSelectLabel">Email:</span></td>
+                                                                <td><span className="userSelectData">{this.state.emailUserModal}</span></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </Table> 
+                                                    </Col>
+                                                    <div className="col-md-12 col-sm-12">
+                                                        <button type="button" className="btn btn-outline-success pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
+                                                    </div>
+                                                </Row>
+                                        </ModalBody>
+                                    </Modal>
+
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                         <ModalHeader className="userSelcectModalHeader editEventLabel">
-                                        {this.state.currentUser === "user" &&
+                                        {this.state.login.admin === false &&
                                             (<h2>{this.state.calendarInfo.title}</h2>)}
-                                        {this.state.currentUser === "admin" &&
+                                        {this.state.login.admin === true &&
                                             (<h2>Edit Event</h2>)}
                                         </ModalHeader>
                                         <ModalBody className="userSelectEventModalParent">
-                                            {this.state.currentUser === "user" &&
+                                            {this.state.login.admin === false &&
                                             (<Row className="userSelectEventModal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
                                                     <Table className="userSelectEventTable">
@@ -1322,7 +1436,7 @@ class App extends Component {
                                                     </Table> 
                                                     </Col>
                                                 </Row> )}
-                                            {this.state.currentUser === "admin" &&
+                                            {this.state.login.admin === true &&
                                             (<Row>
                                             <fieldset>
                                                 <Row className="basicInfo">
@@ -1435,9 +1549,9 @@ class App extends Component {
                                             </Row>)}
                                         </ModalBody>
                                         <ModalFooter>
-                                        {this.state.currentUser === "user" &&
+                                        {this.state.login.admin === false &&
                                             (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
-                                        {this.state.currentUser === "admin" &&
+                                        {this.state.login.admin === true &&
                                             (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
@@ -1505,107 +1619,110 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-                    
                     <div className="contact section-invert py-4">
-                        <Row>
-                            <div className="col-md-12 col-sm-12">
-                                <h1 className="adminName">Admin</h1>
-                            </div>
-                        </Row>
-                        <Row>
-                            <div className="col-md-12 col-sm-12">
-                                <h3 className="adminInactiveName">Inactive Events</h3>
-                            </div>
-                        </Row>
-                        <Row className="unpublishedTable">
-                            <div className="col-md-12 col-sm-12">
-                                <Table>
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Start</th>
-                                        <th>End</th>
-                                        <th>Time</th>
-                                        <th>Location</th>
-                                        <th>Capacity</th>
-                                        <th>Recurrence</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        activeChecker(this.state.events).map((events, index) => {
-                                            var event = events;
-                                            if (event) {
-                                                return <tr key={index + 1}>
-                                                        <th>{event.calendarInfo.title}</th>
-                                                        <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                        <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                                        <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                        <td>{event.location}</td>
-                                                        <td>{event.capacity}</td>
-                                                        <td>{event.recurrence}</td>
-                                                        <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                        <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                        <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                    </tr>;
-                                            } else return
-                                        })
-                                    }
-                                    </tbody>
-                                </Table>
-                            </div>
-                        </Row>
-                        <Row>
-                            <div className="col-md-12 col-sm-12">
-                                <h3 className="adminInactiveName">Active Events</h3>
-                            </div>
-                        </Row>
-                        <Row className="publishedTable">
-                            <div className="col-md-12 col-sm-12">
-                                <Table>
-                                    <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Start</th>
-                                        <th>End</th>
-                                        <th>Time</th>
-                                        <th>Location</th>
-                                        <th>Current Capacity</th>
-                                        <th>Recurrence</th>
-                                        <th>Registration Start</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {
-                                        flatten3(this.state.events).map((events, index) => {
-                                            var event = events;
-                                            if (event) {
-                                                return <tr key={index + 1}>
-                                                        <th>{event.calendarInfo.title}</th>
-                                                        <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                        <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                                        <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                        <td>{event.location}</td>
-                                                        <td>{event.capacity}</td>
-                                                        <td>{event.recurrence}</td>
-                                                        <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
-                                                        <td><Button outline color="success">Announce</Button></td>
-                                                        <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                        <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                    </tr>;
-                                            } else return
-                                        })
-                                    }
-                                    </tbody>
-                                </Table>
-                            </div>
-                        </Row>
-                        <Row className="createEventButton">
-                            <div className="col-md-12 col-sm-12">
-                                <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
-                                <CSVLink data={this.createCSV(this.state.events)} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
-                            </div>
-                        </Row>
+                        {this.state.login.admin === true &&
+                        (<div>
+                            <Row>
+                                <div className="col-md-12 col-sm-12">
+                                    <h1 className="adminName">Admin</h1>
+                                </div>
+                            </Row>
+                            <Row>
+                                <div className="col-md-12 col-sm-12">
+                                    <h3 className="adminInactiveName">Inactive Events</h3>
+                                </div>
+                            </Row>
+                            <Row className="unpublishedTable">
+                                <div className="col-md-12 col-sm-12">
+                                    <Table>
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Start</th>
+                                            <th>End</th>
+                                            <th>Time</th>
+                                            <th>Location</th>
+                                            <th>Capacity</th>
+                                            <th>Recurrence</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {
+                                            activeChecker(this.state.events).map((events, index) => {
+                                                var event = events;
+                                                if (event) {
+                                                    return <tr key={index + 1}>
+                                                            <th>{event.calendarInfo.title}</th>
+                                                            <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                            <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                            <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                            <td>{event.location}</td>
+                                                            <td>{event.capacity}</td>
+                                                            <td>{event.recurrence}</td>
+                                                            <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
+                                                            <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                            <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                        </tr>;
+                                                } else return
+                                            })
+                                        }
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </Row>
+                            <Row>
+                                <div className="col-md-12 col-sm-12">
+                                    <h3 className="adminInactiveName">Active Events</h3>
+                                </div>
+                            </Row>
+                            <Row className="publishedTable">
+                                <div className="col-md-12 col-sm-12">
+                                    <Table>
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Start</th>
+                                            <th>End</th>
+                                            <th>Time</th>
+                                            <th>Location</th>
+                                            <th>Current Capacity</th>
+                                            <th>Recurrence</th>
+                                            <th>Registration Start</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {
+                                            flatten3(this.state.events).map((events, index) => {
+                                                var event = events;
+                                                if (event) {
+                                                    return <tr key={index + 1}>
+                                                            <th>{event.calendarInfo.title}</th>
+                                                            <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                            <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                            <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                            <td>{event.location}</td>
+                                                            <td>{event.capacity}</td>
+                                                            <td>{event.recurrence}</td>
+                                                            <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
+                                                            <td><Button outline color="success">Announce</Button></td>
+                                                            <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                            <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                        </tr>;
+                                                } else return
+                                            })
+                                        }
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </Row>
+                            <Row className="createEventButton">
+                                <div className="col-md-12 col-sm-12">
+                                    <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                    <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
+                                    <Button outline color="success" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
+                                </div>
+                            </Row>
+                            </div>)}
                         <h3 className="section-title text-center m-5">Contact Us</h3>
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
@@ -1639,7 +1756,6 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-
                     <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                     
                     <footer>

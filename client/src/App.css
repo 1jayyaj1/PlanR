@@ -270,3 +270,23 @@
   text-align: center;
   min-height: 100vh;
 }
+
+.searchInputEmailAddAdmin {
+  padding-right:0px!important;
+}
+
+.searchInputEmailAddAdminChild {
+  border-top-right-radius: 0px!important;
+  border-bottom-right-radius: 0px!important;
+}
+
+.searchButtonEmailAddAdmin {
+  padding-left:0px!important;
+}
+
+.searchButtonEmailAddAdminChild {
+  border-top-left-radius: 0px!important;
+  border-bottom-left-radius: 0px!important;
+  width: 100%
+}
+

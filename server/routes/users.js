@@ -6,6 +6,19 @@ const saltRounds = 10;
 
 const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
+router.get('/', function(req, res, next) {
+    User.find()
+        .sort()
+        .exec()
+        .then(docs => {
+          return res.send(docs)
+        })
+        .catch(err => {
+            console.log(err);
+            return res.sendStatus(500)
+        })
+});
+
 router.get('/:userId', function(req, res, next) {
   try {
     User.find({"_id" : req.params.userId})
