@@ -170,13 +170,13 @@ class App extends Component {
             }
             axios.post('/users', user)
             .then(function (response) {
-                alert("Cool!");
+                window.location.reload(); //JAY we will do something better than that
             })
             .catch(function (error) {
-                alert("Oups");
+                console.log(error);
             })
         } else {
-            alert("Basterd!");
+            console.log("NOT MATCHING PASSWORDS") //JAY
         }
     }
 
