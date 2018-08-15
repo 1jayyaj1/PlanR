@@ -8,6 +8,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
+var loginRouter = require('./routes/login')
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+var helmet = require('helmet')
 
 var app = express();
 
@@ -31,16 +35,56 @@ let User =  require('./models/user');
 
 // Miscellaneous
 app.use(logger('dev'));
-// we will remove this for now since most of the object are 1:1 mapping with what the client sends
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+var options = { mongooseConnection: mongoose.connection };
+
+// Use the session middleware
+app.use(session({
+    secret: "magical ankur",
+    name: "umba_cookie",
+    store: new MongoStore(options),
+    proxy: true,
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 60 * 1000 // short, only for testing 
+    }
+}));
+
+// check if logged in, if not, redirect to login
+function loggedIn(req, res, next) {
+    if (!req.session.logged) {
+        return res.sendStatus(401);
+    }
+    next();
+}
+
+app.use(helmet())
+app.use('/login', loginRouter);
+app.use('/users', usersRouter);  //TODO
+app.use(loggedIn)
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);
+
+app.get('/info', function(req, res) {
+    if (!req.session.logged) {
+        return res.sendStatus(401);
+    } else {
+        var info = {
+            username: req.session.username,
+            admin: req.session.admin
+        };
+    
+        return res.send(info);
+    }
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

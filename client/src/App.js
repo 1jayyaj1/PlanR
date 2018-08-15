@@ -10,7 +10,7 @@ import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import {CSVLink} from 'react-csv';
-
+import { BeatLoader, PulseLoader } from 'react-spinners';
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -106,8 +106,16 @@ class App extends Component {
             recurrenceValidLabel: 'hidden',
             daysSelectedValidLabel: 'hidden',
             currentUser: "user",
-            currentEventId: null
+            currentEventId: null,
+            events: [],
+            login: { username: "default", admin: false }
         }
+
+        this.username = React.createRef();
+        this.password = React.createRef();
+        this.name = React.createRef();
+        this.email = React.createRef();
+        this.confirmPassword = React.createRef();
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
@@ -137,6 +145,9 @@ class App extends Component {
         this.handleRecurrenceChange = this.handleRecurrenceChange.bind(this);
         this.fetchEvents = this.fetchEvents.bind(this);
         this.addEventBasket = this.addEventBasket.bind(this);
+        this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
+        this.displayCreateAccount = this.displayCreateAccount.bind(this);
+        this.createAccount = this.createAccount.bind(this);
     }
 
     handleChangeStart(date) {
@@ -298,6 +309,11 @@ class App extends Component {
         }
     }
 
+    displayCreateAccount() {
+        var user = { username: "account", admin: false };
+        this.setState({ login: user });
+    }
+
     nextStep(event) {
         event.preventDefault();
         if (this.state.step === 0) {
@@ -420,6 +436,49 @@ class App extends Component {
         this.setState({ step });
     }
 
+    createAccount() {
+        const username = this.username.current.value;
+        const password = this.password.current.value;
+        const email = this.email.current.value;
+        const name = this.name.current.value;
+        const confirm = this.confirmPassword.current.value;
+
+        if (password == confirm) {
+            var user = {
+                name: name,
+                username: username,
+                email: email,
+                admin: false,
+                password: password
+            }
+            axios.post('/users', user)
+            .then(function (response) {
+                window.location.reload(); //JAY we will do something better than that
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        } else {
+            console.log("NOT MATCHING PASSWORDS") //JAY
+        }
+    }
+
+    handleLoginSubmit() {
+        const name = this.username.current.value;
+        const password = this.password.current.value;
+        axios.post('/login', { username: name, password: password })
+        .then(function (response) {
+            console.log(response);
+            window.location.reload();
+        })
+        .catch(function (error) {
+            if (error.response.status.toString()[0] == 4) {
+                alert("invalid credentials");
+            } else {
+                console.log(error);
+            }
+        });
+    }
 
     handleChange(event) {
         const target = event.target;
@@ -497,6 +556,7 @@ class App extends Component {
                 step: 0
             });
             x.toggleCreateModal();
+            this.setState({events: this.state.events.concat(newEvent)});
         })
         .catch(function (error) {
             console.log(error);
@@ -578,8 +638,34 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-        this.setState({
-            viewModal: !this.state.viewModal
+        this.setState({ viewModal: !this.state.viewModal });
+    }
+
+
+    componentWillMount() {
+        var user = {};
+        let component = this;
+        axios.get('/info')
+        .then(function (response) {
+            user.username = response.data.username;
+            user.admin = response.data.admin;
+            component.setState({login: user});
+
+            axios.get('/events')
+            .then(function (response) {
+                response.data.forEach(event => {
+                    event.calendarInfo.start = new Date(event.calendarInfo.start);
+                    event.calendarInfo.end = new Date(event.calendarInfo.end);
+                });
+                component.setState({events: response.data});
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+        })
+        .catch(function (error) {
+            console.log("Redirecting to login");
+            component.setState({login: {}});
         });
     }
 
@@ -1069,7 +1155,7 @@ class App extends Component {
                                                                             </ul> 
                                                                             <hr/>
                                                                         </Col>
-                                                                   </Row>;
+                                                                </Row>;
                                                         } else return
                                                 })
                                             )}
@@ -1129,7 +1215,7 @@ class App extends Component {
                                             </Row> )}
                                         {this.state.currentUser === "admin" &&
                                         (<Row>
-                                           <fieldset>
+                                        <fieldset>
                                             <Row className="basicInfo">
                                                 <Col xs="6" sm="6" md="6" lg="6">
                                                 <Row>
@@ -1477,5 +1563,6 @@ class App extends Component {
         );
     }
 }
+
 
 export default App;

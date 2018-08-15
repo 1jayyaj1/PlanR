@@ -15,6 +15,14 @@ let userSchema = Schema({
     admin: {
         type: Boolean,
         required: true
+    },
+    username: {
+        type: String,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
     }
 })
 
