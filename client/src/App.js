@@ -39,8 +39,8 @@ function flatten2(l) {
         return events.data
     })
     
-    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
-    console.log(test);
+    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
+   
     return test;
 }
 
@@ -49,7 +49,7 @@ function flatten3(l) {
         return events.data
     })
     
-    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) });
+    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) });
 
     return test;
 }
@@ -65,7 +65,7 @@ function activeChecker(l) {
     var test = l.map(events => {
         return events.data
     })
-    test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) });
+    test = flatten(test).filter(x => { return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) });
     return test;
 }
 
@@ -107,7 +107,6 @@ class App extends Component {
             daysSelectedValidLabel: 'hidden',
             currentUser: "admin",
             currentEventId: null,
-            events: [],
             login: { username: "default", admin: false }
         }
 
@@ -148,6 +147,7 @@ class App extends Component {
         this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
         this.displayCreateAccount = this.displayCreateAccount.bind(this);
         this.createAccount = this.createAccount.bind(this);
+        this.createCSV = this.createCSV.bind(this);
     }
 
     handleChangeStart(date) {
@@ -256,7 +256,7 @@ class App extends Component {
     }
 
     toggleViewModal(obj) {
-        console.log(obj)
+        //console.log(obj)
         const x = this;
         this.state.events.forEach(function(e) {
             var dataSet = e.data;
@@ -742,8 +742,8 @@ class App extends Component {
                     event.activationDay = new Date(event.activationDay);
                 })
             });
+
             myComponent.setState({events: response.data});
-            //console.log(JSON.stringify(Object.values(myComponent.state.events)));
         })
         .catch(function (error) {
             console.log(error);
@@ -774,6 +774,26 @@ class App extends Component {
       
       document.getElementById("contactForm").reset();
 
+    }
+
+    createCSV(events) {
+        var result = [];
+
+        events.map( e => {
+            var eventList = e.data;
+            eventList.map( event => {
+                var output = {
+                    title: event.calendarInfo.title,
+                    start: moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY"),
+                    end: moment(event.calendarInfo.end).format("dddd [,] MMMM Do YYYY"),
+                    capacity: event.capacity,
+                    description: event.description,
+                    location: event.location
+                };
+                result.push(output);
+            })
+        })
+        return (result);
     }
 
     render() {
@@ -1229,7 +1249,7 @@ class App extends Component {
                                                     this.state.registerEvents.map((registerEvents, index) => {
                                                         var event = registerEvents;
                                                             if (event) {
-                                                                console.log(event.data[0].location)
+
                                                                 return <Row key={index + 1}>
                                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                                 <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
@@ -1583,7 +1603,7 @@ class App extends Component {
                         <Row className="createEventButton">
                             <div className="col-md-12 col-sm-12">
                                 <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
-                                <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
+                                <CSVLink data={this.createCSV(this.state.events)} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
                             </div>
                         </Row>
                         <h3 className="section-title text-center m-5">Contact Us</h3>
