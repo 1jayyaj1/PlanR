@@ -143,6 +143,60 @@
   display: none;
 }
 
+.userSelectEventModal
+{
+  width: 100%;
+  margin-right:0px!important;
+  margin-left:0px!important;
+}
+
+.userSelectEventModalParent
+{
+  margin-left: 2%;
+  margin-right: 2%;
+}
+
+.userSelectEventTable
+{
+  margin-bottom: 0px!important;
+}
+
+.userSelectLabel
+{
+  font-weight: bold;
+}
+
+.userSelectData
+{
+  padding-left:10%;
+}
+
+.userSelcectModalHeader
+{
+  padding-left: 10% !important;
+}
+
+.userTableTop
+{
+  border-top: 0px!important;
+}
+
+.editLabel
+{
+  padding-top:2%!important;
+}
+
+.editDatesLabel
+{
+  padding-left:0px!important;
+  padding-right:0px!important;
+}
+
+.editEventLabel
+{
+  padding-left:1rem!important
+}
+
 .fadeout.active {
   display: block;
 }

@@ -40,7 +40,7 @@ function flatten2(l) {
     })
     
     test = flatten(test).filter(x => { console.log(x); return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
-
+    console.log(test);
     return test;
 }
 
@@ -55,13 +55,13 @@ function flatten3(l) {
 }
 
 function activeChecker(l) {
-    for(var i = 0; i < l.length; i++){
-        if(l[i].data.length > 1) {
-            var subLength = l[i].data.length - 1;
-            l[i].data[0].calendarInfo.end = l[i].data[subLength].calendarInfo.end;
-            l[i].data = l[i].data[0];
-        }
-    }
+    // for(var i = 0; i < l.length; i++){
+    //     if(l[i].data.length > 1) {
+    //         var subLength = l[i].data.length - 1;
+    //         l[i].data[0].calendarInfo.end = l[i].data[subLength].calendarInfo.end;
+    //         l[i].data = l[i].data[0];
+    //     }
+    // }
     var test = l.map(events => {
         return events.data
     })
@@ -76,6 +76,7 @@ class App extends Component {
 
         this.state = {
             events: [],
+            registerEvents: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
@@ -104,7 +105,7 @@ class App extends Component {
             dateValidLabel: 'hidden',
             recurrenceValidLabel: 'hidden',
             daysSelectedValidLabel: 'hidden',
-            currentUser: "admin",
+            currentUser: "user",
             currentEventId: null
         }
 
@@ -135,6 +136,7 @@ class App extends Component {
         this.deleteEvent = this.deleteEvent.bind(this);
         this.handleRecurrenceChange = this.handleRecurrenceChange.bind(this);
         this.fetchEvents = this.fetchEvents.bind(this);
+        this.addEventBasket = this.addEventBasket.bind(this);
     }
 
     handleChangeStart(date) {
@@ -227,7 +229,7 @@ class App extends Component {
         this.setState({ registerModal: !this.state.registerModal });
     }
 
-    toggleActivateModal(id) {
+    toggleActivateModal(id, start, end) {
         this.handleChangeActivationDate(null);
         this.setState({ 
             activateModal: !this.state.activateModal,
@@ -243,13 +245,14 @@ class App extends Component {
     }
 
     toggleViewModal(obj) {
+        console.log(obj)
         const x = this;
         this.state.events.forEach(function(e) {
             var dataSet = e.data;
             dataSet.forEach(function(event){
                 if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) {
                     x.setState({
-                        eventId: event._id,
+                        eventId: e._id,
                         name: {value: event.calendarInfo.title, valid: true}, 
                         capacity: {value: event.capacity, valid: true}, 
                         description: {value: event.description, valid: true},
@@ -260,7 +263,9 @@ class App extends Component {
                         allDay: event.allDay,
                         startDate: moment(event.calendarInfo.start),
                         endDate: moment(event.calendarInfo.end),
-                        calendarInfo: event.calendarInfo
+                        activationDay: moment(event.activationDay),
+                        calendarInfo: event.calendarInfo,
+                        currentEventId: event._id
                     })
                     if (event.recurrence === "") {
                         x.setState({ recurrence: "non-recurring" })
@@ -269,8 +274,20 @@ class App extends Component {
             })
             
         });
-
         this.setState({ viewModal: !this.state.viewModal });
+    }
+
+    addEventBasket(eventId) {
+        let myComponent = this;
+        axios.get('/events/' + eventId)
+        .then(function (response) {
+            myComponent.setState({ 
+                registerEvents: myComponent.state.registerEvents.concat(response.data)
+              })
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     }
    
     minMaxTime() {
@@ -508,7 +525,6 @@ class App extends Component {
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
         .then(function (response) {
             x.fetchEvents();
-            console.log("HELLLOOOOO" + response.data);
         })
         .catch(function (error) {
             console.log(error);
@@ -521,55 +537,49 @@ class App extends Component {
     }
 
     editEvent (eventId) {
-        var sDate = moment(this.state.startDate).format();
-        var eDate = moment(this.state.endDate).format();
-        var event = {
-            title: this.state.name.value,
-            allDay: false,
-            start:  new Date(sDate),
-            end: new Date(eDate)
-        }
-        var newEvent = {
-            capacity: this.state.capacity.value, 
-            description: this.state.description.value, 
-            location: this.state.location.value, 
-            allDay: this.state.allDay,
-            calendarInfo: event 
-        }
-  
-        axios.put('/events/' + eventId)
+        let myComponent = this;
+        axios.get('/events/' + eventId)
         .then(function (response) {
-            console.log(response);
+                 axios.put('/events/' + myComponent.state.currentEventId, {
+                    calendarInfo: {
+                        title: myComponent.state.name.value,
+                        allDay: false,
+                        start: new Date(myComponent.state.startDate),
+                        end: new Date(myComponent.state.endDate)
+                    }, 
+                    capacity:  myComponent.state.capacity.value,
+                    description: myComponent.state.description.value,
+                    location: myComponent.state.location.value,
+                    activationDay: new Date(myComponent.state.activationDay)
+                })
+                .then(function (response) {
+                    myComponent.fetchEvents();
+                    myComponent.setState({
+                        name: { value: "", valid: true },
+                        description: { value: "", valid: true },
+                        location: { value: "", valid: true },
+                        capacity: { value: 0, valid: true },
+                        recurrence: "",
+                        allDay: false,
+                        activateToday: false,
+                        startDate: null, 
+                        endDate: null,
+                        activationDay: null, 
+                        daysSelected: [],
+                        isRecurrent: { value: "", valid: true },
+                        recurrence: "",
+                        currentEventId: null
+                    });
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         })
         .catch(function (error) {
             console.log(error);
-        });
-        var indices = [];
-        this.state.events.forEach(function (obj, i) {
-            if (obj.calendarInfo.title === newEvent.calendarInfo.title) {
-                indices.push[i];
-            }
-        });
-        indices.forEach(function (index, i) {
-            this.state.events.splice(index, 1);
-        });
-
-        var list = this.splitEvent(newEvent);
-        list = this.state.events.concat(list);
-
+        })
         this.setState({
-            events: list,
-            name: { value: "", valid: true },
-            description: { value: "", valid: true },
-            location: { value: "", valid: true },
-            capacity: { value: 0, valid: true },
-            daysSelected: [],
-            isRecurrent: { value: "", valid: true },
-            recurrence: "",
-            allDay: false,
-            startDate: null,
-            endDate: null,
-            step: 0,
+            viewModal: !this.state.viewModal
         });
     }
 
@@ -1001,8 +1011,10 @@ class App extends Component {
                 
                                 {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
                                 <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
-                                    <ModalBody>
+                                    <ModalHeader>
                                         <h2> New Event </h2>
+                                    </ModalHeader>
+                                    <ModalBody>
                                         <Form>
                                             <Row>
                                                 <Col xs="12" sm="12" md="12" lg="12">
@@ -1034,48 +1046,33 @@ class App extends Component {
 
                                 {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
                                 <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
-                                    <ModalHeader>New Event</ModalHeader>
+                                    <ModalHeader><h2>Selected Events</h2></ModalHeader>
                                     <ModalBody>
                                         <form>
-                                            <Row>
-                                                <Col xs="12" sm="12" md="12" lg="12">
-                                                <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                <label className="inputName" style={{fontSize: '21px'}}>Zumba</label>
-                                                <ul style={{fontSize: '15px'}}>
-                                                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                                                    <li><span>Type of event:</span> <span>recurrent</span></li>
-                                                    <li><span>Time & date:</span> <span>every Monday at 11h45AM</span></li>
-                                                    <li><span>Location:</span> <span>Ericsson gym</span></li>
-                                                </ul> 
-                                                <hr/>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col xs="12" sm="12" md="12" lg="12">
-                                                <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                <label className="inputName" style={{fontSize: '21px'}}>Cinema</label>
-                                                <ul style={{fontSize: '15px'}}>
-                                                    <li><span>Instructor:</span> <span>Jay Abi-Saad</span></li>
-                                                    <li><span>Type of event:</span> <span>recurrent</span></li>
-                                                    <li><span>Time & date:</span> <span>every Thursday at 5h00PM</span></li>
-                                                    <li><span>Location:</span> <span>Ericsson conference room</span></li>
-                                                </ul> 
-                                                <hr/>
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col xs="12" sm="12" md="12" lg="12">
-                                                <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                <label className="inputName" style={{fontSize: '21px'}}>Hackathon</label>
-                                                <ul style={{fontSize: '15px'}}>
-                                                    <li><span>Instructor:</span> <span>Mathieu Lapointe</span></li>
-                                                    <li><span>Type of event:</span> <span>one time</span></li>
-                                                    <li><span>Time & date:</span> <span>Wednesday at 4h45PM</span></li>
-                                                    <li><span>Location:</span> <span>Ericsson garage</span></li>
-                                                </ul> 
-                                                <hr/>
-                                                </Col>
-                                            </Row>
+                                            {this.state.registerEvents.length > 0 &&
+                                            (
+                                                this.state.registerEvents.map((registerEvents, index) => {
+                                                    var event = registerEvents;
+                                                        if (event) {
+                                                            console.log(event.data[0].location)
+                                                            return <Row key={index + 1}>
+                                                                        <Col xs="12" sm="12" md="12" lg="12">
+                                                                            <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                                                                            <label className="inputName" style={{fontSize: '21px'}}>{event.data[0].calendarInfo.title}</label>
+                                                                            <ul style={{fontSize: '15px'}}>
+                                                                                <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                                                                                <li><span>Date:</span> <span>{moment(event.data[0].calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
+                                                                                <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
+                                                                                <li><span>Location:</span> <span>{event.data[0].location}</span></li>
+                                                                                <li><span>Capacity:</span> <span>{event.data[0].capacity}</span></li>
+                                                                                <li><span>Description:</span> <span>{event.data[0].description}</span></li>
+                                                                            </ul> 
+                                                                            <hr/>
+                                                                        </Col>
+                                                                   </Row>;
+                                                        } else return
+                                                })
+                                            )}
                                         </form>
                                     </ModalBody>
                                     <ModalFooter>
@@ -1085,24 +1082,51 @@ class App extends Component {
 
                                 {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                 <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
-                                    <ModalBody>
-                                        {this.state.currentUser !== "admin" &&
-                                        (<Row>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                            <label className="inputName" style={{fontSize: '21px'}}>Event Information</label>
-                                            <ul style={{fontSize: '15px'}}>
-                                                <li><span>Title:</span> <span>{this.state.calendarInfo.title}</span></li>
-                                                <li><span>Time:</span> <span>From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
-                                                <li><span>Instructor: user</span> <span></span></li>
-                                                <li><span>Location:</span> <span>{this.state.location.value}</span></li>
-                                                <li><span>Description:</span> <span>{this.state.description.value}</span></li>
-                                                {this.state.isRecurrent.value &&
-                                                <li><span>Recurrence:</span> <span>{this.state.recurrence}</span></li>} 
-                                                <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
-                                            </ul> 
-                                            <hr/>
-                                            </Col>
-                                        </Row>)}
+                                    <ModalHeader className="userSelcectModalHeader editEventLabel">
+                                    {this.state.currentUser === "user" &&
+                                        (<h2>{this.state.calendarInfo.title}</h2>)}
+                                    {this.state.currentUser === "admin" &&
+                                        (<h2>Edit Event</h2>)}
+                                    </ModalHeader>
+                                    <ModalBody className="userSelectEventModalParent">
+                                        {this.state.currentUser === "user" &&
+                                        (<Row className="userSelectEventModal">
+                                                <Col xs="12" sm="12" md="12" lg="12">
+                                                <Table className="userSelectEventTable">
+                                                    <tbody>
+                                                    <tr>
+                                                        <td scope="row" className="userTableTop"><span className="userSelectLabel">Instructor:</span></td>
+                                                        <td className="userTableTop"><span className="userSelectData">Leyla kinaze</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Date:</span></td>
+                                                        <td><span className="userSelectData">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Time:</span></td>
+                                                        <td><span className="userSelectData">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Location:</span></td>
+                                                        <td><span className="userSelectData">{this.state.location.value}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Capacity:</span></td>
+                                                        <td><span className="userSelectData">{this.state.capacity.value}</span></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Description:</span></td>
+                                                        <td><span className="userSelectData">{this.state.description.value}</span></td>
+                                                    </tr>
+                                                    {this.state.isRecurrent.value &&
+                                                    <tr>
+                                                        <td scope="row"><span className="userSelectLabel">Recurrence:</span></td>
+                                                        <td><span className="userSelectData">{this.state.recurrence}</span></td>
+                                                    </tr>} 
+                                                    </tbody>
+                                                </Table> 
+                                                </Col>
+                                            </Row> )}
                                         {this.state.currentUser === "admin" &&
                                         (<Row>
                                            <fieldset>
@@ -1145,13 +1169,8 @@ class App extends Component {
                                                 </Col>
                                             </Row>
                                             </fieldset>
-                                            
-                                            <div className="custom-control custom-toggle d-block my-2">
-                                                <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
-                                                <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
-                                            </div>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                            <label className="inputName">Date & time</label>
+                                            <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
+                                            <label className="inputName editLabel">Date & time</label>
                                                 <div className="input-daterange input-group" id="datepicker-example-2">
                                                 <span className="input-group-append" id="startIcon">
                                                     <span className="input-group-text" id="startIcon">
@@ -1196,12 +1215,36 @@ class App extends Component {
                                                 </span>
                                                 </div>
                                             </Col>
-                                            <hr/>
-                                            <Col>
-                                            <Button color="danger" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>
-                                            <Button className="" type="submit">Close</Button></Col>
+                                            <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
+                                            <label className="inputName editLabel">Activation day</label>
+                                                <div className="input-daterange input-group" id="datepicker-example-2">
+                                                <span className="input-group-append" id="startIcon">
+                                                    <span className="input-group-text" id="startIcon">
+                                                    <i className="fa fa-calendar"></i>
+                                                    </span>
+                                                </span>
+                                                <DatePicker
+                                                    className="input-sm form-control activationDate"
+                                                    placeholderText="Activation date"
+                                                    selected={this.state.activationDay}
+                                                    onChange={this.handleChangeActivationDate}
+                                                    showTimeSelect
+                                                    timeFormat="HH:mm"
+                                                    timeIntervals={15}
+                                                    minDate={moment()}
+                                                    dateFormat="LLL"
+                                                    readOnly
+                                                />
+                                                </div>
+                                            </Col>
                                         </Row>)}
                                     </ModalBody>
+                                    <ModalFooter>
+                                    {this.state.currentUser === "user" &&
+                                        (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
+                                    {this.state.currentUser === "admin" &&
+                                        (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
+                                    </ModalFooter>
                                 </Modal>
 
                                 {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
@@ -1306,8 +1349,8 @@ class App extends Component {
                                                     <td>{event.location}</td>
                                                     <td>{event.capacity}</td>
                                                     <td>{event.recurrence}</td>
-                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id)}}>Activate</Button></td>
-                                                    <td><Button outline color="warning">Edit</Button></td>
+                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
+                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
                                                     <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                 </tr>;
                                         } else return
@@ -1352,7 +1395,7 @@ class App extends Component {
                                                     <td>{event.recurrence}</td>
                                                     <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
                                                     <td><Button outline color="success">Announce</Button></td>
-                                                    <td><Button outline color="warning">Edit</Button></td>
+                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
                                                     <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                 </tr>;
                                         } else return
