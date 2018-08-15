@@ -105,7 +105,7 @@ class App extends Component {
             dateValidLabel: 'hidden',
             recurrenceValidLabel: 'hidden',
             daysSelectedValidLabel: 'hidden',
-            currentUser: "user",
+            currentUser: "admin",
             currentEventId: null,
             events: [],
             login: { username: "default", admin: false }
@@ -641,7 +641,6 @@ class App extends Component {
         this.setState({ viewModal: !this.state.viewModal });
     }
 
-
     componentWillMount() {
         var user = {};
         let component = this;
@@ -649,19 +648,10 @@ class App extends Component {
         .then(function (response) {
             user.username = response.data.username;
             user.admin = response.data.admin;
-            component.setState({login: user});
+            console.log(response);
+            component.setState({ login: user });
 
-            axios.get('/events')
-            .then(function (response) {
-                response.data.forEach(event => {
-                    event.calendarInfo.start = new Date(event.calendarInfo.start);
-                    event.calendarInfo.end = new Date(event.calendarInfo.end);
-                });
-                component.setState({events: response.data});
-            })
-            .catch(function (error) {
-                console.log(error);
-            })
+            component.fetchEvents();
         })
         .catch(function (error) {
             console.log("Redirecting to login");
@@ -758,11 +748,6 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-    }
-
-    // kept here only for testing purposes
-    componentWillMount() {
-        this.fetchEvents();
     }
 
     handleSubmit(event) {
@@ -1024,285 +1009,437 @@ class App extends Component {
             </fieldset>;
           }
         }
-        return (
-            <div>
-                {/*<----------------------- NAVBAR ----------------------->*/}
-                <div className="welcome d-flex justify-content-center flex-column">
-                    <div className="container">
-                        <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-                        <a className="navbar-brand">
-                            Umba
-                        </a>
-                        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                            <span className="navbar-toggler-icon"></span>
-                        </button>
-                        <div className="collapse navbar-collapse" id="navbarNavDropdown">
-                            <ul className="navbar-nav">
-                            <li className="nav-item active">
-                                <a className="nav-link">Home <span className="sr-only">(current)</span></a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link">My profile</a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="nav-link">Log Out</a>
-                            </li>
-                            </ul>
-                        </div>
-                        </nav>
-                    </div>
 
-                    {/*<----------------------- MAIN PAGE ----------------------->*/}
-                    <div className="inner-wrapper mt-auto mb-auto container">
-                        <div className="row">
-                        <div className="col-md-7">
-                            <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
-                            <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
-                        </div>
+
+        if (this.state.login.username === "default") {
+            return (
+                <div className='sweet-loading center-screen'>
+                    <PulseLoader
+                        color={'#D73636'} 
+                        loading={true}
+                        size={50}
+                    />
+                </div>
+            )
+        } else if (this.state.login.username === "account") {
+            return (
+                <div className="section-invert">
+                    <div className="py-4" Style="margin-top: 10%">
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
+                                    <form> 
+                                        <h3 Style="text-align: center; padding-bottom: 5%"> Create an account </h3>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="name">Full name</label>
+                                                        <input type="text" className="form-control" id="name" ref={this.name} Style="margin-left: 15%; width: 70%" placeholder="Enter your full name"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="name">Email</label>
+                                                        <input type="text" className="form-control" id="email" ref={this.email} Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="username">Username</label>
+                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="password">Password</label>
+                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="confirmPassword">Confirm your password</label>
+                                                        <input type="password" className="form-control" id="confirmPassword" ref={this.confirmPassword} Style="margin-left: 15%; width: 70%" placeholder="Confirm your password"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.createAccount} Style="margin-top: 12%" type="button" value="Create"></input>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                        {/*<----------------------- CALENDAR PAGE ----------------------->*/}
-                        <div id="our-services" className="our-services section py-4">
-                        <h3 className="section-title text-center my-5">Your schedule</h3>
-                
+            )
+        } else if (!this.state.login.username) {
+            return (
+                <div className="section-invert">
+                    <div className="py-4" Style="margin-top: 10%">
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
-                            <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
-                
-                                <Row>
-                                    <Col xs="12" sm="12" md="12" lg="12">
-                                        <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
-                                        <BigCalendar
-                                            selectable={true}
-                                            min={new Date('2018, 1, 7, 09:00')}
-                                            max={new Date('2018, 1, 7, 18:00')}
-                                            defaultView='week'
-                                            onSelectEvent={(obj) => this.toggleViewModal(obj)}
-                                            onSelectSlot={(date) => this.toggleCreateModal(date)}
-                                            events={flatten2(this.state.events)}
-                                            startAccessor='start'
-                                            endAccessor='end'>
-                                        </BigCalendar>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                
-                                <Row>
-                                    <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-                                        <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
-                                    </Col>
-                                </Row>
-                
-                                {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                                <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
-                                    <ModalHeader>
-                                        <h2> New Event </h2>
-                                    </ModalHeader>
-                                    <ModalBody>
-                                        <Form>
+                                <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
+                                    <form> 
+                                        <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
                                             <Row>
-                                                <Col xs="12" sm="12" md="12" lg="12">
-                                                    <Steps current={this.state.step}>
-                                                        {steps.map(item => <Step key={item.title} title={item.title} />)}
-                                                    </Steps>
-                                                    <div className="steps-content">
-                                                        {wizardContentCreate}
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="username">Username</label>
+                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
                                                     </div>
-                                                    <div className="steps-action">
-                                                        {
-                                                            this.state.step > 0
-                                                            && (<Button color="primary" style={{ marginLeft: 8, marginRight: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
-                                                        }
-                                                        {
-                                                            this.state.step < steps.length - 1
-                                                            && <Button color="primary" className="" type="submit" onClick={this.nextStep}>Next</Button>
-                                                        }
-                                                        {
-                                                            this.state.step === steps.length - 1
-                                                            && <Button color="primary" type="button" onClick={() => this.createEvent()}>Create</Button>
-                                                        }
-                                                    </div>
-                                                </Col>
-                                            </Row>
-                                        </Form>
-                                    </ModalBody>
-                                </Modal>
-
-                                {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
-                                <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
-                                    <ModalHeader><h2>Selected Events</h2></ModalHeader>
-                                    <ModalBody>
-                                        <form>
-                                            {this.state.registerEvents.length > 0 &&
-                                            (
-                                                this.state.registerEvents.map((registerEvents, index) => {
-                                                    var event = registerEvents;
-                                                        if (event) {
-                                                            console.log(event.data[0].location)
-                                                            return <Row key={index + 1}>
-                                                                        <Col xs="12" sm="12" md="12" lg="12">
-                                                                            <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                                            <label className="inputName" style={{fontSize: '21px'}}>{event.data[0].calendarInfo.title}</label>
-                                                                            <ul style={{fontSize: '15px'}}>
-                                                                                <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
-                                                                                <li><span>Date:</span> <span>{moment(event.data[0].calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
-                                                                                <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
-                                                                                <li><span>Location:</span> <span>{event.data[0].location}</span></li>
-                                                                                <li><span>Capacity:</span> <span>{event.data[0].capacity}</span></li>
-                                                                                <li><span>Description:</span> <span>{event.data[0].description}</span></li>
-                                                                            </ul> 
-                                                                            <hr/>
-                                                                        </Col>
-                                                                </Row>;
-                                                        } else return
-                                                })
-                                            )}
-                                        </form>
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
-                                    </ModalFooter>
-                                </Modal>
-
-                                {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
-                                <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
-                                    <ModalHeader className="userSelcectModalHeader editEventLabel">
-                                    {this.state.currentUser === "user" &&
-                                        (<h2>{this.state.calendarInfo.title}</h2>)}
-                                    {this.state.currentUser === "admin" &&
-                                        (<h2>Edit Event</h2>)}
-                                    </ModalHeader>
-                                    <ModalBody className="userSelectEventModalParent">
-                                        {this.state.currentUser === "user" &&
-                                        (<Row className="userSelectEventModal">
-                                                <Col xs="12" sm="12" md="12" lg="12">
-                                                <Table className="userSelectEventTable">
-                                                    <tbody>
-                                                    <tr>
-                                                        <td scope="row" className="userTableTop"><span className="userSelectLabel">Instructor:</span></td>
-                                                        <td className="userTableTop"><span className="userSelectData">Leyla kinaze</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Date:</span></td>
-                                                        <td><span className="userSelectData">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Time:</span></td>
-                                                        <td><span className="userSelectData">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Location:</span></td>
-                                                        <td><span className="userSelectData">{this.state.location.value}</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Capacity:</span></td>
-                                                        <td><span className="userSelectData">{this.state.capacity.value}</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Description:</span></td>
-                                                        <td><span className="userSelectData">{this.state.description.value}</span></td>
-                                                    </tr>
-                                                    {this.state.isRecurrent.value &&
-                                                    <tr>
-                                                        <td scope="row"><span className="userSelectLabel">Recurrence:</span></td>
-                                                        <td><span className="userSelectData">{this.state.recurrence}</span></td>
-                                                    </tr>} 
-                                                    </tbody>
-                                                </Table> 
-                                                </Col>
-                                            </Row> )}
-                                        {this.state.currentUser === "admin" &&
-                                        (<Row>
-                                        <fieldset>
-                                            <Row className="basicInfo">
-                                                <Col xs="6" sm="6" md="6" lg="6">
-                                                <Row>
-                                                    <label>Name</label>
-                                                    <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                                                    <div className="invalid-feedback">Characters only and can't be empty</div>
-                                                </Row>
-                                                <Row>
-                                                    <label>Capacity</label>
-                                                    <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                                                    <div className="invalid-feedback">Numbers only and can't be empty</div>
-                                                </Row>
-                                                <Row>
-                                                    <label>Location</label>
-                                                    <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                                                    <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
-                                                </Row> 
-                                                <Row>
-                                                    <label>Recurrence</label>
-                                                    <fieldset className="inputRecurrence">
-                                                        <select className="custom-select w-100" name="recurrence" value={this.state.recurrence} onChange={this.handleRecurrenceChange}>
-                                                            <option disabled='disabled' value="">Will it be a recurring event?</option>
-                                                            <option value="non-recurring">No</option>
-                                                            <option value="Weekly">Weekly</option>
-                                                            <option value="Biweekly">Biweekly</option>
-                                                            <option value="Triweekly">Triweekly</option>
-                                                        </select>
-                                                    </fieldset>
-                                                </Row>
-                                                </Col>
-                                                <Col xs="6" sm="6" md="6" lg="6">
-                                                <Row  className="rightInputInBasicInfo">
-                                                    <label>Description</label>
-                                                    <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
-                                                    <div className="invalid-feedback">Can't be empty</div>
-                                                </Row>
-                                                </Col>
-                                            </Row>
-                                            </fieldset>
-                                            <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
-                                            <label className="inputName editLabel">Date & time</label>
-                                                <div className="input-daterange input-group" id="datepicker-example-2">
-                                                <span className="input-group-append" id="startIcon">
-                                                    <span className="input-group-text" id="startIcon">
-                                                    <i className="fa fa-calendar"></i>
-                                                    </span>
-                                                </span>
-                                                <DatePicker
-                                                    className="input-sm form-control startDate"
-                                                    name="start"
-                                                    placeholderText="Start date"
-                                                    selected={this.state.startDate}
-                                                    onChange={this.handleChangeStart}
-                                                    showTimeSelect
-                                                    timeFormat="HH:mm"
-                                                    timeIntervals={15}
-                                                    minDate={moment()}
-                                                    minTime={moment().hours(9).minutes(0)}
-                                                    maxTime={moment().hours(17).minutes(45)}
-                                                    dateFormat="LLL"
-                                                    readOnly
-                                                />
-                                                <DatePicker
-                                                    className="input-sm form-control startDate"
-                                                    name="end"
-                                                    placeholderText="End date"
-                                                    selected={this.state.endDate}
-                                                    onChange={this.handleChangeEnd}
-                                                    showTimeSelect
-                                                    timeFormat="HH:mm"
-                                                    timeIntervals={15}
-                                                    minDate={this.minMaxTime()}
-                                                    maxDate={this.minMaxTime()}
-                                                    minTime={this.startTime()}
-                                                    maxTime={moment().hours(18).minutes(0)}
-                                                    dateFormat="LLL"
-                                                    readOnly
-                                                />
-                                                <span className="input-group-prepend" id="endIcon">
-                                                    <span className="input-group-text" id="endIcon">
-                                                    <i className="fa fa-calendar"></i>
-                                                    </span>
-                                                </span>
                                                 </div>
+                                            </Row>
+                                            <Row>
+                                                <div className="col-md-12 col-sm-12">
+                                                    <div className="form-group" Style="text-align: center">
+                                                        <label htmlFor="password">Password</label>
+                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    </div>
+                                                </div>
+                                            </Row>
+                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.handleLoginSubmit} Style="margin-top: 12%" type="button" value="Log in"></input>
+                                    </form>
+                                </div>
+                            </div>
+                            <p onClick={this.displayCreateAccount} Style="text-align: center; color: #007bff; cursor: pointer"> Create an account </p>
+                        </div>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div>
+                    {/*<----------------------- NAVBAR ----------------------->*/}
+                    <div className="welcome d-flex justify-content-center flex-column">
+                        <div className="container">
+                            <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
+                            <a className="navbar-brand">
+                                Umba
+                            </a>
+                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                                <span className="navbar-toggler-icon"></span>
+                            </button>
+                            <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                                <ul className="navbar-nav">
+                                <li className="nav-item active">
+                                    <a className="nav-link">Home <span className="sr-only">(current)</span></a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link">My profile</a>
+                                </li>
+                                <li className="nav-item">
+                                    <a className="nav-link">Log Out</a>
+                                </li>
+                                </ul>
+                            </div>
+                            </nav>
+                        </div>
+
+                        {/*<----------------------- MAIN PAGE ----------------------->*/}
+                        <div className="inner-wrapper mt-auto mb-auto container">
+                            <div className="row">
+                            <div className="col-md-7">
+                                <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
+                                <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                            {/*<----------------------- CALENDAR PAGE ----------------------->*/}
+                            <div id="our-services" className="our-services section py-4">
+                            <h3 className="section-title text-center my-5">Your schedule</h3>
+                    
+                            <div className="container py-4">
+                                <div className="row justify-content-md-center px-4">
+                                <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
+                    
+                                    <Row>
+                                        <Col xs="12" sm="12" md="12" lg="12">
+                                            <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
+                                            <BigCalendar
+                                                selectable={true}
+                                                min={new Date('2018, 1, 7, 09:00')}
+                                                max={new Date('2018, 1, 7, 18:00')}
+                                                defaultView='week'
+                                                onSelectEvent={(obj) => this.toggleViewModal(obj)}
+                                                onSelectSlot={(date) => this.toggleCreateModal(date)}
+                                                events={flatten2(this.state.events)}
+                                                startAccessor='start'
+                                                endAccessor='end'>
+                                            </BigCalendar>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    
+                                    <Row>
+                                        <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
+                                            <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
+                                        </Col>
+                                    </Row>
+                    
+                                    {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
+                                        <ModalHeader>
+                                            <h2> New Event </h2>
+                                        </ModalHeader>
+                                        <ModalBody>
+                                            <Form>
+                                                <Row>
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                        <Steps current={this.state.step}>
+                                                            {steps.map(item => <Step key={item.title} title={item.title} />)}
+                                                        </Steps>
+                                                        <div className="steps-content">
+                                                            {wizardContentCreate}
+                                                        </div>
+                                                        <div className="steps-action">
+                                                            {
+                                                                this.state.step > 0
+                                                                && (<Button color="primary" style={{ marginLeft: 8, marginRight: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
+                                                            }
+                                                            {
+                                                                this.state.step < steps.length - 1
+                                                                && <Button color="primary" className="" type="submit" onClick={this.nextStep}>Next</Button>
+                                                            }
+                                                            {
+                                                                this.state.step === steps.length - 1
+                                                                && <Button color="primary" type="button" onClick={() => this.createEvent()}>Create</Button>
+                                                            }
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </Form>
+                                        </ModalBody>
+                                    </Modal>
+
+                                    {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
+                                        <ModalHeader><h2>Selected Events</h2></ModalHeader>
+                                        <ModalBody>
+                                            <form>
+                                                {this.state.registerEvents.length > 0 &&
+                                                (
+                                                    this.state.registerEvents.map((registerEvents, index) => {
+                                                        var event = registerEvents;
+                                                            if (event) {
+                                                                console.log(event.data[0].location)
+                                                                return <Row key={index + 1}>
+                                                                            <Col xs="12" sm="12" md="12" lg="12">
+                                                                                <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
+                                                                                <label className="inputName" style={{fontSize: '21px'}}>{event.data[0].calendarInfo.title}</label>
+                                                                                <ul style={{fontSize: '15px'}}>
+                                                                                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                                                                                    <li><span>Date:</span> <span>{moment(event.data[0].calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
+                                                                                    <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
+                                                                                    <li><span>Location:</span> <span>{event.data[0].location}</span></li>
+                                                                                    <li><span>Capacity:</span> <span>{event.data[0].capacity}</span></li>
+                                                                                    <li><span>Description:</span> <span>{event.data[0].description}</span></li>
+                                                                                </ul> 
+                                                                                <hr/>
+                                                                            </Col>
+                                                                    </Row>;
+                                                            } else return
+                                                    })
+                                                )}
+                                            </form>
+                                        </ModalBody>
+                                        <ModalFooter>
+                                            <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
+                                        </ModalFooter>
+                                    </Modal>
+
+                                    {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
+                                        <ModalHeader className="userSelcectModalHeader editEventLabel">
+                                        {this.state.currentUser === "user" &&
+                                            (<h2>{this.state.calendarInfo.title}</h2>)}
+                                        {this.state.currentUser === "admin" &&
+                                            (<h2>Edit Event</h2>)}
+                                        </ModalHeader>
+                                        <ModalBody className="userSelectEventModalParent">
+                                            {this.state.currentUser === "user" &&
+                                            (<Row className="userSelectEventModal">
+                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                    <Table className="userSelectEventTable">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td scope="row" className="userTableTop"><span className="userSelectLabel">Instructor:</span></td>
+                                                            <td className="userTableTop"><span className="userSelectData">Leyla kinaze</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Date:</span></td>
+                                                            <td><span className="userSelectData">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Time:</span></td>
+                                                            <td><span className="userSelectData">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Location:</span></td>
+                                                            <td><span className="userSelectData">{this.state.location.value}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Capacity:</span></td>
+                                                            <td><span className="userSelectData">{this.state.capacity.value}</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Description:</span></td>
+                                                            <td><span className="userSelectData">{this.state.description.value}</span></td>
+                                                        </tr>
+                                                        {this.state.isRecurrent.value &&
+                                                        <tr>
+                                                            <td scope="row"><span className="userSelectLabel">Recurrence:</span></td>
+                                                            <td><span className="userSelectData">{this.state.recurrence}</span></td>
+                                                        </tr>} 
+                                                        </tbody>
+                                                    </Table> 
+                                                    </Col>
+                                                </Row> )}
+                                            {this.state.currentUser === "admin" &&
+                                            (<Row>
+                                            <fieldset>
+                                                <Row className="basicInfo">
+                                                    <Col xs="6" sm="6" md="6" lg="6">
+                                                    <Row>
+                                                        <label>Name</label>
+                                                        <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
+                                                        <div className="invalid-feedback">Characters only and can't be empty</div>
+                                                    </Row>
+                                                    <Row>
+                                                        <label>Capacity</label>
+                                                        <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
+                                                        <div className="invalid-feedback">Numbers only and can't be empty</div>
+                                                    </Row>
+                                                    <Row>
+                                                        <label>Location</label>
+                                                        <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
+                                                        <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+                                                    </Row> 
+                                                    <Row>
+                                                        <label>Recurrence</label>
+                                                        <fieldset className="inputRecurrence">
+                                                            <select className="custom-select w-100" name="recurrence" value={this.state.recurrence} onChange={this.handleRecurrenceChange}>
+                                                                <option disabled='disabled' value="">Will it be a recurring event?</option>
+                                                                <option value="non-recurring">No</option>
+                                                                <option value="Weekly">Weekly</option>
+                                                                <option value="Biweekly">Biweekly</option>
+                                                                <option value="Triweekly">Triweekly</option>
+                                                            </select>
+                                                        </fieldset>
+                                                    </Row>
+                                                    </Col>
+                                                    <Col xs="6" sm="6" md="6" lg="6">
+                                                    <Row  className="rightInputInBasicInfo">
+                                                        <label>Description</label>
+                                                        <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                                                        <div className="invalid-feedback">Can't be empty</div>
+                                                    </Row>
+                                                    </Col>
+                                                </Row>
+                                                </fieldset>
+                                                <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
+                                                <label className="inputName editLabel">Date & time</label>
+                                                    <div className="input-daterange input-group" id="datepicker-example-2">
+                                                    <span className="input-group-append" id="startIcon">
+                                                        <span className="input-group-text" id="startIcon">
+                                                        <i className="fa fa-calendar"></i>
+                                                        </span>
+                                                    </span>
+                                                    <DatePicker
+                                                        className="input-sm form-control startDate"
+                                                        name="start"
+                                                        placeholderText="Start date"
+                                                        selected={this.state.startDate}
+                                                        onChange={this.handleChangeStart}
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={15}
+                                                        minDate={moment()}
+                                                        minTime={moment().hours(9).minutes(0)}
+                                                        maxTime={moment().hours(17).minutes(45)}
+                                                        dateFormat="LLL"
+                                                        readOnly
+                                                    />
+                                                    <DatePicker
+                                                        className="input-sm form-control startDate"
+                                                        name="end"
+                                                        placeholderText="End date"
+                                                        selected={this.state.endDate}
+                                                        onChange={this.handleChangeEnd}
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={15}
+                                                        minDate={this.minMaxTime()}
+                                                        maxDate={this.minMaxTime()}
+                                                        minTime={this.startTime()}
+                                                        maxTime={moment().hours(18).minutes(0)}
+                                                        dateFormat="LLL"
+                                                        readOnly
+                                                    />
+                                                    <span className="input-group-prepend" id="endIcon">
+                                                        <span className="input-group-text" id="endIcon">
+                                                        <i className="fa fa-calendar"></i>
+                                                        </span>
+                                                    </span>
+                                                    </div>
+                                                </Col>
+                                                <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
+                                                <label className="inputName editLabel">Activation day</label>
+                                                    <div className="input-daterange input-group" id="datepicker-example-2">
+                                                    <span className="input-group-append" id="startIcon">
+                                                        <span className="input-group-text" id="startIcon">
+                                                        <i className="fa fa-calendar"></i>
+                                                        </span>
+                                                    </span>
+                                                    <DatePicker
+                                                        className="input-sm form-control activationDate"
+                                                        placeholderText="Activation date"
+                                                        selected={this.state.activationDay}
+                                                        onChange={this.handleChangeActivationDate}
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={15}
+                                                        minDate={moment()}
+                                                        dateFormat="LLL"
+                                                        readOnly
+                                                    />
+                                                    </div>
+                                                </Col>
+                                            </Row>)}
+                                        </ModalBody>
+                                        <ModalFooter>
+                                        {this.state.currentUser === "user" &&
+                                            (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
+                                        {this.state.currentUser === "admin" &&
+                                            (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
+                                        </ModalFooter>
+                                    </Modal>
+
+                                    {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
+                                        <ModalHeader>
+                                        <h2>Registration set-up</h2>
+                                        </ModalHeader>
+                                        <ModalBody>
+                                        <Row className="allDayLabel">
+                                            <Col xs="8" sm="8" md="8" lg="8">
+                                            <fieldset>
+                                                <div className="custom-control custom-toggle d-block my-2">
+                                                <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
+                                                <label className="custom-control-label" htmlFor="customToggle1">Today</label>
+                                                </div>
+                                            </fieldset>
                                             </Col>
-                                            <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
-                                            <label className="inputName editLabel">Activation day</label>
+                                        </Row><br/>
+                                        <Row>
+                                            <Col xs="12" sm="12" md="12" lg="12">
                                                 <div className="input-daterange input-group" id="datepicker-example-2">
                                                 <span className="input-group-append" id="startIcon">
                                                     <span className="input-group-text" id="startIcon">
@@ -1323,244 +1460,197 @@ class App extends Component {
                                                 />
                                                 </div>
                                             </Col>
-                                        </Row>)}
-                                    </ModalBody>
-                                    <ModalFooter>
-                                    {this.state.currentUser === "user" &&
-                                        (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
-                                    {this.state.currentUser === "admin" &&
-                                        (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
-                                    </ModalFooter>
-                                </Modal>
+                                        </Row>
+                                        <Row className="activateButtonRow pull-right">
+                                            <Button color="success" onClick={() => this.activateEvent()} >Activate</Button>  
+                                        </Row>
+                                        </ModalBody>
+                                    </Modal>
+                                    {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
 
-                                {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
-                                <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
-                                    <ModalHeader>
-                                    <h2>Registration set-up</h2>
-                                    </ModalHeader>
-                                    <ModalBody>
-                                    <Row className="allDayLabel">
-                                        <Col xs="8" sm="8" md="8" lg="8">
-                                        <fieldset>
-                                            <div className="custom-control custom-toggle d-block my-2">
-                                            <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
-                                            <label className="custom-control-label" htmlFor="customToggle1">Today</label>
-                                            </div>
-                                        </fieldset>
-                                        </Col>
-                                    </Row><br/>
-                                    <Row>
-                                        <Col xs="12" sm="12" md="12" lg="12">
-                                            <div className="input-daterange input-group" id="datepicker-example-2">
-                                            <span className="input-group-append" id="startIcon">
-                                                <span className="input-group-text" id="startIcon">
-                                                <i className="fa fa-calendar"></i>
-                                                </span>
-                                            </span>
-                                            <DatePicker
-                                                className="input-sm form-control activationDate"
-                                                placeholderText="Activation date"
-                                                selected={this.state.activationDay}
-                                                onChange={this.handleChangeActivationDate}
-                                                showTimeSelect
-                                                timeFormat="HH:mm"
-                                                timeIntervals={15}
-                                                minDate={moment()}
-                                                dateFormat="LLL"
-                                                readOnly
-                                            />
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                    <Row className="activateButtonRow pull-right">
-                                        <Button color="success" onClick={() => this.activateEvent()} >Activate</Button>  
-                                    </Row>
-                                    </ModalBody>
-                                </Modal>
-                                {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
-
-                                <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
-                                    <ModalHeader>
-                                    <h2>Delete event</h2>
-                                    </ModalHeader>
-                                    <ModalBody>
-                                    <Row className="allDayLabel">
-                                    <p className="deleteMessage">Are you sure you wish to delete this event?</p>
-                                    </Row><br/>
-                                    <Row className="deleteButtonRow pull-right">
-                                        <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
-                                    </Row>
-                                    </ModalBody>
-                                </Modal>
+                                    <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
+                                        <ModalHeader>
+                                        <h2>Delete event</h2>
+                                        </ModalHeader>
+                                        <ModalBody>
+                                        <Row className="allDayLabel">
+                                        <p className="deleteMessage">Are you sure you wish to delete this event?</p>
+                                        </Row><br/>
+                                        <Row className="deleteButtonRow pull-right">
+                                            <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
+                                        </Row>
+                                        </ModalBody>
+                                    </Modal>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div className="contact section-invert py-4">
-                    <Row>
-                        <div className="col-md-12 col-sm-12">
-                            <h1 className="adminName">Admin</h1>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className="col-md-12 col-sm-12">
-                            <h3 className="adminInactiveName">Inactive Events</h3>
-                        </div>
-                    </Row>
-                    <Row className="unpublishedTable">
-                        <div className="col-md-12 col-sm-12">
-                            <Table>
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Time</th>
-                                    <th>Location</th>
-                                    <th>Capacity</th>
-                                    <th>Recurrence</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {
-                                    activeChecker(this.state.events).map((events, index) => {
-                                        var event = events;
-                                        if (event) {
-                                            return <tr key={index + 1}>
-                                                    <th>{event.calendarInfo.title}</th>
-                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                    <td>{event.location}</td>
-                                                    <td>{event.capacity}</td>
-                                                    <td>{event.recurrence}</td>
-                                                    <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                </tr>;
-                                        } else return
-                                    })
-                                }
-                                </tbody>
-                            </Table>
-                        </div>
-                    </Row>
-                    <Row>
-                        <div className="col-md-12 col-sm-12">
-                            <h3 className="adminInactiveName">Active Events</h3>
-                        </div>
-                    </Row>
-                    <Row className="publishedTable">
-                        <div className="col-md-12 col-sm-12">
-                            <Table>
-                                <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Start</th>
-                                    <th>End</th>
-                                    <th>Time</th>
-                                    <th>Location</th>
-                                    <th>Current Capacity</th>
-                                    <th>Recurrence</th>
-                                    <th>Registration Start</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {
-                                    flatten3(this.state.events).map((events, index) => {
-                                        var event = events;
-                                        if (event) {
-                                            return <tr key={index + 1}>
-                                                    <th>{event.calendarInfo.title}</th>
-                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                    <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
-                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                    <td>{event.location}</td>
-                                                    <td>{event.capacity}</td>
-                                                    <td>{event.recurrence}</td>
-                                                    <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
-                                                    <td><Button outline color="success">Announce</Button></td>
-                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                </tr>;
-                                        } else return
-                                    })
-                                }
-                                </tbody>
-                            </Table>
-                        </div>
-                    </Row>
-                    <Row className="createEventButton">
-                        <div className="col-md-12 col-sm-12">
-                            <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
-                            <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
-                        </div>
-                    </Row>
-                    <h3 className="section-title text-center m-5">Contact Us</h3>
-                    <div className="container py-4">
-                        <div className="row justify-content-md-center px-4">
-                            <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-                                <form onSubmit={this.handleSubmit} id="contactForm">
-                                <div className="row">
-                                    <div className="col-md-6 col-sm-12">
-                                    <div className="form-group">
-                                        <label htmlFor="contactFormFullName">Full Name</label>
-                                        <input className="form-control" id="contactFormFullName" name="contactFormFullName" required="required" placeholder="Enter your full name"></input>
+                    
+                    <div className="contact section-invert py-4">
+                        <Row>
+                            <div className="col-md-12 col-sm-12">
+                                <h1 className="adminName">Admin</h1>
+                            </div>
+                        </Row>
+                        <Row>
+                            <div className="col-md-12 col-sm-12">
+                                <h3 className="adminInactiveName">Inactive Events</h3>
+                            </div>
+                        </Row>
+                        <Row className="unpublishedTable">
+                            <div className="col-md-12 col-sm-12">
+                                <Table>
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Time</th>
+                                        <th>Location</th>
+                                        <th>Capacity</th>
+                                        <th>Recurrence</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        activeChecker(this.state.events).map((events, index) => {
+                                            var event = events;
+                                            if (event) {
+                                                return <tr key={index + 1}>
+                                                        <th>{event.calendarInfo.title}</th>
+                                                        <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                        <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                        <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                        <td>{event.location}</td>
+                                                        <td>{event.capacity}</td>
+                                                        <td>{event.recurrence}</td>
+                                                        <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
+                                                        <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                        <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                    </tr>;
+                                            } else return
+                                        })
+                                    }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                        <Row>
+                            <div className="col-md-12 col-sm-12">
+                                <h3 className="adminInactiveName">Active Events</h3>
+                            </div>
+                        </Row>
+                        <Row className="publishedTable">
+                            <div className="col-md-12 col-sm-12">
+                                <Table>
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Time</th>
+                                        <th>Location</th>
+                                        <th>Current Capacity</th>
+                                        <th>Recurrence</th>
+                                        <th>Registration Start</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {
+                                        flatten3(this.state.events).map((events, index) => {
+                                            var event = events;
+                                            if (event) {
+                                                return <tr key={index + 1}>
+                                                        <th>{event.calendarInfo.title}</th>
+                                                        <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                        <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
+                                                        <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                        <td>{event.location}</td>
+                                                        <td>{event.capacity}</td>
+                                                        <td>{event.recurrence}</td>
+                                                        <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
+                                                        <td><Button outline color="success">Announce</Button></td>
+                                                        <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                        <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                    </tr>;
+                                            } else return
+                                        })
+                                    }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                        <Row className="createEventButton">
+                            <div className="col-md-12 col-sm-12">
+                                <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
+                            </div>
+                        </Row>
+                        <h3 className="section-title text-center m-5">Contact Us</h3>
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
+                                    <form onSubmit={this.handleSubmit} id="contactForm">
+                                    <div className="row">
+                                        <div className="col-md-6 col-sm-12">
+                                        <div className="form-group">
+                                            <label htmlFor="contactFormFullName">Full Name</label>
+                                            <input className="form-control" id="contactFormFullName" name="contactFormFullName" required="required" placeholder="Enter your full name"></input>
+                                        </div>
+                                        </div>
+                                        <div className="col-md-6 col-sm-12">
+                                        <div className="form-group">
+                                            <label htmlFor="contactFormEmail">Email address</label>
+                                            <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" required="required" placeholder="Enter your email address"></input>
+                                        </div>
+                                        </div>
                                     </div>
+                                    <div className="row">
+                                        <div className="col">
+                                        <div className="form-group">
+                                            <label htmlFor="contactFormMessage">Message</label>
+                                            <textarea id="contactFormMessage" className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." name="contactFormMessage"></textarea>
+                                        </div>
+                                        </div>
                                     </div>
-                                    <div className="col-md-6 col-sm-12">
-                                    <div className="form-group">
-                                        <label htmlFor="contactFormEmail">Email address</label>
-                                        <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" required="required" placeholder="Enter your email address"></input>
-                                    </div>
-                                    </div>
+                                    <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
+                                    </form>
                                 </div>
-                                <div className="row">
-                                    <div className="col">
-                                    <div className="form-group">
-                                        <label htmlFor="contactFormMessage">Message</label>
-                                        <textarea id="contactFormMessage" className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." name="contactFormMessage"></textarea>
-                                    </div>
-                                    </div>
-                                </div>
-                                <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
-                                </form>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
-                
-                <footer>
-                    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                        <div className="container">
-                            <a className="navbar-brand">Ericsson</a>
-                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
-                            </button>
-                            <div className="collapse navbar-collapse" id="navbarNav">
-                                <ul className="navbar-nav ml-auto">
-                                <li className="nav-item active">
-                                    <a className="nav-link">Home <span className="sr-only">(current)</span></a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link">Our Services</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link">My profile</a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link">Contact Us</a>
-                                </li>
-                                </ul>
+                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
+                    
+                    <footer>
+                        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                            <div className="container">
+                                <a className="navbar-brand">Ericsson</a>
+                                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span className="navbar-toggler-icon"></span>
+                                </button>
+                                <div className="collapse navbar-collapse" id="navbarNav">
+                                    <ul className="navbar-nav ml-auto">
+                                    <li className="nav-item active">
+                                        <a className="nav-link">Home <span className="sr-only">(current)</span></a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link">Our Services</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link">My profile</a>
+                                    </li>
+                                    <li className="nav-item">
+                                        <a className="nav-link">Contact Us</a>
+                                    </li>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    </nav>
-                </footer>
-            </div>
-        );
+                        </nav>
+                    </footer>
+                </div>
+            );
+        }
     }
 }
 

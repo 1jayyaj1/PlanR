@@ -53,7 +53,7 @@ app.use(session({
     cookie: {
         secure: false,
         httpOnly: true,
-        maxAge: 60 * 1000 // short, only for testing 
+        maxAge: 60 * 1000 * 30 // short, only for testing 
     }
 }));
 
