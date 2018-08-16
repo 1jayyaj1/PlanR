@@ -102,7 +102,6 @@ router.delete('/:eventId', function(req, res) {
                         return res.sendStatus(500);
                     })
                 } else {
-                    console.log("TEST");
                     Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
                     .then(event => {
                         if (!event) {
@@ -176,6 +175,9 @@ router.put('/all/:parentId', function(req, res) {
                             if (body.activationDay) {
                                 y.activationDay = new Date(body.activationDay);
                             }
+                            if (body.instructor) {
+                                y.instructor = body.instructor;
+                            }
                         });
                     }
 
@@ -184,7 +186,6 @@ router.put('/all/:parentId', function(req, res) {
                         parentId = x._id;
                     }
                 });
-                
                 Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
                 .then(event => {
                     if (!event) {
@@ -258,15 +259,16 @@ router.put('/:eventId', function(req, res) {
                             if (body.activationDay) {
                                 y.activationDay = new Date(body.activationDay);
                             }
+                            if (body.instructor) {
+                                y.instructor = body.instructor;
+                            }
                         }
                     });
-
                     if (found) {
                         parentId = x._id;
                         newList = x.data;
                     }
                 });
-                
                 Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
                 .then(event => {
                     if (!event) {

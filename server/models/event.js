@@ -19,6 +19,10 @@ let eventSchema = Schema({
             type: Date,
             required: false
         },
+        instructor: {
+            type: String,
+            required: true
+        },
         calendarInfo: {
             title: {
                 type: String,

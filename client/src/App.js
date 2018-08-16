@@ -44,17 +44,17 @@ function flatten2(l) {
     return test;
 }
 
-function flatten3(l) {
+function flatten3(l, currentUser) {
     var test = l.map(events => {
         return events.data
     })
     
-    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) });
+    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }});
 
     return test;
 }
 
-function activeChecker(l) {
+function activeChecker(l, currentUser) {
     // for(var i = 0; i < l.length; i++){
     //     if(l[i].data.length > 1) {
     //         var subLength = l[i].data.length - 1;
@@ -65,7 +65,7 @@ function activeChecker(l) {
     var test = l.map(events => {
         return events.data
     })
-    test = flatten(test).filter(x => { return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) });
+    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) }});
     return test;
 }
 
@@ -94,6 +94,7 @@ class App extends Component {
             recurrence: "",
             allDay: false,
             activateToday: false,
+            instructor: "",
             startDate: null, 
             endDate: null,
             activationDay: null, 
@@ -158,6 +159,7 @@ class App extends Component {
         this.searchAdminEmail = this.searchAdminEmail.bind(this);
         this.addAdmin = this.addAdmin.bind(this);
         this.createCSV = this.createCSV.bind(this);
+        this.findFirstName = this.findFirstName.bind(this);
     }
 
     handleChangeStart(date) {
@@ -198,6 +200,15 @@ class App extends Component {
         this.setState({ [target.name]: { value: target.value, valid: valid } });
     }
 
+    findFirstName(fullName) {
+        if (/\s/g.test(fullName) === true) {
+            var firstName = fullName.substr(0,fullName.indexOf(' '));
+            return firstName;
+        } else {
+            return fullName
+        }
+    }
+
     searchAdminEmail(email) {
         let myComponent = this;
         axios.get('/users/')
@@ -208,14 +219,22 @@ class App extends Component {
             try {
                 users.forEach(function(user) {
                     if (email === user.email) {
-                        myComponent.setState({ 
-                            nameUserModal: user.name,
-                            userNameModal: user.username,
-                            emailUserModal: user.email,
-                            idUserModal: user._id,
-                            newAdminSearchTable: 'block',
-                            email: { value: myComponent.state.email.value, valid: true }
-                        });
+                        if (user.admin === true) {
+                            myComponent.setState({
+                                newAdminSearchTable: 'none',
+                                email: { value: myComponent.state.email.value, valid: false }
+                            });
+                        }
+                        else if (user.admin === false) {
+                            myComponent.setState({ 
+                                nameUserModal: user.name,
+                                userNameModal: user.username,
+                                emailUserModal: user.email,
+                                idUserModal: user._id,
+                                newAdminSearchTable: 'block',
+                                email: { value: myComponent.state.email.value, valid: true }
+                            });
+                        }
                     throw BreakException;
                     } else{
                         myComponent.setState({
@@ -337,6 +356,7 @@ class App extends Component {
                         startDate: moment(event.calendarInfo.start),
                         endDate: moment(event.calendarInfo.end),
                         activationDay: moment(event.activationDay),
+                        instructor: event.instructor,
                         calendarInfo: event.calendarInfo,
                         currentEventId: event._id
                     })
@@ -347,6 +367,25 @@ class App extends Component {
             })
             
         });
+        if (this.state.viewModal === true) {
+            this.setState({ 
+                eventId: "",
+                name: {value: "", valid: true}, 
+                capacity: {value: "", valid: true}, 
+                description: {value: "", valid: true},
+                location: {value: "", valid: true},
+                isRecurrent: {value: "", valid: true}, 
+                daysSelected: [],
+                recurrence: "",
+                allDay: false,
+                startDate: null,
+                endDate: null,
+                activationDay: null,
+                instructor: "",
+                calendarInfo: {},
+                currentEventId: ""
+            });
+        }
         this.setState({ viewModal: !this.state.viewModal });
     }
 
@@ -368,7 +407,27 @@ class App extends Component {
         .then(function (response) {
             myComponent.setState({ 
                 registerEvents: myComponent.state.registerEvents.concat(response.data)
-              })
+            })
+            if (myComponent.state.viewModal === true) {
+                myComponent.setState({ 
+                    eventId: "",
+                    name: {value: "", valid: true}, 
+                    capacity: {value: "", valid: true}, 
+                    description: {value: "", valid: true},
+                    location: {value: "", valid: true},
+                    isRecurrent: {value: "", valid: true}, 
+                    daysSelected: [],
+                    recurrence: "",
+                    allDay: false,
+                    startDate: null,
+                    endDate: null,
+                    activationDay: null,
+                    instructor: "",
+                    calendarInfo: {},
+                    currentEventId: ""
+                });
+            }
+            myComponent.setState({ viewModal: !myComponent.state.viewModal });
         })
         .catch(function (error) {
             console.log(error);
@@ -606,6 +665,7 @@ class App extends Component {
             location: this.state.location.value, 
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
+            instructor: this.state.login.username,
             calendarInfo: event 
         }
 
@@ -627,6 +687,7 @@ class App extends Component {
                 startDate: null,
                 endDate: null,
                 activationDay: null,
+                instructor: "",
                 step: 0
             });
             x.toggleCreateModal();
@@ -654,6 +715,7 @@ class App extends Component {
             location: this.state.location.value, 
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
+            instructor: this.state.login.username,
             calendarInfo: event 
         }
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
@@ -785,6 +847,7 @@ class App extends Component {
                                 location: event.location, 
                                 allDay: event.allDay,
                                 activationDay: new Date(a2Date.format()),
+                                instructor: event.instructor,
                                 calendarInfo: {
                                     title: event.calendarInfo.title,
                                     allDay: false,
@@ -816,7 +879,6 @@ class App extends Component {
                     event.activationDay = new Date(event.activationDay);
                 })
             });
-
             myComponent.setState({events: response.data});
         })
         .catch(function (error) {
@@ -1068,7 +1130,7 @@ class App extends Component {
                   <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
                   <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
                   <ul style={{fontSize: '15px'}}>
-                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
                     <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
                     <li><span>Type of event:</span> <span>Non-recurring</span></li>
                     <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
@@ -1088,7 +1150,7 @@ class App extends Component {
                   <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
                   <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
                   <ul style={{fontSize: '15px'}}>
-                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
                     <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                     <li><span>Type of event:</span> <span>Recurring</span></li>
                     <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
@@ -1239,7 +1301,7 @@ class App extends Component {
                         <div className="inner-wrapper mt-auto mb-auto container">
                             <div className="row">
                             <div className="col-md-7">
-                                <h1 className="welcome-heading display-4 text-white">Let's move.</h1>
+                                <h1 className="welcome-heading display-4 text-white">Welcome back {this.findFirstName(this.state.login.username)}</h1>
                                 <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
                             </div>
                             </div>
@@ -1322,16 +1384,16 @@ class App extends Component {
                                                 (
                                                     this.state.registerEvents.map((registerEvents, index) => {
                                                         var event = registerEvents;
+                                                        console.log(event.data.length);
                                                             if (event) {
-
                                                                 return <Row key={index + 1}>
                                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                                 <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
                                                                                 <label className="inputName" style={{fontSize: '21px'}}>{event.data[0].calendarInfo.title}</label>
                                                                                 <ul style={{fontSize: '15px'}}>
-                                                                                    <li><span>Instructor:</span> <span>Leyla Kinaze</span></li>
+                                                                                    <li><span>Instructor:</span> <span>{event.data[0].instructor}</span></li>
                                                                                     <li><span>Date:</span> <span>{moment(event.data[0].calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
-                                                                                    <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></li>
+                                                                                    <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(event.data[0].calendarInfo.end).format("H:mm")}</span></li>
                                                                                     <li><span>Location:</span> <span>{event.data[0].location}</span></li>
                                                                                     <li><span>Capacity:</span> <span>{event.data[0].capacity}</span></li>
                                                                                     <li><span>Description:</span> <span>{event.data[0].description}</span></li>
@@ -1357,8 +1419,8 @@ class App extends Component {
                                                 <label htmlFor="contactFormEmail">Search by email</label>
                                                 <Row>
                                                     <div className="col-md-9 col-sm-9 searchInputEmailAddAdmin">
-                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control" : "form-control is-invalid"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
-                                                        <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist.</div>
+                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control" : "form-control is-invalid"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email" style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}}></input>
+                                                        <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
                                                     </div>
                                                     <div className="col-md-3 col-sm-3 searchButtonEmailAddAdmin">
                                                         <Button outline color="secondary light searchButtonEmailAddAdminChild" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
@@ -1405,7 +1467,7 @@ class App extends Component {
                                                         <tbody>
                                                         <tr>
                                                             <td scope="row" className="userTableTop"><span className="userSelectLabel">Instructor:</span></td>
-                                                            <td className="userTableTop"><span className="userSelectData">Leyla kinaze</span></td>
+                                                            <td className="userTableTop"><span className="userSelectData">{this.state.instructor}</span></td>
                                                         </tr>
                                                         <tr>
                                                             <td scope="row"><span className="userSelectLabel">Date:</span></td>
@@ -1648,7 +1710,7 @@ class App extends Component {
                                         </thead>
                                         <tbody>
                                         {
-                                            activeChecker(this.state.events).map((events, index) => {
+                                            activeChecker(this.state.events, this.state.login.username).map((events, index) => {
                                                 var event = events;
                                                 if (event) {
                                                     return <tr key={index + 1}>
@@ -1692,7 +1754,7 @@ class App extends Component {
                                         </thead>
                                         <tbody>
                                         {
-                                            flatten3(this.state.events).map((events, index) => {
+                                            flatten3(this.state.events, this.state.login.username).map((events, index) => {
                                                 var event = events;
                                                 if (event) {
                                                     return <tr key={index + 1}>
