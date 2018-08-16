@@ -1454,13 +1454,13 @@ class App extends Component {
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                         <ModalHeader className="userSelcectModalHeader editEventLabel">
-                                        {this.state.login.admin === false &&
+                                        {this.state.instructor !== this.state.login.username &&
                                             (<h2>{this.state.calendarInfo.title}</h2>)}
-                                        {this.state.login.admin === true &&
+                                        {this.state.instructor === this.state.login.username &&
                                             (<h2>Edit Event</h2>)}
                                         </ModalHeader>
                                         <ModalBody className="userSelectEventModalParent">
-                                            {this.state.login.admin === false &&
+                                            {this.state.instructor !== this.state.login.username &&
                                             (<Row className="userSelectEventModal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
                                                     <Table className="userSelectEventTable">
@@ -1498,7 +1498,7 @@ class App extends Component {
                                                     </Table> 
                                                     </Col>
                                                 </Row> )}
-                                            {this.state.login.admin === true &&
+                                            {this.state.instructor === this.state.login.username &&
                                             (<Row>
                                             <fieldset>
                                                 <Row className="basicInfo">
@@ -1611,9 +1611,9 @@ class App extends Component {
                                             </Row>)}
                                         </ModalBody>
                                         <ModalFooter>
-                                        {this.state.login.admin === false &&
+                                        {this.state.instructor !== this.state.login.username &&
                                             (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
-                                        {this.state.login.admin === true &&
+                                        {this.state.instructor === this.state.login.username &&
                                             (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
