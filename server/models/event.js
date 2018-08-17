@@ -23,6 +23,10 @@ let eventSchema = Schema({
             type: String,
             required: true
         },
+        registeredEmail: {
+            type: Array,
+            required: true
+        },
         calendarInfo: {
             title: {
                 type: String,

@@ -77,6 +77,7 @@ class App extends Component {
         this.state = {
             events: [],
             registerEvents: [],
+            registerUserEmails: [],
             createModal : false,
             registerModal: false,
             viewModal: false,
@@ -160,6 +161,7 @@ class App extends Component {
         this.addAdmin = this.addAdmin.bind(this);
         this.createCSV = this.createCSV.bind(this);
         this.findFirstName = this.findFirstName.bind(this);
+        this.registerForEvents = this.registerForEvents.bind(this);
     }
 
     handleChangeStart(date) {
@@ -230,6 +232,7 @@ class App extends Component {
                                 nameUserModal: user.name,
                                 userNameModal: user.username,
                                 emailUserModal: user.email,
+                                
                                 idUserModal: user._id,
                                 newAdminSearchTable: 'block',
                                 email: { value: myComponent.state.email.value, valid: true }
@@ -401,13 +404,35 @@ class App extends Component {
         });
     }
 
-    addEventBasket(eventId) {
+    registerForEvents() {
+        console.log(this.state.registerUserEmails)
+        this.state.registerEvents.forEach(event => {
+            console.log(event._id)
+            axios.put('/events/' + event._id, {registeredEmail: this.state.registerUserEmails})
+                .then(function (response) {
+                    console.log(response.data)
+                })
+                .catch(function (error) {
+                    console.log(error);
+            });
+        });
+    }
+
+    addEventBasket(eventId, currentEventId) {
         let myComponent = this;
         axios.get('/events/' + eventId)
         .then(function (response) {
-            myComponent.setState({ 
-                registerEvents: myComponent.state.registerEvents.concat(response.data)
-            })
+            console.log(response)
+            console.log(response.data.data)
+            response.data.data.forEach(event => {
+                if (event._id === currentEventId) {
+                    myComponent.setState({ 
+                        registerEvents: myComponent.state.registerEvents.concat(event),
+                        registerUserEmails: myComponent.state.registerUserEmails.concat(myComponent.state.login.username),
+                    })
+                }
+            }); 
+           
             if (myComponent.state.viewModal === true) {
                 myComponent.setState({ 
                     eventId: "",
@@ -666,6 +691,7 @@ class App extends Component {
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
             instructor: this.state.login.username,
+            registeredEmail: this.state.registerEvents,
             calendarInfo: event 
         }
 
@@ -716,6 +742,7 @@ class App extends Component {
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
             instructor: this.state.login.username,
+            registeredEmail: [],
             calendarInfo: event 
         }
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
@@ -933,6 +960,7 @@ class App extends Component {
     }
 
     render() {
+        console.log(this.state.registerEvents);
         let wizardContentCreate;
         if (this.state.step === 0) {
           wizardContentCreate = 
@@ -1384,19 +1412,18 @@ class App extends Component {
                                                 (
                                                     this.state.registerEvents.map((registerEvents, index) => {
                                                         var event = registerEvents;
-                                                        console.log(event.data.length);
                                                             if (event) {
                                                                 return <Row key={index + 1}>
                                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                                 <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                                                <label className="inputName" style={{fontSize: '21px'}}>{event.data[0].calendarInfo.title}</label>
+                                                                                <label className="inputName" style={{fontSize: '21px'}}>{event.calendarInfo.title}</label>
                                                                                 <ul style={{fontSize: '15px'}}>
-                                                                                    <li><span>Instructor:</span> <span>{event.data[0].instructor}</span></li>
-                                                                                    <li><span>Date:</span> <span>{moment(event.data[0].calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
-                                                                                    <li><span>Time:</span> <span>From {moment(event.data[0].calendarInfo.start).format("H:mm")} to {moment(event.data[0].calendarInfo.end).format("H:mm")}</span></li>
-                                                                                    <li><span>Location:</span> <span>{event.data[0].location}</span></li>
-                                                                                    <li><span>Capacity:</span> <span>{event.data[0].capacity}</span></li>
-                                                                                    <li><span>Description:</span> <span>{event.data[0].description}</span></li>
+                                                                                    <li><span>Instructor:</span> <span>{event.instructor}</span></li>
+                                                                                    <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
+                                                                                    <li><span>Time:</span> <span>From {moment(event.calendarInfo.start).format("H:mm")} to {moment(event.calendarInfo.end).format("H:mm")}</span></li>
+                                                                                    <li><span>Location:</span> <span>{event.location}</span></li>
+                                                                                    <li><span>Capacity:</span> <span>{event.capacity}</span></li>
+                                                                                    <li><span>Description:</span> <span>{event.description}</span></li>
                                                                                 </ul> 
                                                                                 <hr/>
                                                                             </Col>
@@ -1407,7 +1434,7 @@ class App extends Component {
                                             </form>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <button type="button" className="btn btn-outline-success pull-right" align="right">Register</button>
+                                            <button type="button" className="btn btn-outline-success pull-right" align="right" onClick={() => {this.registerForEvents()}}>Register</button>
                                         </ModalFooter>
                                     </Modal>
 
@@ -1612,7 +1639,7 @@ class App extends Component {
                                         </ModalBody>
                                         <ModalFooter>
                                         {this.state.instructor !== this.state.login.username &&
-                                            (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId)}}>Add</Button>)}
+                                            (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}}>Add</Button>)}
                                         {this.state.instructor === this.state.login.username &&
                                             (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
                                         </ModalFooter>

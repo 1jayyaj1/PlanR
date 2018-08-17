@@ -178,6 +178,9 @@ router.put('/all/:parentId', function(req, res) {
                             if (body.instructor) {
                                 y.instructor = body.instructor;
                             }
+                            if (body.registeredEmail) {
+                                y.registeredEmail = body.registeredEmail;
+                            }
                         });
                     }
 
@@ -262,11 +265,16 @@ router.put('/:eventId', function(req, res) {
                             if (body.instructor) {
                                 y.instructor = body.instructor;
                             }
+                            if (body.registeredEmail) {
+                                y.registeredEmail = body.registeredEmail;
+                            }
                         }
                     });
+
                     if (found) {
                         parentId = x._id;
                         newList = x.data;
+                        console.log(x.data);
                     }
                 });
                 Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
