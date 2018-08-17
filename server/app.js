@@ -69,7 +69,7 @@ app.use('/users', usersRouter);  //TODO
 
 app.use(helmet())
 app.use('/login', loginRouter);
-app.use(loggedIn)
+// app.use(loggedIn)
 app.use('/', indexRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);

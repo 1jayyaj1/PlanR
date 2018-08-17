@@ -267,6 +267,7 @@ router.put('/:eventId', function(req, res) {
                             }
                             if (body.registeredEmail) {
                                 y.registeredEmail = body.registeredEmail;
+                                y.markModified('registeredEmail');
                             }
                         }
                     });
