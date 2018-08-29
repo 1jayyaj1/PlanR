@@ -214,10 +214,11 @@ button.rbc-input::-moz-focus-inner {
 .rbc-event {
   padding: 2px 5px;
   border-radius: 6pt!important;
-  color: #fff;
-  background-image: linear-gradient(to right, #f78ca0 0%, #f9748f 19%, #fd868c 60%, #fe9a8b 100%);
+  color: #004085!important;
+  background-color: #CCE5FF!important;
+  border-color: #CCE5FF!important;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: medium;
+  font-weight: 200!important;
   cursor: pointer;
 }
 .rbc-slot-selecting .rbc-event {

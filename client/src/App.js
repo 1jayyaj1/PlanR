@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, ButtonGroup, Table, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form} from 'reactstrap';
+import { Button, ButtonGroup, Table, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form, Alert} from 'reactstrap';
 import { Steps} from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,7 +10,7 @@ import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import {CSVLink} from 'react-csv';
-import { BeatLoader, PulseLoader } from 'react-spinners';
+import { PulseLoader } from 'react-spinners';
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -55,19 +55,17 @@ function flatten3(l, currentUser) {
 }
 
 function activeChecker(l, currentUser) {
-    // for(var i = 0; i < l.length; i++){
-    //     if(l[i].data.length > 1) {
-    //         var subLength = l[i].data.length - 1;
-    //         l[i].data[0].calendarInfo.end = l[i].data[subLength].calendarInfo.end;
-    //         l[i].data = l[i].data[0];
-    //     }
-    // }
     var test = l.map(events => {
         return events.data
     })
     test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) }});
     return test;
 }
+
+const formattedSeconds = (sec) =>
+  Math.floor(sec / 60) +
+    ':' +
+  ('0' + sec % 60).slice(-2)
 
 class App extends Component {
 
@@ -78,14 +76,21 @@ class App extends Component {
             events: [],
             registerEvents: [],
             registerUserEmails: [],
+            registerEventId: [],
+            secondsElapsed: 300, 
+            laps: [],
+            lastClearedIncrementer: null,
+            registerEventEmail: "",
             createModal : false,
             registerModal: false,
             viewModal: false,
             activateModal: false,
             deleteModal: false,
             addAdminModal: false,
+            announceModal: false,
             step: 0,
             name: { value: "", valid: true },
+            email: { value: "", valid: true },
             description: { value: "", valid: true },
             location: { value: "", valid: true },
             capacity: { value: 0, valid: true },
@@ -115,14 +120,20 @@ class App extends Component {
             emailUserModal: "",
             idUserModal: "",
             newAdminSearchTable: 'none',
-            login: { username: "default", admin: false }
+            login: { username: "default", email: "default", admin: false },
+            visible: false,
+            liveCapacity: 0
         }
 
+        this.incrementer = null;
         this.username = React.createRef();
         this.password = React.createRef();
         this.name = React.createRef();
         this.email = React.createRef();
         this.confirmPassword = React.createRef();
+
+        this.announceFullname = React.createRef();
+        this.announceMessage = React.createRef();
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
@@ -138,6 +149,7 @@ class App extends Component {
         this.toggleActivateModal = this.toggleActivateModal.bind(this);
         this.toggleDeleteModal = this.toggleDeleteModal.bind(this);
         this.toggleAddAdminModal = this.toggleAddAdminModal.bind(this);
+        this.toggleAnnounceModal = this.toggleAnnounceModal.bind(this);
         this.onRadioBtnClick = this.onRadioBtnClick.bind(this);
         this.onRadioBtnActivateClick = this.onRadioBtnActivateClick.bind(this);
         this.nextStep = this.nextStep.bind(this);
@@ -162,6 +174,39 @@ class App extends Component {
         this.createCSV = this.createCSV.bind(this);
         this.findFirstName = this.findFirstName.bind(this);
         this.registerForEvents = this.registerForEvents.bind(this);
+        this.notifyEvent = this.notifyEvent.bind(this);
+        this.unRegisterEvent = this.unRegisterEvent.bind(this);
+    }
+
+    handleStartClick() {
+        if(this.state.secondsElapsed !== 0) {
+            this.incrementer = setInterval( () =>
+                this.setState({
+                secondsElapsed: this.state.secondsElapsed - 1
+                })
+            , 1000);
+        }
+    }
+      
+    handleStopClick() {
+    clearInterval(this.incrementer);
+    this.setState({
+        lastClearedIncrementer: this.incrementer
+    });
+    }
+    
+    handleResetClick() {
+    clearInterval(this.incrementer);
+    this.setState({
+        secondsElapsed: 300,
+        laps: []
+    });
+    }
+    
+    handleLabClick() {
+    this.setState({
+        laps: this.state.laps.concat([this.state.secondsElapsed])
+    })
     }
 
     handleChangeStart(date) {
@@ -215,7 +260,6 @@ class App extends Component {
         let myComponent = this;
         axios.get('/users/')
         .then(function (response) {
-            console.log(response.data)
             var users = response.data
             var BreakException = {};
             try {
@@ -321,7 +365,17 @@ class App extends Component {
     }
 
     toggleRegisterModal() {
-        this.setState({ registerModal: !this.state.registerModal });
+        if(this.state.registerEvents.length > 0) {
+            if(this.state.registerModal === false) {
+                this.handleStopClick();
+            } 
+            else if(this.state.registerModal === true) {
+                this.handleStartClick();
+            }
+            this.setState({
+                registerModal: !this.state.registerModal
+            });
+        }
     }
 
     toggleActivateModal(id, start, end) {
@@ -340,7 +394,6 @@ class App extends Component {
     }
 
     toggleViewModal(obj) {
-        //console.log(obj)
         const x = this;
         this.state.events.forEach(function(e) {
             var dataSet = e.data;
@@ -361,7 +414,8 @@ class App extends Component {
                         activationDay: moment(event.activationDay),
                         instructor: event.instructor,
                         calendarInfo: event.calendarInfo,
-                        currentEventId: event._id
+                        currentEventId: event._id,
+                        liveCapacity: event.registeredEmail.length
                     })
                     if (event.recurrence === "") {
                         x.setState({ recurrence: "non-recurring" })
@@ -404,34 +458,137 @@ class App extends Component {
         });
     }
 
-    registerForEvents() {
-        console.log(this.state.registerUserEmails)
-        this.state.registerEvents.forEach(event => {
-            console.log(event._id)
-            axios.put('/events/' + event._id, {registeredEmail: this.state.registerUserEmails})
-                .then(function (response) {
-                    console.log(response.data)
-                })
-                .catch(function (error) {
-                    console.log(error);
+    toggleAnnounceModal(event) {
+        var myComponent = this;
+        axios.get('/users/')
+        .then(function (response) {
+            var users = response.data
+            var BreakException = {};
+            try {
+                users.forEach(function(user) {
+                    if (myComponent.state.login.username === user.name) {
+                            myComponent.setState({ 
+                                email: { value: user.email, valid: true }
+                             });
+                    throw BreakException;
+                    }
+                });
+            }
+            catch (e) {
+                if (e !== BreakException) throw e;
+                }
+            })
+        .catch(function (error) {
+            console.log(error);
+        })
+        if(this.state.announceModal === false){
+            this.setState({ 
+                announceModal: !this.state.announceModal,
+                currentEventId: event._id,
+                name: {value: event.calendarInfo.title, valid: true},
+                startDate: event.calendarInfo.start
             });
+        }
+        if(this.state.announceModal === true){
+            this.setState({ 
+                announceModal: !this.state.announceModal,
+                currentEventId: "",
+                name: {value: "", valid: true},
+                startDate: ""
+            });
+        }
+    }
+
+    registerForEvents() {
+        this.setState({ 
+            registerEvents: [],
+            registerModal: !this.state.registerModal,
+            visible: false
         });
+        this.handleResetClick();
+    }
+
+    unRegisterEvent() {
+        const myComponent = this;
+        var i = 0;
+        this.state.registerEventId.forEach(function(id){
+            axios.get('/events/' + id)
+            .then(function (event) {
+                console.log(event)
+                    var i = 0;
+                    event.data.registeredEmail.forEach(function(email){
+                        if (myComponent.state.registerEventEmail === email) {
+                            event.data.registeredEmail.splice(i, 1)
+                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
+                            .then(function (response) {
+                                console.log(response.data)
+                                myComponent.handleResetClick()
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                });
+                        }
+                        i++;
+                    })
+                        
+                    
+                })
+            .catch(function (error) {
+                console.log(error);
+            });
+            })
     }
 
     addEventBasket(eventId, currentEventId) {
         let myComponent = this;
-        axios.get('/events/' + eventId)
+        axios.get('/users/')
         .then(function (response) {
-            console.log(response)
-            console.log(response.data.data)
-            response.data.data.forEach(event => {
-                if (event._id === currentEventId) {
-                    myComponent.setState({ 
-                        registerEvents: myComponent.state.registerEvents.concat(event),
-                        registerUserEmails: myComponent.state.registerUserEmails.concat(myComponent.state.login.username),
-                    })
+            var users = response.data
+            var BreakException = {};
+            try {
+                users.forEach(function(user) {
+                    if (myComponent.state.login.username === user.name) {
+                            axios.get('/events/' + currentEventId)
+                                .then(function (response) {
+                                    console.log(response.data)
+                                    myComponent.setState({
+                                        registerEventId: myComponent.state.registerEventId.concat(currentEventId),
+                                        registerEventEmail: user.email
+                                    });
+                                    axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)})
+                                        .then(function (response) {
+                                            console.log(response.data)
+                                            myComponent.handleResetClick()
+                                            myComponent.handleStartClick()
+                                            myComponent.setState({ 
+                                                visible: true
+                                            });
+                                        
+                                        })
+                                        .catch(function (error) {
+                                            console.log(error);
+                                    });
+                                })
+                                .catch(function (error) {
+                                    console.log(error);
+                            });
+                    throw BreakException;
+                    }
+                });
+            }
+            catch (e) {
+                if (e !== BreakException) throw e;
                 }
-            }); 
+            })
+        .catch(function (error) {
+            console.log(error);
+        })
+        axios.get('/events/' + currentEventId)
+        .then(function (response) {
+                    myComponent.setState({ 
+                        registerEvents: myComponent.state.registerEvents.concat(response.data),
+                    });
+                
            
             if (myComponent.state.viewModal === true) {
                 myComponent.setState({ 
@@ -514,7 +671,7 @@ class App extends Component {
                 }
             }
                 else {
-                    if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate !== null && this.state.endDate !== null) {
+                    if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate  !== null && this.state.endDate !== null) {
                         var nonRecurStartDate = moment(this.state.startDate);
                         var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
                         this.setState({ startDate: nonRecurStartDate });
@@ -611,13 +768,13 @@ class App extends Component {
             }
             axios.post('/users', user)
             .then(function (response) {
-                window.location.reload(); //JAY we will do something better than that
+                window.location.reload();
             })
             .catch(function (error) {
                 console.log(error);
             })
         } else {
-            console.log("NOT MATCHING PASSWORDS") //JAY
+            console.log("NOT MATCHING PASSWORDS")
         }
     }
 
@@ -867,7 +1024,6 @@ class App extends Component {
                         var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
                         var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
-                            //console.log(i);
                             var newEvent = {
                                 capacity: event.capacity, 
                                 description: event.description, 
@@ -939,6 +1095,41 @@ class App extends Component {
 
     }
 
+    notifyEvent(event) {
+        var myComponent = this;
+        event.preventDefault();
+        axios.get('/events/' + this.state.currentEventId)
+        .then(function (response) {
+            var startDateNotifyEmail = moment(myComponent.state.startDate).format('LLLL')
+            var data = {
+                notifyFullName: myComponent.state.login.username,
+                notifyEmailSender: myComponent.state.email.value,
+                notifyEmailRecepients: response.data.registeredEmail, 
+                notifyMessage: myComponent.announceMessage.current.value,
+                notifyEventName: myComponent.state.name.value,
+                notifyEventStart: startDateNotifyEmail.toString()
+            }
+                  
+            axios.post('/notification', data)
+            .then(toast.success('We have received your message. Thank you! 😊', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                }))
+            .catch(function (error) {
+                console.log(error);
+            });
+            
+            document.getElementById("announceModal").reset();
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
+    }
+
     createCSV(events) {
         var result = [];
 
@@ -960,7 +1151,6 @@ class App extends Component {
     }
 
     render() {
-        console.log(this.state.registerEvents);
         let wizardContentCreate;
         if (this.state.step === 0) {
           wizardContentCreate = 
@@ -1194,7 +1384,6 @@ class App extends Component {
           }
         }
 
-
         if (this.state.login.username === "default") {
             return (
                 <div className='sweet-loading center-screen'>
@@ -1311,12 +1500,6 @@ class App extends Component {
                             </button>
                             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                                 <ul className="navbar-nav">
-                                <li className="nav-item active">
-                                    <a className="nav-link">Home <span className="sr-only">(current)</span></a>
-                                </li>
-                                <li className="nav-item">
-                                    <a className="nav-link">My profile</a>
-                                </li>
                                 <li className="nav-item">
                                     <a className="nav-link">Log Out</a>
                                 </li>
@@ -1329,15 +1512,25 @@ class App extends Component {
                         <div className="inner-wrapper mt-auto mb-auto container">
                             <div className="row">
                             <div className="col-md-7">
-                                <h1 className="welcome-heading display-4 text-white">Welcome back {this.findFirstName(this.state.login.username)}</h1>
-                                <button href="#our-services" className="btn btn-lg btn-outline-white btn-pill align-self-center">Get started</button>
+                                <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.username)}</h1>
+                                <label className="bottomHomePageText">Scroll down to get started</label>
                             </div>
                             </div>
                         </div>
                     </div>
-
+                    
                             {/*<----------------------- CALENDAR PAGE ----------------------->*/}
                             <div id="our-services" className="our-services section py-4">
+                            <div className="counter-alert">
+                                {this.state.secondsElapsed > 0 &&
+                                    (<Alert color="primary" isOpen={this.state.visible} fade={false}>
+                                        <div>
+                                            <h4 className="stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
+                                        </div>
+                                    </Alert>)}
+                                    {this.state.secondsElapsed == 0 &&
+                                    ( this.unRegisterEvent() )}
+                            </div>
                             <h3 className="section-title text-center my-5">Your schedule</h3>
                     
                             <div className="container py-4">
@@ -1353,7 +1546,6 @@ class App extends Component {
                                                 max={new Date('2018, 1, 7, 18:00')}
                                                 defaultView='week'
                                                 onSelectEvent={(obj) => this.toggleViewModal(obj)}
-                                                onSelectSlot={(date) => this.toggleCreateModal(date)}
                                                 events={flatten2(this.state.events)}
                                                 startAccessor='start'
                                                 endAccessor='end'>
@@ -1364,7 +1556,7 @@ class App extends Component {
                                     
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-                                            <Button className="btn btn-outline-danger btn-pill" style={{float: 'right'}} onClick={this.toggleRegisterModal}>Register</Button>
+                                            <Button outline className="btn btn-secondary" style={{float: 'right'}} onClick={this.toggleRegisterModal}>My Events</Button>
                                         </Col>
                                     </Row>
                     
@@ -1434,8 +1626,32 @@ class App extends Component {
                                             </form>
                                         </ModalBody>
                                         <ModalFooter>
-                                            <button type="button" className="btn btn-outline-success pull-right" align="right" onClick={() => {this.registerForEvents()}}>Register</button>
+                                                {(this.state.secondsElapsed !== 0 &&
+                                                this.incrementer === this.state.lastClearedIncrementer
+                                                ? <button type="button" className="btn btn-outline-success pull-right" align="right"onClick={() => {this.registerForEvents()}}>Register</button>
+                                                : null
+                                                )}
                                         </ModalFooter>
+                                    </Modal>
+
+
+                                    {/*<----------------------- EVENT ANNOUNCE MODAL ----------------------->*/}
+                                    <Modal isOpen={this.state.announceModal} toggle={this.toggleAnnounceModal} className={this.props.className}>
+                                        <ModalHeader><h2>Announcement</h2></ModalHeader>
+                                        <ModalBody>
+                                        <form onSubmit={this.notifyEvent} id="announceModal">
+                                            <div className="row">
+                                                <div className="col">
+                                                <div className="form-group">
+                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..."></textarea>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            <div className="announceButton">
+                                                <input className="btn btn-success announceButton" type="submit" value="Announce"></input>
+                                            </div>
+                                        </form>
+                                        </ModalBody>
                                     </Modal>
 
                                     {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
@@ -1450,7 +1666,7 @@ class App extends Component {
                                                         <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
                                                     </div>
                                                     <div className="col-md-3 col-sm-3 searchButtonEmailAddAdmin">
-                                                        <Button outline color="secondary light searchButtonEmailAddAdminChild" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
+                                                        <Button color="secondary light searchButtonEmailAddAdminChild" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
                                                     </div>
                                                 
                                                     <Col xs="12" sm="12" md="12" lg="12" className="userSelectEventModal" style={{display: this.state.newAdminSearchTable}}>
@@ -1472,7 +1688,7 @@ class App extends Component {
                                                     </Table> 
                                                     </Col>
                                                     <div className="col-md-12 col-sm-12">
-                                                        <button type="button" className="btn btn-outline-success pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
+                                                        <button type="button" className="btn btn-secondary pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
                                                     </div>
                                                 </Row>
                                         </ModalBody>
@@ -1510,7 +1726,7 @@ class App extends Component {
                                                         </tr>
                                                         <tr>
                                                             <td scope="row"><span className="userSelectLabel">Capacity:</span></td>
-                                                            <td><span className="userSelectData">{this.state.capacity.value}</span></td>
+                                                            <td><span className="userSelectData">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
                                                         </tr>
                                                         <tr>
                                                             <td scope="row"><span className="userSelectLabel">Description:</span></td>
@@ -1641,7 +1857,7 @@ class App extends Component {
                                         {this.state.instructor !== this.state.login.username &&
                                             (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}}>Add</Button>)}
                                         {this.state.instructor === this.state.login.username &&
-                                            (<Button color="primary" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
+                                            (<Button color="warning" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
 
@@ -1727,12 +1943,10 @@ class App extends Component {
                                         <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Start</th>
-                                            <th>End</th>
+                                            <th>Date</th>
                                             <th>Time</th>
                                             <th>Location</th>
                                             <th>Capacity</th>
-                                            <th>Recurrence</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -1743,11 +1957,9 @@ class App extends Component {
                                                     return <tr key={index + 1}>
                                                             <th>{event.calendarInfo.title}</th>
                                                             <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
                                                             <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
                                                             <td>{event.location}</td>
                                                             <td>{event.capacity}</td>
-                                                            <td>{event.recurrence}</td>
                                                             <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
                                                             <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
                                                             <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
@@ -1770,13 +1982,11 @@ class App extends Component {
                                         <thead>
                                         <tr>
                                             <th>Name</th>
-                                            <th>Start</th>
-                                            <th>End</th>
+                                            <th>Date</th>
                                             <th>Time</th>
                                             <th>Location</th>
                                             <th>Current Capacity</th>
-                                            <th>Recurrence</th>
-                                            <th>Registration Start</th>
+                                            <th>Registration Started</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -1787,13 +1997,11 @@ class App extends Component {
                                                     return <tr key={index + 1}>
                                                             <th>{event.calendarInfo.title}</th>
                                                             <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td>{moment(event.calendarInfo.end).format('dddd[,] MMMM Do YYYY')}</td>
                                                             <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
                                                             <td>{event.location}</td>
-                                                            <td>{event.capacity}</td>
-                                                            <td>{event.recurrence}</td>
+                                                            <td>{event.registeredEmail.length} / {event.capacity}</td>
                                                             <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td><Button outline color="success">Announce</Button></td>
+                                                            <td><Button outline color="success" onClick={() => {this.toggleAnnounceModal(event)}}>Announce</Button></td>
                                                             <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
                                                             <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                         </tr>;
@@ -1804,14 +2012,21 @@ class App extends Component {
                                     </Table>
                                 </div>
                             </Row>
-                            <Row className="createEventButton">
                                 <div className="col-md-12 col-sm-12">
-                                    <Button outline color="success" onClick={() => this.toggleCreateModal()} >Create Event</Button>
-                                    <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-outline-success" target="_blank">Create CSV</CSVLink>
-                                    <Button outline color="success" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
+                                <Row className="createEventButton">
+                                    <div className="bottomAdminButton">
+                                        <Button className="templateButton" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                    </div>
+                                    <div className="bottomAdminButton">
+                                        <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-secondary templateButton" target="_blank">Create CSV</CSVLink>
+                                    </div>
+                                    <div className="bottomAdminButton">
+                                        <Button className="templateButton" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
+                                    </div>
+                                </Row>
                                 </div>
-                            </Row>
                             </div>)}
+
                         <h3 className="section-title text-center m-5">Contact Us</h3>
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
@@ -1839,11 +2054,12 @@ class App extends Component {
                                         </div>
                                         </div>
                                     </div>
-                                    <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" type="submit" value="Send Your Message"></input>
+                                    <input className="btn btn-outline-secondary d-flex ml-auto mr-auto" type="submit" value="Send"></input>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                     <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                     
@@ -1854,22 +2070,6 @@ class App extends Component {
                                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                     <span className="navbar-toggler-icon"></span>
                                 </button>
-                                <div className="collapse navbar-collapse" id="navbarNav">
-                                    <ul className="navbar-nav ml-auto">
-                                    <li className="nav-item active">
-                                        <a className="nav-link">Home <span className="sr-only">(current)</span></a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className="nav-link">Our Services</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className="nav-link">My profile</a>
-                                    </li>
-                                    <li className="nav-item">
-                                        <a className="nav-link">Contact Us</a>
-                                    </li>
-                                    </ul>
-                                </div>
                             </div>
                         </nav>
                     </footer>

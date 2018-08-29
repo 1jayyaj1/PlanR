@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
         })
 });
 
-router.get('/:parentId', function(req, res) {
+router.get('/all/:parentId', function(req, res) {
     try {
         Event.find({"_id" : req.params.parentId})
             .exec()
@@ -31,6 +31,40 @@ router.get('/:parentId', function(req, res) {
                 console.log(err);
                 return res.sendStatus(404);
             })
+    } catch {
+        return res.sendStatus(500);
+    }
+});
+
+router.get('/:eventId', function(req, res) {
+    const id = req.params.eventId;
+    var event = null;
+    try {
+        Event.find()
+        .exec()
+        .then(events => {
+            if (events.length == 0) {
+                return res.sendStatus(404);
+            } else {
+                events.map(x => {
+                    x.data.forEach(y => {
+                        if (y._id == id) {
+                            event = y;
+                        }
+                    });
+                });
+
+                if (event) {
+                    return res.json(event);
+                } else {
+                    return res.sendStatus(404);
+                }
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            return res.sendStatus(404);
+        })
     } catch {
         return res.sendStatus(500);
     }
@@ -81,8 +115,6 @@ router.delete('/:eventId', function(req, res) {
                         newList = x.data.pull({ _id: id });
                     }
                 });
-
-                console.log(newList);
 
                 // if there are no more events, then the whole object must be deleted
                 if (newList.length == 0) {
@@ -180,13 +212,16 @@ router.put('/all/:parentId', function(req, res) {
                             }
                             if (body.registeredEmail) {
                                 y.registeredEmail = body.registeredEmail;
+                                y.markModified('registeredEmail');
                             }
+
+                            newList = x.data;
+                            parentId = x._id;
                         });
                     }
 
                     if (found) {
-                        newList = x.data;
-                        parentId = x._id;
+                        
                     }
                 });
                 Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
@@ -226,7 +261,7 @@ router.put('/:eventId', function(req, res) {
             if (events.length == 0) {
                 return res.sendStatus(404);
             } else {
-                var found = null;
+                var found = false;
                 events.map(x => {
                     x.data.forEach(y => {
                         if (y._id == id) {
@@ -269,14 +304,12 @@ router.put('/:eventId', function(req, res) {
                                 y.registeredEmail = body.registeredEmail;
                                 y.markModified('registeredEmail');
                             }
+
+                            parentId = x._id;
+                            newList = x.data;
                         }
                     });
 
-                    if (found) {
-                        parentId = x._id;
-                        newList = x.data;
-                        console.log(x.data);
-                    }
                 });
                 Event.findByIdAndUpdate(parentId, {data: newList}, {new: true})
                 .then(event => {

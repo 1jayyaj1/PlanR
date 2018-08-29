@@ -139,6 +139,30 @@
   height: 100%
 } */
 
+.templateButton {
+  background-color: #65737e!important;
+  border-color: #65737e!important;
+}
+
+.navbar-brand {
+  color: white!important;
+}
+
+.bottomHomePageText {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 200;
+  line-height: 1.0;
+}
+
+.bottomAdminButton {
+  padding-right:1%;
+}
+
+.announceButton {
+  text-align: right
+}
+
 .fadeout {
   display: none;
 }
@@ -283,5 +307,17 @@
   border-top-left-radius: 0px!important;
   border-bottom-left-radius: 0px!important;
   width: 100%
+}
+
+.stopwatch-timer {
+  margin-top: 0px!important;
+  margin-bottom: 0px!important;
+}
+
+.counter-alert {
+  width:45%;
+  text-align:center;
+  margin-left:auto;
+  margin-right:auto;
 }
 

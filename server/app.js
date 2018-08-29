@@ -4,11 +4,13 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose')
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
-var loginRouter = require('./routes/login')
+var announceRouter = require('./routes/notification');
+var loginRouter = require('./routes/login');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 var helmet = require('helmet')
@@ -73,6 +75,7 @@ app.use('/login', loginRouter);
 app.use('/', indexRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);
+app.use('/notification', announceRouter);
 
 app.get('/info', function(req, res) {
     if (!req.session.logged) {
