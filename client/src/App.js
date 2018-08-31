@@ -122,7 +122,10 @@ class App extends Component {
             newAdminSearchTable: 'none',
             login: { username: "default", email: "default", admin: false },
             visible: false,
-            liveCapacity: 0
+            liveCapacity: 0,
+            myEventsErrorLabel: 'none',
+            allReadyRegisteredErrorLabel: 'none',
+            fullCapacityErrorLabel: 'none',
         }
 
         this.incrementer = null;
@@ -176,13 +179,14 @@ class App extends Component {
         this.registerForEvents = this.registerForEvents.bind(this);
         this.notifyEvent = this.notifyEvent.bind(this);
         this.unRegisterEvent = this.unRegisterEvent.bind(this);
+        this.unregisterFromSingleEvent = this.unregisterFromSingleEvent.bind(this);
     }
 
     handleStartClick() {
         if(this.state.secondsElapsed !== 0) {
             this.incrementer = setInterval( () =>
                 this.setState({
-                secondsElapsed: this.state.secondsElapsed - 1
+                    secondsElapsed: this.state.secondsElapsed - 1,
                 })
             , 1000);
         }
@@ -191,7 +195,7 @@ class App extends Component {
     handleStopClick() {
     clearInterval(this.incrementer);
     this.setState({
-        lastClearedIncrementer: this.incrementer
+        lastClearedIncrementer: this.incrementer,
     });
     }
     
@@ -199,13 +203,13 @@ class App extends Component {
     clearInterval(this.incrementer);
     this.setState({
         secondsElapsed: 300,
-        laps: []
+        laps: [],
     });
     }
     
     handleLabClick() {
     this.setState({
-        laps: this.state.laps.concat([this.state.secondsElapsed])
+        laps: this.state.laps.concat([this.state.secondsElapsed]),
     })
     }
 
@@ -213,19 +217,19 @@ class App extends Component {
         if (this.state.isRecurrent.value === "non-recurring") {
             var nonRecurStartDate = moment(this.state.startDate);
             var nonRecurEndDate = moment(date).add(15, "minutes");
-            this.setState({ startDate: nonRecurStartDate });
-            this.setState({ endDate: nonRecurEndDate });
+            this.setState({ startDate: nonRecurStartDate, });
+            this.setState({ endDate: nonRecurEndDate, });
         }
 
         if (this.state.allDay === true) {
-            this.setState({ startDate: moment(date).hours(9).minutes(0) });
-            this.setState({ endDate: moment(date).hours(18).minutes(0) });
+            this.setState({ startDate: moment(date).hours(9).minutes(0), });
+            this.setState({ endDate: moment(date).hours(18).minutes(0), });
         }
-        this.setState({ startDate: date });
+        this.setState({ startDate: date, });
     }
 
     handleChangeEnd(date) {
-        this.setState({ endDate: date });
+        this.setState({ endDate: date, });
     }
 
     handleChangeActivationDate(date) {
@@ -237,14 +241,14 @@ class App extends Component {
 
     handleChangeAdminInactive(eventData) {
         this.setState({ 
-            events: this.state.events.concat([eventData])
+            events: this.state.events.concat([eventData]),
         })
     }
 
     handleChangeSearchNewAdmin(emailAdress) {
         const target = emailAdress.target;
         var valid = true;
-        this.setState({ [target.name]: { value: target.value, valid: valid } });
+        this.setState({ [target.name]: { value: target.value, valid: valid }, });
     }
 
     findFirstName(fullName) {
@@ -268,7 +272,7 @@ class App extends Component {
                         if (user.admin === true) {
                             myComponent.setState({
                                 newAdminSearchTable: 'none',
-                                email: { value: myComponent.state.email.value, valid: false }
+                                email: { value: myComponent.state.email.value, valid: false },
                             });
                         }
                         else if (user.admin === false) {
@@ -276,17 +280,16 @@ class App extends Component {
                                 nameUserModal: user.name,
                                 userNameModal: user.username,
                                 emailUserModal: user.email,
-                                
                                 idUserModal: user._id,
                                 newAdminSearchTable: 'block',
-                                email: { value: myComponent.state.email.value, valid: true }
+                                email: { value: myComponent.state.email.value, valid: true },
                             });
                         }
                     throw BreakException;
                     } else{
                         myComponent.setState({
                             newAdminSearchTable: 'none',
-                            email: { value: myComponent.state.email.value, valid: false }
+                            email: { value: myComponent.state.email.value, valid: false },
                         });
                     }
                 });
@@ -311,7 +314,7 @@ class App extends Component {
         this.toggleAddAdminModal();
     }
     updateRecurence(selection) {
-        this.setState({ recurrence: selection });
+        this.setState({ recurrence: selection, });
     }
 
     startTime() {
@@ -325,27 +328,27 @@ class App extends Component {
     onRadioBtnClick() {
         if (this.state.allDay === false) {
             if (this.state.startDate === null || this.state.endDate === null) {
-                this.setState({ startDate: moment().hours(9).minutes(0) });
-                this.setState({ endDate: moment().hours(18).minutes(0) });
+                this.setState({ startDate: moment().hours(9).minutes(0), });
+                this.setState({ endDate: moment().hours(18).minutes(0), });
             } else {
-                this.setState({ startDate: moment(this.state.startDate).hours(9).minutes(0) });
-                this.setState({ endDate: moment(this.state.endDate).hours(18).minutes(0) });
+                this.setState({ startDate: moment(this.state.startDate).hours(9).minutes(0), });
+                this.setState({ endDate: moment(this.state.endDate).hours(18).minutes(0), });
             }
-            this.setState({ allDay: true });
+            this.setState({ allDay: true, });
         } else {
-            this.setState({ startDate: null });
-            this.setState({ endDate: null });
-            this.setState({ allDay: false });
+            this.setState({ startDate: null, });
+            this.setState({ endDate: null, });
+            this.setState({ allDay: false, });
         }
     }
 
     onRadioBtnActivateClick() {
         if (this.state.activateToday === false) {
-            this.setState({ activateToday: true });
-            this.setState({ activationDay: moment() });
+            this.setState({ activateToday: true, });
+            this.setState({ activationDay: moment(), });
         } else if (this.state.activateToday === true) {
-            this.setState({ activateToday: false });
-            this.setState({ activationDay: null });
+            this.setState({ activateToday: false, });
+            this.setState({ activationDay: null, });
         }
     }
 
@@ -357,11 +360,11 @@ class App extends Component {
             this.state.daysSelected.splice(index, 1);
         } 
         
-        this.setState({ daysSelected: [...this.state.daysSelected] });
+        this.setState({ daysSelected: [...this.state.daysSelected], });
     }
 
     toggleCreateModal() {
-        this.setState({ createModal: !this.state.createModal });
+        this.setState({ createModal: !this.state.createModal, });
     }
 
     toggleRegisterModal() {
@@ -373,7 +376,13 @@ class App extends Component {
                 this.handleStartClick();
             }
             this.setState({
-                registerModal: !this.state.registerModal
+                registerModal: !this.state.registerModal,
+                myEventsErrorLabel: 'none',
+            });
+        }
+        else {
+            this.setState({
+                myEventsErrorLabel: 'block',
             });
         }
     }
@@ -382,14 +391,14 @@ class App extends Component {
         this.handleChangeActivationDate(null);
         this.setState({ 
             activateModal: !this.state.activateModal,
-            currentEventId: id
+            currentEventId: id,
          });
     }
 
     toggleDeleteModal(id) {
         this.setState({ 
             deleteModal: !this.state.deleteModal,
-            currentEventId: id
+            currentEventId: id,
         });
     }
 
@@ -415,10 +424,12 @@ class App extends Component {
                         instructor: event.instructor,
                         calendarInfo: event.calendarInfo,
                         currentEventId: event._id,
-                        liveCapacity: event.registeredEmail.length
+                        liveCapacity: event.registeredEmail.length,
+                        allReadyRegisteredErrorLabel: 'none',
+                        fullCapacityErrorLabel: 'none',
                     })
                     if (event.recurrence === "") {
-                        x.setState({ recurrence: "non-recurring" })
+                        x.setState({ recurrence: "non-recurring", })
                     }
                 }
             })
@@ -440,10 +451,10 @@ class App extends Component {
                 activationDay: null,
                 instructor: "",
                 calendarInfo: {},
-                currentEventId: ""
+                currentEventId: "",
             });
         }
-        this.setState({ viewModal: !this.state.viewModal });
+        this.setState({ viewModal: !this.state.viewModal, });
     }
 
     toggleAddAdminModal() {
@@ -454,7 +465,7 @@ class App extends Component {
             emailUserModal: "",
             idUserModal: "",
             newAdminSearchTable: 'none',
-            email: { value: "", valid: true }
+            email: { value: "", valid: true },
         });
     }
 
@@ -468,7 +479,7 @@ class App extends Component {
                 users.forEach(function(user) {
                     if (myComponent.state.login.username === user.name) {
                             myComponent.setState({ 
-                                email: { value: user.email, valid: true }
+                                email: { value: user.email, valid: true },
                              });
                     throw BreakException;
                     }
@@ -486,7 +497,7 @@ class App extends Component {
                 announceModal: !this.state.announceModal,
                 currentEventId: event._id,
                 name: {value: event.calendarInfo.title, valid: true},
-                startDate: event.calendarInfo.start
+                startDate: event.calendarInfo.start,
             });
         }
         if(this.state.announceModal === true){
@@ -494,7 +505,7 @@ class App extends Component {
                 announceModal: !this.state.announceModal,
                 currentEventId: "",
                 name: {value: "", valid: true},
-                startDate: ""
+                startDate: "",
             });
         }
     }
@@ -503,9 +514,64 @@ class App extends Component {
         this.setState({ 
             registerEvents: [],
             registerModal: !this.state.registerModal,
-            visible: false
+            visible: false,
         });
         this.handleResetClick();
+    }
+
+    unregisterFromSingleEvent(id) {
+        const myComponent = this;
+            axios.get('/events/' + id)
+            .then(function (event) {
+                console.log(event)
+                    var i = 0;
+                    var index;
+                    myComponent.state.registerEvents.forEach(function(event){
+                        if(event._id === id) {
+                            index = i;
+                        }
+                        i++;
+                    })
+                    var emailCounter = 0;
+                    event.data.registeredEmail.forEach(function(email){
+                        if (myComponent.state.registerEventEmail === email) {
+                            event.data.registeredEmail.splice(emailCounter, 1)
+                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
+                            .then(function (response) {
+                                console.log(response.data)
+                                if (myComponent.state.registerEvents.length == 1) {
+                                    console.log(index);
+                                    myComponent.state.registerEvents.splice(index, 1);
+                                    console.log(myComponent.state.registerEvents);
+                                    myComponent.setState({
+                                        registerEvents: myComponent.state.registerEvents,
+                                        registerModal: false,
+                                        visible: false,
+                                    });
+                                    myComponent.handleResetClick();
+                                }
+                                else {
+                                    console.log(index);
+                                    myComponent.state.registerEvents.splice(index, 1);
+                                    console.log(myComponent.state.registerEvents);
+                                    myComponent.setState({
+                                        registerEvents: myComponent.state.registerEvents,
+                                    });
+                                }
+                                
+                            })
+                            .catch(function (error) {
+                                console.log(error);
+                                });
+                        }
+                        emailCounter++;
+                    })
+                        
+                    
+                })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
 
     unRegisterEvent() {
@@ -522,7 +588,11 @@ class App extends Component {
                             axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
                             .then(function (response) {
                                 console.log(response.data)
-                                myComponent.handleResetClick()
+                                this.setState({ 
+                                    registerEvents: [],
+                                    visible: false,
+                                });
+                                myComponent.handleResetClick();
                             })
                             .catch(function (error) {
                                 console.log(error);
@@ -541,6 +611,8 @@ class App extends Component {
 
     addEventBasket(eventId, currentEventId) {
         let myComponent = this;
+        let alreadyRegistered = false;
+        let fullCapacity = false;
         axios.get('/users/')
         .then(function (response) {
             var users = response.data
@@ -551,23 +623,53 @@ class App extends Component {
                             axios.get('/events/' + currentEventId)
                                 .then(function (response) {
                                     console.log(response.data)
+                                    if (response.data.registeredEmail.length == response.data.capacity){
+                                        fullCapacity = true
+                                    }
                                     myComponent.setState({
                                         registerEventId: myComponent.state.registerEventId.concat(currentEventId),
-                                        registerEventEmail: user.email
+                                        registerEventEmail: user.email,
                                     });
-                                    axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)})
-                                        .then(function (response) {
-                                            console.log(response.data)
-                                            myComponent.handleResetClick()
-                                            myComponent.handleStartClick()
-                                            myComponent.setState({ 
-                                                visible: true
-                                            });
-                                        
-                                        })
-                                        .catch(function (error) {
-                                            console.log(error);
+                                    response.data.registeredEmail.forEach(function(email) {
+                                        if (user.email === email) {
+                                            alreadyRegistered = true;
+                                        }
                                     });
+                                    if (alreadyRegistered === false && fullCapacity === false) {
+                                        axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)})
+                                            .then(function (response) {
+                                                console.log(response.data)
+                                                myComponent.handleResetClick()
+                                                myComponent.handleStartClick()
+                                                myComponent.setState({ 
+                                                    visible: true,
+                                                    myEventsErrorLabel: 'none',
+                                                });
+                                                axios.get('/events/' + currentEventId)
+                                                .then(function (response) {
+                                                    myComponent.setState({ 
+                                                        registerEvents: myComponent.state.registerEvents.concat(response.data),
+                                                    });
+                                                    myComponent.setState({ viewModal: !myComponent.state.viewModal });
+                                                })
+                                                .catch(function (error) {
+                                                    console.log(error);
+                                                })
+                                            })
+                                            .catch(function (error) {
+                                                console.log(error);
+                                        });
+                                    }
+                                    else if(alreadyRegistered === true) {
+                                        myComponent.setState({ 
+                                            allReadyRegisteredErrorLabel: 'block',
+                                        });
+                                    }
+                                    else if(fullCapacity === true) {
+                                        myComponent.setState({ 
+                                            fullCapacityErrorLabel: 'block',
+                                        });
+                                    }
                                 })
                                 .catch(function (error) {
                                     console.log(error);
@@ -583,37 +685,6 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-        axios.get('/events/' + currentEventId)
-        .then(function (response) {
-                    myComponent.setState({ 
-                        registerEvents: myComponent.state.registerEvents.concat(response.data),
-                    });
-                
-           
-            if (myComponent.state.viewModal === true) {
-                myComponent.setState({ 
-                    eventId: "",
-                    name: {value: "", valid: true}, 
-                    capacity: {value: "", valid: true}, 
-                    description: {value: "", valid: true},
-                    location: {value: "", valid: true},
-                    isRecurrent: {value: "", valid: true}, 
-                    daysSelected: [],
-                    recurrence: "",
-                    allDay: false,
-                    startDate: null,
-                    endDate: null,
-                    activationDay: null,
-                    instructor: "",
-                    calendarInfo: {},
-                    currentEventId: ""
-                });
-            }
-            myComponent.setState({ viewModal: !myComponent.state.viewModal });
-        })
-        .catch(function (error) {
-            console.log(error);
-        })
     }
    
     minMaxTime() {
@@ -626,7 +697,7 @@ class App extends Component {
 
     displayCreateAccount() {
         var user = { username: "account", admin: false };
-        this.setState({ login: user });
+        this.setState({ login: user, });
     }
 
     nextStep(event) {
@@ -642,31 +713,31 @@ class App extends Component {
                 if (recurrenceValid.value === "") {
                     valid = false;
                     this.setState({
-                        isRecurrent: {value: recurrenceValid.value, valid: valid}
+                        isRecurrent: {value: recurrenceValid.value, valid: valid},
                     });
                 }
                 if (nameValid.value === "") {
                     valid = false;
                     this.setState({
-                        name: {value: nameValid.value, valid: valid}
+                        name: {value: nameValid.value, valid: valid},
                     });
                 }
                 if (capacityValid.value === "") {
                     valid = false;
                     this.setState({
-                        capacity: {value: capacityValid.value, valid: valid}
+                        capacity: {value: capacityValid.value, valid: valid},
                     });
                 }
                 if (locationValid.value === "") {
                     valid = false;
                     this.setState({
-                        location: {value: locationValid.value, valid: valid}
+                        location: {value: locationValid.value, valid: valid},
                     });
                 }
                 if (descriptionValid.value === "") {
                     valid = false;
                     this.setState({
-                        description: {value: descriptionValid.value, valid: valid}
+                        description: {value: descriptionValid.value, valid: valid},
                     });
                 }
             }
@@ -674,68 +745,68 @@ class App extends Component {
                     if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate  !== null && this.state.endDate !== null) {
                         var nonRecurStartDate = moment(this.state.startDate);
                         var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
-                        this.setState({ startDate: nonRecurStartDate });
-                        this.setState({ endDate: nonRecurEndDate });
+                        this.setState({ startDate: nonRecurStartDate, });
+                        this.setState({ endDate: nonRecurEndDate, });
                     }
                     const step = this.state.step + 1;
-                    this.setState({ step });
+                    this.setState({ step, });
                 }
         }
         else if (this.state.step === 1) {
             if (this.state.isRecurrent.value === "recurring") {
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence === "" || this.state.startDate === null || this.state.endDate === null || this.state.daysSelected.length === 0) {
                     if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
-                        this.setState({ dateValid: '#c4183c' });
-                        this.setState({ dateValidLabel: 'visible' });
+                        this.setState({ dateValid: '#c4183c', });
+                        this.setState({ dateValidLabel: 'visible', });
                     }
                     if (this.state.recurrence === "") {
-                        this.setState({ recurrenceValid: '#c4183c' });
-                        this.setState({ recurrenceValidLabel: 'visible' });
+                        this.setState({ recurrenceValid: '#c4183c', });
+                        this.setState({ recurrenceValidLabel: 'visible', });
                     }
                     if (this.state.daysSelected.length === 0) {
-                        this.setState({ daysSelectedValid: '#c4183c' });
-                        this.setState({ daysSelectedValidLabel: 'visible' });
+                        this.setState({ daysSelectedValid: '#c4183c', });
+                        this.setState({ daysSelectedValidLabel: 'visible', });
                     }
                     if (this.state.startDate !== null && this.state.endDate !== null) {
-                        this.setState({ dateValid: 'black' });
-                        this.setState({ dateValidLabel: 'hidden' });
+                        this.setState({ dateValid: 'black', });
+                        this.setState({ dateValidLabel: 'hidden', });
                     }
                     if (this.state.recurrence !== "") {
-                        this.setState({ recurrenceValid: 'black' });
-                        this.setState({ recurrenceValidLabel: 'hidden' });
+                        this.setState({ recurrenceValid: 'black', });
+                        this.setState({ recurrenceValidLabel: 'hidden', });
                     }
                     if (this.state.daysSelected.length !== 0) {
-                        this.setState({ daysSelectedValid: 'black' });
-                        this.setState({ daysSelectedValidLabel: 'hidden' });
+                        this.setState({ daysSelectedValid: 'black', });
+                        this.setState({ daysSelectedValidLabel: 'hidden', });
                     }
                 }
                 else {
-                    this.setState({ dateValid: 'black' });
-                    this.setState({ dateValidLabel: 'hidden' });
-                    this.setState({ recurrenceValid: 'black' });
-                    this.setState({ recurrenceValidLabel: 'hidden' });
-                    this.setState({ daysSelectedValid: 'black' });
-                    this.setState({ daysSelectedValidLabel: 'hidden' });
+                    this.setState({ dateValid: 'black', });
+                    this.setState({ dateValidLabel: 'hidden', });
+                    this.setState({ recurrenceValid: 'black', });
+                    this.setState({ recurrenceValidLabel: 'hidden', });
+                    this.setState({ daysSelectedValid: 'black', });
+                    this.setState({ daysSelectedValidLabel: 'hidden', });
                     const step = this.state.step + 1;
-                    this.setState({ step });
+                    this.setState({ step, });
                 }
             }
             else {
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
                     //CODE TO MAKE FIELDS UNVALID NON-RECURRING
                     if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
-                        this.setState({ dateValidNonRecurr: '#c4183c' });
-                        this.setState({ dateValidLabelNonRecurr: 'visible' });
+                        this.setState({ dateValidNonRecurr: '#c4183c', });
+                        this.setState({ dateValidLabelNonRecurr: 'visible', });
                     }
                     if (this.state.startDate !== null && this.state.endDate !== null) {
-                        this.setState({ dateValidNonRecurr: 'black' });
-                        this.setState({ dateValidLabelNonRecurr: 'hidden' });
+                        this.setState({ dateValidNonRecurr: 'black', });
+                        this.setState({ dateValidLabelNonRecurr: 'hidden', });
                     }
                 } else {
-                    this.setState({ dateValidNonRecurr: 'black' });
-                    this.setState({ dateValidLabelNonRecurr: 'hidden' });
+                    this.setState({ dateValidNonRecurr: 'black', });
+                    this.setState({ dateValidLabelNonRecurr: 'hidden', });
                     const step = this.state.step + 1;
-                    this.setState({ step });
+                    this.setState({ step, });
                 }
             }
         }
@@ -743,12 +814,12 @@ class App extends Component {
     
     prevStep() {
         if (this.state.allDay === true) {
-            this.setState({ allDay: false });
-            this.setState({ startDate: null });
-            this.setState({ endDate: null });
+            this.setState({ allDay: false, });
+            this.setState({ startDate: null, });
+            this.setState({ endDate: null, });
         }
         const step = this.state.step - 1;
-        this.setState({ step });
+        this.setState({ step, });
     }
 
     createAccount() {
@@ -807,11 +878,11 @@ class App extends Component {
         else if (target.name === "location" && /[^A-Za-z0-9- ]+/.test(target.value)) {
             valid = false;
         }
-        this.setState({ [target.name]: { value: target.value, valid: valid } });
+        this.setState({ [target.name]: { value: target.value, valid: valid }, });
     }
 
     handleRecurrenceChange(event) {
-        this.setState({ recurrence: event.target.value });
+        this.setState({ recurrence: event.target.value, });
     }
 
     weekDaysToNumbers(dayINeed) {
@@ -871,10 +942,10 @@ class App extends Component {
                 endDate: null,
                 activationDay: null,
                 instructor: "",
-                step: 0
+                step: 0,
             });
             x.toggleCreateModal();
-            this.setState({events: this.state.events.concat(newEvent)});
+            this.setState({ events: this.state.events.concat(newEvent), });
         })
         .catch(function (error) {
             console.log(error);
@@ -948,7 +1019,7 @@ class App extends Component {
                         daysSelected: [],
                         isRecurrent: { value: "", valid: true },
                         recurrence: "",
-                        currentEventId: null
+                        currentEventId: null,
                     });
                 })
                 .catch(function (error) {
@@ -958,7 +1029,7 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-        this.setState({ viewModal: !this.state.viewModal });
+        this.setState({ viewModal: !this.state.viewModal, });
     }
 
     componentWillMount() {
@@ -969,13 +1040,13 @@ class App extends Component {
             user.username = response.data.username;
             user.admin = response.data.admin;
             console.log(response);
-            component.setState({ login: user });
+            component.setState({ login: user, });
 
             component.fetchEvents();
         })
         .catch(function (error) {
             console.log("Redirecting to login");
-            component.setState({login: {}});
+            component.setState({ login: {}, });
         });
     }
 
@@ -1062,7 +1133,7 @@ class App extends Component {
                     event.activationDay = new Date(event.activationDay);
                 })
             });
-            myComponent.setState({events: response.data});
+            myComponent.setState({ events: response.data, });
         })
         .catch(function (error) {
             console.log(error);
@@ -1557,6 +1628,7 @@ class App extends Component {
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
                                             <Button outline className="btn btn-secondary" style={{float: 'right'}} onClick={this.toggleRegisterModal}>My Events</Button>
+                                            <label className="myEventsErrorLabel" style={{float: 'right', display: this.state.myEventsErrorLabel}}> No added events to show. </label>
                                         </Col>
                                     </Row>
                     
@@ -1609,6 +1681,7 @@ class App extends Component {
                                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                                 <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
                                                                                 <label className="inputName" style={{fontSize: '21px'}}>{event.calendarInfo.title}</label>
+                                                                                <i className="fas fa-times pull-right unregisterFromEvent" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
                                                                                 <ul style={{fontSize: '15px'}}>
                                                                                     <li><span>Instructor:</span> <span>{event.instructor}</span></li>
                                                                                     <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
@@ -1616,7 +1689,7 @@ class App extends Component {
                                                                                     <li><span>Location:</span> <span>{event.location}</span></li>
                                                                                     <li><span>Capacity:</span> <span>{event.capacity}</span></li>
                                                                                     <li><span>Description:</span> <span>{event.description}</span></li>
-                                                                                </ul> 
+                                                                                </ul>
                                                                                 <hr/>
                                                                             </Col>
                                                                     </Row>;
@@ -1855,7 +1928,11 @@ class App extends Component {
                                         </ModalBody>
                                         <ModalFooter>
                                         {this.state.instructor !== this.state.login.username &&
-                                            (<Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}}>Add</Button>)}
+                                            (<Col xs="12" sm="12" md="12" lg="12">
+                                            <Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}} style={{float: 'right'}}>Add</Button>
+                                            <label className="myEventsErrorLabel" style={{float: 'right', paddingRight: '4%', display: this.state.allReadyRegisteredErrorLabel}}> You're already registered to this event. </label>
+                                            <label className="myEventsErrorLabel" style={{float: 'right', paddingRight: '4%', display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
+                                            </Col>)}
                                         {this.state.instructor === this.state.login.username &&
                                             (<Button color="warning" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
                                         </ModalFooter>

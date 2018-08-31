@@ -321,3 +321,18 @@
   margin-right:auto;
 }
 
+.unregisterFromEvent {
+  padding-right: 5%!important;
+  padding-top: 5%!important;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.myEventsErrorLabel {
+  padding-right: 1%;
+  line-height: 35px;
+  font-size: 11pt;
+  color: #c4183c;
+  margin-bottom:0px!important
+}
+
