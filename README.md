@@ -6,6 +6,7 @@
 2. [ Usage ](#usage)
 3. [ Technologies ](#tech)
 4. [ Future Improvements ](#improv)
+5. [ License ](#license)
 
 
 <a name="install"></a>
@@ -48,3 +49,8 @@ Can you think of a better duo than peanut butter and jelly? Yeah, it's called us
 ## Future Improvements
 
 Again, the documentation (available in this repository) lists multiple future improvements that could be done to improve the user experience.
+
+<a name="license"></a>
+## License
+
+MIT, but feel free to use my code for your projects! Sharing is caring am I right?
