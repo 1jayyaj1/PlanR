@@ -24,7 +24,7 @@ npm install
 npm start
 ```
 
-As for the front-end, we use *ReactJS* (duh!). To get started, run this:
+As for the front-end, we use *ReactJS*. To get started, run this:
 
 ```
 cd Umba/client
