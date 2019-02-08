@@ -1966,25 +1966,30 @@ class App extends Component {
                                             <th>Capacity</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        {
-                                            activeChecker(this.state.events, this.state.login.username).map((events, index) => {
-                                                var event = events;
-                                                if (event) {
-                                                    return <tr key={index + 1}>
-                                                            <th>{event.calendarInfo.title}</th>
-                                                            <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                            <td>{event.location}</td>
-                                                            <td>{event.capacity}</td>
-                                                            <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                            <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                            <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                        </tr>;
-                                                } else return
-                                            })
+                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
+                                            <label className="noEventsMessage">Get started by creating an event</label>
+                                        }    
+                                        {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
+                                            <tbody>
+                                            {
+                                                activeChecker(this.state.events, this.state.login.username).map((events, index) => {
+                                                    var event = events;
+                                                    if (event) {
+                                                        return <tr key={index + 1}>
+                                                                <th>{event.calendarInfo.title}</th>
+                                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                                <td>{event.location}</td>
+                                                                <td>{event.capacity}</td>
+                                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
+                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                            </tr>;
+                                                    } else return
+                                                })
+                                            }
+                                            </tbody>
                                         }
-                                        </tbody>
                                     </Table>
                                 </div>
                             </Row>
@@ -2006,26 +2011,31 @@ class App extends Component {
                                             <th>Registration Started</th>
                                         </tr>
                                         </thead>
-                                        <tbody>
-                                        {
-                                            flatten3(this.state.events, this.state.login.username).map((events, index) => {
-                                                var event = events;
-                                                if (event) {
-                                                    return <tr key={index + 1}>
-                                                            <th>{event.calendarInfo.title}</th>
-                                                            <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                            <td>{event.location}</td>
-                                                            <td>{event.registeredEmail.length} / {event.capacity}</td>
-                                                            <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
-                                                            <td><Button outline color="success" onClick={() => {this.toggleAnnounceModal(event)}}>Announce</Button></td>
-                                                            <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                            <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                        </tr>;
-                                                } else return
-                                            })
+                                        {flatten3(this.state.events, this.state.login.username).length === 0 &&
+                                            <label className="noEventsMessage">Activate an event to make it public</label>
                                         }
-                                        </tbody>
+                                        {flatten3(this.state.events, this.state.login.username).length !== 0 &&
+                                            <tbody>
+                                                {
+                                                    flatten3(this.state.events, this.state.login.username).map((events, index) => {
+                                                        var event = events;
+                                                        if (event) {
+                                                            return <tr key={index + 1}>
+                                                                    <th>{event.calendarInfo.title}</th>
+                                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                                    <td>{event.location}</td>
+                                                                    <td>{event.registeredEmail.length} / {event.capacity}</td>
+                                                                    <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
+                                                                    <td><Button outline color="success" onClick={() => {this.toggleAnnounceModal(event)}}>Announce</Button></td>
+                                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                                </tr>;
+                                                        } else return
+                                                    })
+                                                }
+                                            </tbody>
+                                        }
                                     </Table>
                                 </div>
                             </Row>
