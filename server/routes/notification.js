@@ -18,8 +18,8 @@ router.post('/', function(req, res, next) {
                 service: 'gmail',
                 secure: false,
                 auth: {
-                    user: 'ericsson.wellness@gmail.com',
-                    pass: 'Administrator!'
+                    user: 'umbawellness@gmail.com',
+                    pass: 'jaja2637'
                 },
                 tls: {
                     rejectUnauthorized: false
@@ -31,7 +31,7 @@ router.post('/', function(req, res, next) {
                 console.log(email);
                 var firstName = email.substr(0,email.indexOf('.'));
                 let mailOptions = {
-                    from: '"Umba" <ericsson.wellness@gmail.com>', // sender address
+                    from: '"Umba" <umbawellness@gmail.com>', // sender address
                     to: email, // list of receivers
                     subject: 'Message from ' + fullName + " " + "regarding your upcoming " + eventName + " event" + " on " + eventStart, // Subject line
                     text: "Hello" + " " + firstName + "," + "\n\n" + fullName + " (" + sender + ")," + "instructor of your upcoming " + eventName + " event" + " says: " + message + "\n\n" + "Replies to the following message must only be sent directly to the instructor's email." + "\n\n" + "Best, " + "\n\n" + "Umba team", // plain text body

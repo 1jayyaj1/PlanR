@@ -160,7 +160,6 @@ class App extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.createEvent = this.createEvent.bind(this);
         this.componentWillMount = this.componentWillMount.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.weekDaysToNumbers = this.weekDaysToNumbers.bind(this);
         this.splitEvent = this.splitEvent.bind(this);
         this.startTime = this.startTime.bind(this);
@@ -174,7 +173,6 @@ class App extends Component {
         this.createAccount = this.createAccount.bind(this);
         this.searchAdminEmail = this.searchAdminEmail.bind(this);
         this.addAdmin = this.addAdmin.bind(this);
-        this.createCSV = this.createCSV.bind(this);
         this.findFirstName = this.findFirstName.bind(this);
         this.registerForEvents = this.registerForEvents.bind(this);
         this.notifyEvent = this.notifyEvent.bind(this);
@@ -987,9 +985,9 @@ class App extends Component {
         this.toggleActivateModal();
     }
 
-    editEvent (eventId) {
+    editEvent () {
         let myComponent = this;
-        axios.get('/events/' + eventId)
+        axios.get('/events/' + myComponent.state.currentEventId)
         .then(function (response) {
                  axios.put('/events/' + myComponent.state.currentEventId, {
                     calendarInfo: {
@@ -1140,32 +1138,6 @@ class App extends Component {
         })
     }
 
-    handleSubmit(event) {
-      event.preventDefault();
-      
-      var data = {
-            contactFormFullName: event.target[0].value, 
-            contactFormEmail: event.target[1].value, 
-            contactFormMessage: event.target[2].value
-      }
-
-      axios.post('/feedback', data)
-      .then(toast.success('We have received your message. Thank you! 😊', {
-            position: "top-center",
-            autoClose: 4000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggablePercent: 60,
-          }))
-      .catch(function (error) {
-            console.log(error);
-      });
-      
-      document.getElementById("contactForm").reset();
-
-    }
-
     notifyEvent(event) {
         var myComponent = this;
         event.preventDefault();
@@ -1199,26 +1171,6 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-    }
-
-    createCSV(events) {
-        var result = [];
-
-        events.map( e => {
-            var eventList = e.data;
-            eventList.map( event => {
-                var output = {
-                    title: event.calendarInfo.title,
-                    start: moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY"),
-                    end: moment(event.calendarInfo.end).format("dddd [,] MMMM Do YYYY"),
-                    capacity: event.capacity,
-                    description: event.description,
-                    location: event.location
-                };
-                result.push(output);
-            })
-        })
-        return (result);
     }
 
     render() {
@@ -1934,7 +1886,7 @@ class App extends Component {
                                             <label className="myEventsErrorLabel" style={{float: 'right', paddingRight: '4%', display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
                                             </Col>)}
                                         {this.state.instructor === this.state.login.username &&
-                                            (<Button color="warning" onClick={() => {this.editEvent(this.state.eventId)}}>Save</Button>)}
+                                            (<Button color="warning" onClick={() => {this.editEvent()}}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
 
@@ -2090,52 +2042,16 @@ class App extends Component {
                                 </div>
                             </Row>
                                 <div className="col-md-12 col-sm-12">
-                                <Row className="createEventButton">
-                                    <div className="bottomAdminButton">
-                                        <Button className="templateButton" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
-                                    </div>
-                                    <div className="bottomAdminButton">
-                                        <CSVLink data={JSON.stringify(Object.values(this.state.events))} filename={"events.csv"} className="btn btn-secondary templateButton" target="_blank">Create CSV</CSVLink>
-                                    </div>
-                                    <div className="bottomAdminButton">
-                                        <Button className="templateButton" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
-                                    </div>
-                                </Row>
+                                    <Row className="createEventButton">
+                                        <div className="bottomAdminButton">
+                                            <Button className="templateButton" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                        </div>
+                                        <div className="bottomAdminButton">
+                                            <Button className="templateButton" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
+                                        </div>
+                                    </Row>
                                 </div>
                             </div>)}
-
-                        <h3 className="section-title text-center m-5">Contact Us</h3>
-                        <div className="container py-4">
-                            <div className="row justify-content-md-center px-4">
-                                <div className="contact-form col-sm-12 col-md-10 col-lg-7 p-4 mb-4 card">
-                                    <form onSubmit={this.handleSubmit} id="contactForm">
-                                    <div className="row">
-                                        <div className="col-md-6 col-sm-12">
-                                        <div className="form-group">
-                                            <label htmlFor="contactFormFullName">Full Name</label>
-                                            <input className="form-control" id="contactFormFullName" name="contactFormFullName" required="required" placeholder="Enter your full name"></input>
-                                        </div>
-                                        </div>
-                                        <div className="col-md-6 col-sm-12">
-                                        <div className="form-group">
-                                            <label htmlFor="contactFormEmail">Email address</label>
-                                            <input type="email" className="form-control" id="contactFormEmail" name="contactFormEmail" required="required" placeholder="Enter your email address"></input>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col">
-                                        <div className="form-group">
-                                            <label htmlFor="contactFormMessage">Message</label>
-                                            <textarea id="contactFormMessage" className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." name="contactFormMessage"></textarea>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    <input className="btn btn-outline-secondary d-flex ml-auto mr-auto" type="submit" value="Send"></input>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
 
                     </div>
                     <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>

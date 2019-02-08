@@ -15,8 +15,8 @@ router.post('/', function(req, res, next) {
                 host: "smtp-mail.outlook.com",
                 secure: false,
                 auth: {
-                    user: 'jay.abi-saad@ericsson.com',
-                    pass: 'jaJa6734'
+                    user: 'umbawellness@gmail.com',
+                    pass: 'jaja2637'
                 },
                 tls: {
                     rejectUnauthorized: false
@@ -25,8 +25,8 @@ router.post('/', function(req, res, next) {
         
             // setup email data with unicode symbols
             let mailOptions = {
-                from: '"Umba" <jay.abi-saad@ericsson.com>', // sender address
-                to: 'lu.ya.ding@ericsson.com', // list of receivers
+                from: 'umbawellness@gmail.com', // sender address
+                to: 'jayabisaad@gmail.com', // list of receivers
                 subject: 'Message from ' + fullName, // Subject line
                 text: 'Full Name: ' + fullName + '\nEmail: ' + email + '\nMessage: ' + message, // plain text body
             };
