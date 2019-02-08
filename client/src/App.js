@@ -1131,7 +1131,7 @@ class App extends Component {
                     event.activationDay = new Date(event.activationDay);
                 })
             });
-            myComponent.setState({ events: response.data, });
+            myComponent.setState({ events: response.data });
         })
         .catch(function (error) {
             console.log(error);

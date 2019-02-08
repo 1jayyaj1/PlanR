@@ -75,6 +75,7 @@ router.delete('/all/:parentId', function(req, res) {
     try {
         Event.findByIdAndRemove(id)
             .then(event => {
+                console.log("lol")
                 if (!event) {
                     return res.status(404).send("Event not found with id " + id);
                 }
@@ -93,7 +94,7 @@ router.delete('/all/:parentId', function(req, res) {
 
 
 router.delete('/:eventId', function(req, res) {
-    const id = req.params.eventId;
+    var id = req.params.eventId;
     try {
         var parentId = null;
         var newList = null;
@@ -108,11 +109,10 @@ router.delete('/:eventId', function(req, res) {
                     for (var i = 0; i < x.data.length; i++) {
                         if (x.data[i]._id == id) {
                             found = i;
+                            parentId = x._id;
+                            newList = x.data.pull({ _id: id });
+                            console.log(newList);
                         }
-                    }
-                    if (found != null) {
-                        parentId = x._id;
-                        newList = x.data.pull({ _id: id });
                     }
                 });
 
