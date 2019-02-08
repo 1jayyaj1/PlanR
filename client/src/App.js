@@ -9,7 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
-import {CSVLink} from 'react-csv';
 import { PulseLoader } from 'react-spinners';
 const axios = require('axios');
 
@@ -94,7 +93,6 @@ class App extends Component {
             description: { value: "", valid: true },
             location: { value: "", valid: true },
             capacity: { value: 0, valid: true },
-            email: { value: "", valid: true },
             daysSelected: [],
             isRecurrent: { value: "", valid: true },
             recurrence: "",
@@ -537,7 +535,7 @@ class App extends Component {
                             axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
                             .then(function (response) {
                                 console.log(response.data)
-                                if (myComponent.state.registerEvents.length == 1) {
+                                if (myComponent.state.registerEvents.length === 1) {
                                     console.log(index);
                                     myComponent.state.registerEvents.splice(index, 1);
                                     console.log(myComponent.state.registerEvents);
@@ -574,7 +572,6 @@ class App extends Component {
 
     unRegisterEvent() {
         const myComponent = this;
-        var i = 0;
         this.state.registerEventId.forEach(function(id){
             axios.get('/events/' + id)
             .then(function (event) {
@@ -621,7 +618,7 @@ class App extends Component {
                             axios.get('/events/' + currentEventId)
                                 .then(function (response) {
                                     console.log(response.data)
-                                    if (response.data.registeredEmail.length == response.data.capacity){
+                                    if (response.data.registeredEmail.length === response.data.capacity){
                                         fullCapacity = true
                                     }
                                     myComponent.setState({
@@ -827,7 +824,7 @@ class App extends Component {
         const name = this.name.current.value;
         const confirm = this.confirmPassword.current.value;
 
-        if (password == confirm) {
+        if (password === confirm) {
             var user = {
                 name: name,
                 username: username,
@@ -856,7 +853,7 @@ class App extends Component {
             window.location.reload();
         })
         .catch(function (error) {
-            if (error.response.status.toString()[0] == 4) {
+            if (error.response.status.toString()[0] === 4) {
                 alert("invalid credentials");
             } else {
                 console.log(error);
@@ -952,25 +949,6 @@ class App extends Component {
 
     activateEvent() {
         const x = this;
-        var sDate = moment(this.state.startDate).format();
-        var eDate = moment(this.state.endDate).format();
-        var aDate = moment(this.state.activationDay).format();
-        var event = {
-            title: this.state.name.value,
-            allDay: false,
-            start:  new Date(sDate),
-            end: new Date(eDate)
-        }
-        var newEvent = {
-            capacity: this.state.capacity.value, 
-            description: this.state.description.value, 
-            location: this.state.location.value, 
-            allDay: this.state.allDay,
-            activationDay: new Date(aDate),
-            instructor: this.state.login.username,
-            registeredEmail: [],
-            calendarInfo: event 
-        }
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
         .then(function (response) {
             x.fetchEvents();
@@ -1008,7 +986,6 @@ class App extends Component {
                         description: { value: "", valid: true },
                         location: { value: "", valid: true },
                         capacity: { value: 0, valid: true },
-                        recurrence: "",
                         allDay: false,
                         activateToday: false,
                         startDate: null, 
@@ -1210,7 +1187,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <Row  className="rightInputInBasicInfo">
                     <label>Description</label>
-                      <Input name="description" type="textarea" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be about?" rows={5} style={{maxHeight:'199pt', minHeight:'199pt'}}/>
+                      <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be about?" rows={5} style={{maxHeight:'199pt', minHeight:'199pt'}}></textarea>
                       <div className="invalid-feedback">Can't be empty</div>
                   </Row>
                 </Col>
@@ -1551,7 +1528,7 @@ class App extends Component {
                                             <h4 className="stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
                                         </div>
                                     </Alert>)}
-                                    {this.state.secondsElapsed == 0 &&
+                                    {this.state.secondsElapsed === 0 &&
                                     ( this.unRegisterEvent() )}
                             </div>
                             <h3 className="section-title text-center my-5">Your schedule</h3>
@@ -1668,7 +1645,7 @@ class App extends Component {
                                             <div className="row">
                                                 <div className="col">
                                                 <div className="form-group">
-                                                    <Input type="textarea" id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." style={{minHeight: '250pt', maxHeight:'250pt'}}></Input>
+                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." style={{minHeight: '250pt', maxHeight:'250pt'}}></textarea>
                                                 </div>
                                                 </div>
                                             </div>
@@ -1812,7 +1789,7 @@ class App extends Component {
                                                     <Col xs="6" sm="6" md="6" lg="6">
                                                     <Row  className="rightInputInBasicInfo">
                                                         <label>Description</label>
-                                                        <Input type="textarea" name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{minHeight:'204pt', maxHeight:'204pt'}}/>
+                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{minHeight:'204pt', maxHeight:'204pt'}}></textarea>
                                                         <div className="invalid-feedback">Can't be empty</div>
                                                     </Row>
                                                     </Col>
@@ -2057,7 +2034,7 @@ class App extends Component {
                     <footer>
                         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                             <div className="container">
-                                <a className="navbar-brand">Ericsson</a>
+                                <a className="navbar-brand">Umba</a>
                                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                     <span className="navbar-toggler-icon"></span>
                                 </button>
