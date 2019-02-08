@@ -111,7 +111,6 @@ router.delete('/:eventId', function(req, res) {
                             found = i;
                             parentId = x._id;
                             newList = x.data.pull({ _id: id });
-                            console.log(newList);
                         }
                     }
                 });
@@ -180,7 +179,7 @@ router.put('/all/:parentId', function(req, res) {
                             if (body.calendarInfo) {
                                 if (body.calendarInfo.title) {
                                     y.calendarInfo.allDay = body.calendarInfo.allDay;
-                                    if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
+                                    if (/^[a-zA-Z0-9- ]+$/.test(body.calendarInfo.title)) {
                                         y.calendarInfo.title = body.calendarInfo.title;
                                     } else {
                                         return res.sendStatus(404);
@@ -270,7 +269,7 @@ router.put('/:eventId', function(req, res) {
                             if (body.calendarInfo) {
                                 if (body.calendarInfo.title) {
                                     y.calendarInfo.allDay = body.calendarInfo.allDay;
-                                    if (/^[a-zA-Z- ]+$/.test(body.calendarInfo.title)) {
+                                    if (/^[a-zA-Z0-9- ]+$/.test(body.calendarInfo.title)) {
                                         y.calendarInfo.title = body.calendarInfo.title;
                                     } else {
                                         return res.sendStatus(404);
@@ -346,7 +345,7 @@ router.post('/', function(req, res) {
                 var activationDay = new Date(e.activationDay);
                 var capacity = Number(e.capacity);
 
-                if (!/^[a-zA-Z- ]+$/.test(e.calendarInfo.title)) {
+                if (!/^[#/&a-zA-Z0-9- ]+$/.test(e.calendarInfo.title)) {
                     return false;
                 }
         

@@ -131,14 +131,6 @@
   font-size: large;
 }
 
-/* .modal-dialog {
-  height: 45%
-}
-
-.modal-content {
-  height: 100%
-} */
-
 .templateButton {
   background-color: #65737e!important;
   border-color: #65737e!important;
@@ -334,5 +326,9 @@
   font-size: 11pt;
   color: #c4183c;
   margin-bottom:0px!important
+}
+
+.editFieldLabel {
+  margin-top: 37px;
 }
 

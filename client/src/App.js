@@ -867,7 +867,7 @@ class App extends Component {
     handleChange(event) {
         const target = event.target;
         var valid = true;
-        if (target.name === "name" && !/^[a-zA-Z- ]*$/.test(target.value)) {
+        if (target.name === "name" && !/^[#/&a-zA-Z0-9- ]*$/.test(target.value)) {
             valid = false;
         }
         else if (target.name === "capacity" && /\D+/.test(target.value)) {
@@ -1183,17 +1183,17 @@ class App extends Component {
                   <Row>
                       <label>Name</label>
                       <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                      <div className="invalid-feedback">Characters only and can't be empty</div>
+                      <div className="invalid-feedback">Alphanumeric and can't be empty</div>
                   </Row>
                   <Row>
                       <label>Capacity</label>
                       <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                      <div className="invalid-feedback">Numbers only and can't be empty</div>
+                      <div className="invalid-feedback">Numbers and can't be empty</div>
                   </Row>
                   <Row>
                       <label>Location</label>
                       <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                      <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+                      <div className="invalid-feedback">Alphanumeric and can't be empty</div>
                   </Row> 
                   <Row>
                       <label>Recurrence</label>
@@ -1210,7 +1210,7 @@ class App extends Component {
                 <Col xs="6" sm="6" md="6" lg="6">
                   <Row  className="rightInputInBasicInfo">
                     <label>Description</label>
-                      <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                      <Input name="description" type="textarea" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be about?" rows={5} style={{maxHeight:'199pt', minHeight:'199pt'}}/>
                       <div className="invalid-feedback">Can't be empty</div>
                   </Row>
                 </Col>
@@ -1668,7 +1668,7 @@ class App extends Component {
                                             <div className="row">
                                                 <div className="col">
                                                 <div className="form-group">
-                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..."></textarea>
+                                                    <Input type="textarea" id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." style={{minHeight: '250pt', maxHeight:'250pt'}}></Input>
                                                 </div>
                                                 </div>
                                             </div>
@@ -1787,22 +1787,32 @@ class App extends Component {
                                                         <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
                                                     </Row> 
                                                     <Row>
-                                                        <label>Recurrence</label>
-                                                        <fieldset className="inputRecurrence">
-                                                            <select className="custom-select w-100" name="recurrence" value={this.state.recurrence} onChange={this.handleRecurrenceChange}>
-                                                                <option disabled='disabled' value="">Will it be a recurring event?</option>
-                                                                <option value="non-recurring">No</option>
-                                                                <option value="Weekly">Weekly</option>
-                                                                <option value="Biweekly">Biweekly</option>
-                                                                <option value="Triweekly">Triweekly</option>
-                                                            </select>
-                                                        </fieldset>
+                                                        <label className="inputName editLabel">Activation day</label>
+                                                        <div className="input-daterange input-group" id="datepicker-example-2">
+                                                        <span className="input-group-append" id="startIcon">
+                                                            <span className="input-group-text" id="startIcon">
+                                                            <i className="fa fa-calendar"></i>
+                                                            </span>
+                                                        </span>
+                                                            <DatePicker
+                                                                className="input-sm form-control activationDate"
+                                                                placeholderText="Activation date"
+                                                                selected={this.state.activationDay}
+                                                                onChange={this.handleChangeActivationDate}
+                                                                showTimeSelect
+                                                                timeFormat="HH:mm"
+                                                                timeIntervals={15}
+                                                                minDate={moment()}
+                                                                dateFormat="LLL"
+                                                                readOnly
+                                                            />
+                                                        </div>
                                                     </Row>
                                                     </Col>
                                                     <Col xs="6" sm="6" md="6" lg="6">
                                                     <Row  className="rightInputInBasicInfo">
                                                         <label>Description</label>
-                                                        <Input name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{height:'199pt'}}/>
+                                                        <Input type="textarea" name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{minHeight:'204pt', maxHeight:'204pt'}}/>
                                                         <div className="invalid-feedback">Can't be empty</div>
                                                     </Row>
                                                     </Col>
@@ -1852,28 +1862,6 @@ class App extends Component {
                                                         <i className="fa fa-calendar"></i>
                                                         </span>
                                                     </span>
-                                                    </div>
-                                                </Col>
-                                                <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
-                                                <label className="inputName editLabel">Activation day</label>
-                                                    <div className="input-daterange input-group" id="datepicker-example-2">
-                                                    <span className="input-group-append" id="startIcon">
-                                                        <span className="input-group-text" id="startIcon">
-                                                        <i className="fa fa-calendar"></i>
-                                                        </span>
-                                                    </span>
-                                                    <DatePicker
-                                                        className="input-sm form-control activationDate"
-                                                        placeholderText="Activation date"
-                                                        selected={this.state.activationDay}
-                                                        onChange={this.handleChangeActivationDate}
-                                                        showTimeSelect
-                                                        timeFormat="HH:mm"
-                                                        timeIntervals={15}
-                                                        minDate={moment()}
-                                                        dateFormat="LLL"
-                                                        readOnly
-                                                    />
                                                     </div>
                                                 </Col>
                                             </Row>)}
