@@ -89,7 +89,7 @@ router.put('/:userId', function(req, res, next) {
 router.post('/', function(req, res, next) {
     const body = req.body;
     try {
-        if (/^[a-zA-Z ]+$/.test(body.name) && emailRegex.test(body.email)) {
+        if (emailRegex.test(body.email)) {
 
             bcrypt.hash(body.password, saltRounds, function(err, hash) {
                 // Store hash in your password DB.
@@ -109,7 +109,7 @@ router.post('/', function(req, res, next) {
                 .catch(err => {
                     console.error(err);
                     if (err.code === 11000) {
-                        return res.status(500).send("This user already exists in the database");
+                        return res.status(500).send("The provided email is already associated to an existing account.");
                     }
                     return res.status(500).send("Unable to create user in database")
                 })

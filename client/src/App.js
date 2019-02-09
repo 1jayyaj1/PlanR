@@ -97,7 +97,9 @@ class App extends Component {
             createEmail: { value: "", valid: true },
             createUserName: { value: "", valid: true },
             createPassword: { value: "", valid: true },
-            createConfirmPassword: { value: "", valid: true, match: true},
+            createConfirmPassword: { value: "", valid: true},
+            username: { value: "", valid: true },
+            password: { value: "", valid: true },
             daysSelected: [],
             isRecurrent: { value: "", valid: true },
             recurrence: "",
@@ -132,7 +134,6 @@ class App extends Component {
         }
 
         this.incrementer = null;
-        this.username = React.createRef();
         this.password = React.createRef();
         this.name = React.createRef();
         this.email = React.createRef();
@@ -699,12 +700,23 @@ class App extends Component {
 
     displayCreateAccount() {
         var user = { username: "account", admin: false };
-        this.setState({ login: user, });
+        this.setState({
+            login: user,
+            username: {value: "", valid: true},
+            password: {value: "", valid: true},
+        });
     }
 
     displayLogIn() {
         var user = { username: null, admin: false };
-        this.setState({ login: user, });
+        this.setState({ 
+            login: user,
+            createName: {value: "", valid: true},
+            createEmail: {value: "", valid: true},
+            createUserName: {value: "", valid: true},
+            createPassword: {value: "", valid: true},
+            createConfirmPassword: {value: "", valid: true},
+        });
     }
 
     logOut() {
@@ -835,6 +847,7 @@ class App extends Component {
     }
 
     createAccount() {
+        const myComponent = this;
         const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
         const username = this.state.createUserName.value;
         const password = this.state.createPassword.value;
@@ -852,10 +865,40 @@ class App extends Component {
             }
             axios.post('/users', user)
             .then(function (response) {
-                window.location.reload();
+                myComponent.displayLogIn();
+                toast.success("Woohoo, your account has been created!", {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                })
             })
             .catch(function (error) {
-                console.log(error);
+                if (error.response.data.toString() === "Bad Request") {
+                    toast.error("Naem", {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                    })
+                }
+                else {
+                    toast.error(error.response.data, {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                    })
+                }
             })
         }
         else {
@@ -879,42 +922,62 @@ class App extends Component {
                     createPassword: {value: "", valid: false},
                 });
             }
-            if (confirm === "") {
+            if (password !== confirm || confirm === "") {
                 this.setState({
-                    createConfirmPassword: {value: "", valid: false, match: true},
-                });
-            }
-            if (password !== confirm) {
-                this.setState({
-                    createConfirmPassword: {value: "", valid: false, match: false},
+                    createConfirmPassword: {value: "", valid: false},
                 });
             }
         }
     }
 
     handleLoginSubmit() {
-        const name = this.username.current.value;
-        const password = this.password.current.value;
-        axios.post('/login', { username: name, password: password })
-        .then(function (response) {
-            console.log(response);
-            window.location.reload();
-        })
-        .catch(function (error) {
-            if (error.response.status.toString() === "404") {
-                toast.error('The username or password you entered is incorrect.', {
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
-                })
-            } else {
-                console.log(error);
+        const name = this.state.username.value;
+        const password = this.state.password.value;
+        if (name !== "" && password !== "") {
+            axios.post('/login', { username: name, password: password })
+            .then(function (response) {
+                console.log(response);
+                window.location.reload();
+            })
+            .catch(function (error) {
+                if (error.response.status.toString() === "401") {
+                    toast.error('The username or password you entered is incorrect.', {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                    })
+                }
+                else if (error.response.status.toString() === "404") {
+                    toast.error('The username entered does not match any account.', {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                    })
+                } else {
+                    console.log(error);
+                }
+            });
+        }
+        else {
+            if (name === "") {
+                this.setState({
+                    username: {value: "", valid: false},
+                });
             }
-        });
+            if (password === "") {
+                this.setState({
+                    password: {value: "", valid: false},
+                });
+            }
+        }
     }
 
     handleChange(event) {
@@ -1510,6 +1573,7 @@ class App extends Component {
                                 </div>
                             </div>
                             <p onClick={this.displayLogIn} Style="text-align: center; color: #007bff; cursor: pointer"> Return to log in </p>
+                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                         </div>
                     </div>
                 </div>
@@ -1522,12 +1586,13 @@ class App extends Component {
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
                                     <form> 
-                                        <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
+                                        <h3 Style="text-align: center; padding-bottom: 5%"> Log In </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: left">
                                                         <label htmlFor="username" Style="margin-left: 15%; width: 70%">Username</label>
-                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
+                                                        <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your username" Style="margin-left: 15%; width: 70%"></Input>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Username can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
@@ -1535,7 +1600,8 @@ class App extends Component {
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group" Style="text-align: left">
                                                         <label htmlFor="password" Style="margin-left: 15%; width: 70%">Password</label>
-                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                        <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your password" Style="margin-left: 15%; width: 70%"></Input>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Password can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
@@ -1544,7 +1610,7 @@ class App extends Component {
                                 </div>
                             </div>
                             <p onClick={this.displayCreateAccount} Style="text-align: center; color: #007bff; cursor: pointer"> Create an account </p>
-                        <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
+                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                         </div>
                     </div>
                 </div>
