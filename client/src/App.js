@@ -93,6 +93,11 @@ class App extends Component {
             description: { value: "", valid: true },
             location: { value: "", valid: true },
             capacity: { value: 0, valid: true },
+            createName: { value: "", valid: true },
+            createEmail: { value: "", valid: true },
+            createUserName: { value: "", valid: true },
+            createPassword: { value: "", valid: true },
+            createConfirmPassword: { value: "", valid: true, match: true},
             daysSelected: [],
             isRecurrent: { value: "", valid: true },
             recurrence: "",
@@ -168,6 +173,7 @@ class App extends Component {
         this.addEventBasket = this.addEventBasket.bind(this);
         this.handleLoginSubmit = this.handleLoginSubmit.bind(this);
         this.displayCreateAccount = this.displayCreateAccount.bind(this);
+        this.displayLogIn = this.displayLogIn.bind(this);
         this.createAccount = this.createAccount.bind(this);
         this.searchAdminEmail = this.searchAdminEmail.bind(this);
         this.addAdmin = this.addAdmin.bind(this);
@@ -176,6 +182,7 @@ class App extends Component {
         this.notifyEvent = this.notifyEvent.bind(this);
         this.unRegisterEvent = this.unRegisterEvent.bind(this);
         this.unregisterFromSingleEvent = this.unregisterFromSingleEvent.bind(this);
+        this.logOut = this.logOut.bind(this);
     }
 
     handleStartClick() {
@@ -250,9 +257,9 @@ class App extends Component {
     findFirstName(fullName) {
         if (/\s/g.test(fullName) === true) {
             var firstName = fullName.substr(0,fullName.indexOf(' '));
-            return firstName;
+            return firstName.charAt(0).toUpperCase() + firstName.substr(1);
         } else {
-            return fullName
+            return fullName.charAt(0).toUpperCase() + fullName.substr(1);
         }
     }
 
@@ -695,6 +702,16 @@ class App extends Component {
         this.setState({ login: user, });
     }
 
+    displayLogIn() {
+        var user = { username: null, admin: false };
+        this.setState({ login: user, });
+    }
+
+    logOut() {
+        var user = { username: null, admin: false };
+        this.setState({ login: user, });
+    }
+
     nextStep(event) {
         event.preventDefault();
         if (this.state.step === 0) {
@@ -818,13 +835,14 @@ class App extends Component {
     }
 
     createAccount() {
-        const username = this.username.current.value;
-        const password = this.password.current.value;
-        const email = this.email.current.value;
-        const name = this.name.current.value;
-        const confirm = this.confirmPassword.current.value;
+        const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        const username = this.state.createUserName.value;
+        const password = this.state.createPassword.value;
+        const email = this.state.createEmail.value;
+        const name = this.state.createName.value;
+        const confirm = this.state.createConfirmPassword.value;
 
-        if (password === confirm) {
+        if (name !== "" && email !== "" && emailRegex.test(email) && username !== "" && password !== ""  && confirm !== "" && password === confirm) {
             var user = {
                 name: name,
                 username: username,
@@ -839,8 +857,38 @@ class App extends Component {
             .catch(function (error) {
                 console.log(error);
             })
-        } else {
-            console.log("NOT MATCHING PASSWORDS")
+        }
+        else {
+            if (name === "") {
+                this.setState({
+                    createName: {value: "", valid: false},
+                });
+            }
+            if (email === "" || !emailRegex.test(email)) {
+                this.setState({
+                    createEmail: {value: "", valid: false},
+                });
+            }
+            if (username === "") {
+                this.setState({
+                    createUserName: {value: "", valid: false},
+                });
+            }
+            if (password === "") {
+                this.setState({
+                    createPassword: {value: "", valid: false},
+                });
+            }
+            if (confirm === "") {
+                this.setState({
+                    createConfirmPassword: {value: "", valid: false, match: true},
+                });
+            }
+            if (password !== confirm) {
+                this.setState({
+                    createConfirmPassword: {value: "", valid: false, match: false},
+                });
+            }
         }
     }
 
@@ -853,8 +901,16 @@ class App extends Component {
             window.location.reload();
         })
         .catch(function (error) {
-            if (error.response.status.toString()[0] === 4) {
-                alert("invalid credentials");
+            if (error.response.status.toString() === "404") {
+                toast.error('The username or password you entered is incorrect.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                closeButton: false,
+                })
             } else {
                 console.log(error);
             }
@@ -1131,13 +1187,14 @@ class App extends Component {
             }
                   
             axios.post('/notification', data)
-            .then(toast.success('We have received your message. Thank you! 😊', {
+            .then(toast.success('The announcement was sent to the participants of your event.', {
                 position: "top-center",
                 autoClose: 4000,
                 hideProgressBar: true,
                 closeOnClick: true,
                 pauseOnHover: false,
                 draggablePercent: 60,
+                closeButton: false,
                 }))
             .catch(function (error) {
                 console.log(error);
@@ -1397,7 +1454,7 @@ class App extends Component {
         } else if (this.state.login.username === "account") {
             return (
                 <div className="section-invert">
-                    <div className="py-4" Style="margin-top: 10%">
+                    <div className="py-4" Style="margin-top: 2%">
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
@@ -1405,48 +1462,54 @@ class App extends Component {
                                         <h3 Style="text-align: center; padding-bottom: 5%"> Create an account </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="name">Full name</label>
-                                                        <input type="text" className="form-control" id="name" ref={this.name} Style="margin-left: 15%; width: 70%" placeholder="Enter your full name"></input>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="name" Style="margin-left: 15%; width: 70%">Full name</label>
+                                                        <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your full name" Style="margin-left: 15%; width: 70%"/>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Name can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="name">Email</label>
-                                                        <input type="text" className="form-control" id="email" ref={this.email} Style="margin-left: 15%; width: 70%" placeholder="Enter your email"></input>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="email" Style="margin-left: 15%; width: 70%">Email</label>
+                                                        <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your email" Style="margin-left: 15%; width: 70%"/>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Email format should be a@b.c.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="username">Username</label>
-                                                        <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="username" Style="margin-left: 15%; width: 70%">Username</label>
+                                                        <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your username" Style="margin-left: 15%; width: 70%"/>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Username can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="password">Password</label>
-                                                        <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="password" Style="margin-left: 15%; width: 70%">Password</label>
+                                                        <Input type="text" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your password" Style="margin-left: 15%; width: 70%"/>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Password can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="confirmPassword">Confirm your password</label>
-                                                        <input type="password" className="form-control" id="confirmPassword" ref={this.confirmPassword} Style="margin-left: 15%; width: 70%" placeholder="Confirm your password"></input>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="confirmPassword" Style="margin-left: 15%; width: 70%">Confirm your password</label>
+                                                        <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid? "form-control" : "form-control is-invalid"} placeholder="Confirm your password" Style="margin-left: 15%; width: 70%"></Input>
+                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Passwords do not match.</div>
                                                     </div>
                                                 </div>
-                                            </Row>
-                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.createAccount} Style="margin-top: 12%" type="button" value="Create"></input>
+                                            </Row>  
+                                        <input className="btn btn-primary d-flex ml-auto mr-auto" onClick={this.createAccount} Style="margin: 2%" type="button" value="Create"></input>
                                     </form>
                                 </div>
                             </div>
+                            <p onClick={this.displayLogIn} Style="text-align: center; color: #007bff; cursor: pointer"> Return to log in </p>
                         </div>
                     </div>
                 </div>
@@ -1462,25 +1525,26 @@ class App extends Component {
                                         <h3 Style="text-align: center; padding-bottom: 5%"> Sign In </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="username">Username</label>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="username" Style="margin-left: 15%; width: 70%">Username</label>
                                                         <input type="text" className="form-control" id="username" ref={this.username} Style="margin-left: 15%; width: 70%" placeholder="Enter your username"></input>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: center">
-                                                        <label htmlFor="password">Password</label>
+                                                    <div className="form-group" Style="text-align: left">
+                                                        <label htmlFor="password" Style="margin-left: 15%; width: 70%">Password</label>
                                                         <input type="password" className="form-control" id="password" ref={this.password} Style="margin-left: 15%; width: 70%" placeholder="Enter your password"></input>
                                                     </div>
                                                 </div>
                                             </Row>
-                                        <input className="btn btn-primary btn-pill d-flex ml-auto mr-auto" onClick={this.handleLoginSubmit} Style="margin-top: 12%" type="button" value="Log in"></input>
+                                        <input className="btn btn-primary d-flex ml-auto mr-auto" onClick={this.handleLoginSubmit} Style="margin: 2%" type="button" value="Log in"></input>
                                     </form>
                                 </div>
                             </div>
                             <p onClick={this.displayCreateAccount} Style="text-align: center; color: #007bff; cursor: pointer"> Create an account </p>
+                        <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                         </div>
                     </div>
                 </div>
@@ -1501,7 +1565,7 @@ class App extends Component {
                             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                                 <ul className="navbar-nav">
                                 <li className="nav-item">
-                                    <a className="nav-link">Log Out</a>
+                                    <a onClick={this.logOut} className="nav-link">Log Out</a>
                                 </li>
                                 </ul>
                             </div>
@@ -1918,6 +1982,62 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
+
+
+
+                    <div className="contact section-invert py-4">
+                        {this.state.login.admin === false &&
+                        (<div>
+                            <Row>
+                                <div className="col-md-12 col-sm-12">
+                                    <h1 className="adminName">My Events</h1>
+                                </div>
+                            </Row>
+                            <Row className="unpublishedTable">
+                                <div className="col-md-12 col-sm-12">
+                                    <Table>
+                                        <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Location</th>
+                                            <th>Capacity</th>
+                                        </tr>
+                                        </thead>
+                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
+                                            <label className="noEventsMessage">Get started by creating an event</label>
+                                        }    
+                                        {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
+                                            <tbody>
+                                            {
+                                                activeChecker(this.state.events, this.state.login.username).map((events, index) => {
+                                                    var event = events;
+                                                    if (event) {
+                                                        return <tr key={index + 1}>
+                                                                <th>{event.calendarInfo.title}</th>
+                                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                                <td>{event.location}</td>
+                                                                <td>{event.capacity}</td>
+                                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
+                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                            </tr>;
+                                                    } else return
+                                                })
+                                            }
+                                            </tbody>
+                                        }
+                                    </Table>
+                                </div>
+                            </Row>
+                        </div>)}
+                    </div>
+                    
+
+
+
                     <div className="contact section-invert py-4">
                         {this.state.login.admin === true &&
                         (<div>
