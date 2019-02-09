@@ -134,10 +134,6 @@ class App extends Component {
         }
 
         this.incrementer = null;
-        this.password = React.createRef();
-        this.name = React.createRef();
-        this.email = React.createRef();
-        this.confirmPassword = React.createRef();
 
         this.announceFullname = React.createRef();
         this.announceMessage = React.createRef();
