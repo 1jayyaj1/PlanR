@@ -15,6 +15,7 @@ import './css/createAccount.css'
 import './css/createEvent.css'
 import './css/calendarPage.css'
 import './css/submitEvent.css'
+import './css/announceEvent.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1776,7 +1777,7 @@ class App extends Component {
                                             <div className="row">
                                                 <div className="col">
                                                 <div className="form-group">
-                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4" rows="10" required="required" placeholder="Enter your message..." style={{minHeight: '250pt', maxHeight:'250pt'}}></textarea>
+                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4 announce-event-textarea" rows="10" required="required" placeholder="Enter your message..."></textarea>
                                                 </div>
                                                 </div>
                                             </div>
