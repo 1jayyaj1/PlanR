@@ -13,6 +13,8 @@ import { PulseLoader } from 'react-spinners';
 import './css/logIn.css'
 import './css/createAccount.css'
 import './css/createEvent.css'
+import './css/calendarPage.css'
+import './css/submitEvent.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1668,7 +1670,7 @@ class App extends Component {
                     
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12">
-                                            <div className="calendar" style={{height: '700px', width: '100%', paddingTop: '5%'}}>
+                                            <div className="calendar-main">
                                             <BigCalendar
                                                 selectable={true}
                                                 min={new Date('2018, 1, 7, 09:00')}
@@ -1684,9 +1686,9 @@ class App extends Component {
                                     </Row>
                                     
                                     <Row>
-                                        <Col xs="12" sm="12" md="12" lg="12" style={{paddingTop: '3%'}}>
-                                            <Button outline className="btn btn-secondary" style={{float: 'right'}} onClick={this.toggleRegisterModal}>My Events</Button>
-                                            <label className="myEventsErrorLabel" style={{float: 'right', display: this.state.myEventsErrorLabel}}> No added events to show. </label>
+                                        <Col xs="12" sm="12" md="12" lg="12" className="calendar-my-events-col">
+                                            <Button outline className="btn btn-secondary calendar-my-events-button" onClick={this.toggleRegisterModal}>My Events</Button>
+                                            <label className="calendar-my-events-label" style={{display: this.state.myEventsErrorLabel}}> No added events to show. </label>
                                         </Col>
                                     </Row>
                     
@@ -1708,7 +1710,7 @@ class App extends Component {
                                                         <div className="steps-action">
                                                             {
                                                                 this.state.step > 0
-                                                                && (<Button color="primary" style={{ marginLeft: 8, marginRight: 8 }} onClick={() => this.prevStep()}> Previous </Button>)
+                                                                && (<Button color="primary" className="create-event-modal-previous-button" onClick={() => this.prevStep()}> Previous </Button>)
                                                             }
                                                             {
                                                                 this.state.step < steps.length - 1
@@ -1737,10 +1739,10 @@ class App extends Component {
                                                             if (event) {
                                                                 return <Row key={index + 1}>
                                                                             <Col xs="12" sm="12" md="12" lg="12">
-                                                                                <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                                                                                <label className="inputName" style={{fontSize: '21px'}}>{event.calendarInfo.title}</label>
+                                                                                <i className="fa fa-check-circle icon-pass cycle-status submit-event-icon"></i>
+                                                                                <label className="submit-event-name-label">{event.calendarInfo.title}</label>
                                                                                 <i className="fas fa-times pull-right unregisterFromEvent" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
-                                                                                <ul style={{fontSize: '15px'}}>
+                                                                                <ul className="submit-event-list">
                                                                                     <li><span>Instructor:</span> <span>{event.instructor}</span></li>
                                                                                     <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
                                                                                     <li><span>Time:</span> <span>From {moment(event.calendarInfo.start).format("H:mm")} to {moment(event.calendarInfo.end).format("H:mm")}</span></li>

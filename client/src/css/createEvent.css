@@ -24,3 +24,8 @@
 .create-event-summary-list {
 	font-size: 15px;
 }
+
+.create-event-modal-previous-button {
+	margin-left: 8;
+	margin-right: 8;
+}

@@ -1,0 +1,22 @@
+.calendar-main {
+	height: 700px;
+	width: 100%;
+	padding-top: 5%;
+}
+
+.calendar-my-events-col {
+	padding-top: 3%;
+}
+
+.calendar-my-events-button {
+	float: right;
+}
+
+.calendar-my-events-label {
+  padding-right: 1%;
+  line-height: 35px;
+  font-size: 11pt;
+  color: #c4183c;
+  margin-bottom:0px!important;
+  float: right;
+ }
