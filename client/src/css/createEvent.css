@@ -1,0 +1,26 @@
+.create-event-description {
+	max-height: 199pt;
+	min-height: 199pt;
+}
+
+.create-event-recurrence-radio {
+	font-size: 12pt;
+}
+
+.create-event-weekday-check {
+	font-size: 11.5pt;
+}
+
+.create-event-summary-icon {
+	font-size: 21px;
+	color: #28A745;
+	padding-right: 1%;
+}
+
+.create-event-summary-name {
+  font-size: 21px;
+}
+
+.create-event-summary-list {
+	font-size: 15px;
+}

@@ -12,6 +12,7 @@ import 'react-datepicker/dist/react-datepicker.min.css';
 import { PulseLoader } from 'react-spinners';
 import './css/logIn.css'
 import './css/createAccount.css'
+import './css/createEvent.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1278,17 +1279,17 @@ class App extends Component {
                   <Row>
                       <label>Name</label>
                       <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                      <div className="invalid-feedback">Alphanumeric and can't be empty</div>
+                      <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
                   </Row>
                   <Row>
                       <label>Capacity</label>
                       <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                      <div className="invalid-feedback">Numbers and can't be empty</div>
+                      <div className="invalid-feedback">Numbers and can't be empty.</div>
                   </Row>
                   <Row>
                       <label>Location</label>
                       <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                      <div className="invalid-feedback">Alphanumeric and can't be empty</div>
+                      <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
                   </Row> 
                   <Row>
                       <label>Recurrence</label>
@@ -1298,15 +1299,15 @@ class App extends Component {
                             <option value="recurring">Yes</option>
                             <option value="non-recurring">No</option>
                           </select>
-                          <div className="invalid-feedback">Recurrence type is required</div>
+                          <div className="invalid-feedback">Recurrence type is required.</div>
                       </fieldset>
                   </Row>
                 </Col>
                 <Col xs="6" sm="6" md="6" lg="6">
                   <Row  className="rightInputInBasicInfo">
                     <label>Description</label>
-                      <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be about?" rows={5} style={{maxHeight:'199pt', minHeight:'199pt'}}></textarea>
-                      <div className="invalid-feedback">Can't be empty</div>
+                      <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control create-event-description" : "form-control is-invalid create-event-description"} placeholder="What will it be about?" rows={5}/>
+                      <div className="invalid-feedback">Can't be empty.</div>
                   </Row>
                 </Col>
               </Row>
@@ -1369,10 +1370,10 @@ class App extends Component {
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName" style={{color: this.state.recurrenceValid}}>Recurrence</label>
                   <ButtonGroup>
-                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
-                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
-                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
-                    <Button className="radioButtons" style={{fontSize: '12pt'}} color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
                   </ButtonGroup>
                   <div className="invalid-input" style={{visibility: this.state.recurrenceValidLabel}}>Recurrence type is required</div>
                 </Col>
@@ -1381,11 +1382,11 @@ class App extends Component {
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName" style={{color: this.state.daysSelectedValid}}>Weekly Occurence</label>
                   <ButtonGroup name="weeklyOcurrence">
-                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
-                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
-                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
-                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
-                    <Button className="checkButtons" style={{fontSize: '11.5pt'}} color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
                   </ButtonGroup>
                   <div className="invalid-input" style={{visibility: this.state.daysSelectedValidLabel}}>Weekly occurence is required</div>
                 </Col>
@@ -1463,9 +1464,9 @@ class App extends Component {
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
-                  <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                  <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
-                  <ul style={{fontSize: '15px'}}>
+                  <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
+                  <label className="create-event-summary-name">{this.state.name.value}</label>
+                  <ul className="create-event-summary-list">
                     <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
                     <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
                     <li><span>Type of event:</span> <span>Non-recurring</span></li>
@@ -1483,9 +1484,9 @@ class App extends Component {
             <fieldset> 
               <Row>
                 <Col xs="12" sm="12" md="12" lg="12">
-                  <i className="fa fa-check-circle icon-pass cycle-status" style={{fontSize: '21px', color: '#28A745', paddingRight: '1%'}}></i>
-                  <label className="inputName" style={{fontSize: '21px'}}>{this.state.name.value}</label>
-                  <ul style={{fontSize: '15px'}}>
+                  <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
+                  <label className="create-event-summary-name">{this.state.name.value}</label>
+                  <ul className="create-event-summary-list">
                     <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
                     <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                     <li><span>Type of event:</span> <span>Recurring</span></li>
@@ -1570,7 +1571,7 @@ class App extends Component {
                                     </form>
                                 </div>
                             </div>
-                            <p onClick={this.displayLogIn} Style="text-align: center; color: #007bff; cursor: pointer"> Return to log in </p>
+                            <p className="switch-login-createaccount-link" onClick={this.displayLogIn}> Return to log in </p>
                             <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                         </div>
                     </div>
@@ -1607,7 +1608,7 @@ class App extends Component {
                                     </form>
                                 </div>
                             </div>
-                            <p onClick={this.displayCreateAccount} Style="text-align: center; color: #007bff; cursor: pointer"> Create an account </p>
+                            <p className="switch-login-createaccount-link" onClick={this.displayCreateAccount}> Create an account </p>
                             <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                         </div>
                     </div>
@@ -1879,17 +1880,17 @@ class App extends Component {
                                                     <Row>
                                                         <label>Name</label>
                                                         <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                                                        <div className="invalid-feedback">Characters only and can't be empty</div>
+                                                        <div className="invalid-feedback">Characters only and can't be empty.</div>
                                                     </Row>
                                                     <Row>
                                                         <label>Capacity</label>
                                                         <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                                                        <div className="invalid-feedback">Numbers only and can't be empty</div>
+                                                        <div className="invalid-feedback">Numbers only and can't be empty.</div>
                                                     </Row>
                                                     <Row>
                                                         <label>Location</label>
                                                         <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                                                        <div className="invalid-feedback">Alphanumeric only and can't be empty</div>
+                                                        <div className="invalid-feedback">Alphanumeric only and can't be empty.</div>
                                                     </Row> 
                                                     <Row>
                                                         <label className="inputName editLabel">Activation day</label>
@@ -1918,7 +1919,7 @@ class App extends Component {
                                                     <Row  className="rightInputInBasicInfo">
                                                         <label>Description</label>
                                                         <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{minHeight:'204pt', maxHeight:'204pt'}}></textarea>
-                                                        <div className="invalid-feedback">Can't be empty</div>
+                                                        <div className="invalid-feedback">Can't be empty.</div>
                                                     </Row>
                                                     </Col>
                                                 </Row>

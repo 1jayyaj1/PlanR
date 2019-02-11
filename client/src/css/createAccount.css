@@ -19,3 +19,9 @@
 .create-account-button {
 	margin: 2%;
 }
+
+.switch-login-createaccount-link {
+	text-align: center;
+	color: #007bff;
+	cursor: pointer;
+}
