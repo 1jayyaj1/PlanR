@@ -1,0 +1,17 @@
+.select-event-input-description {
+	min-height: 204pt;
+	max-height: 204pt;
+}
+
+.select-event-add-button {
+	float: right;
+}
+
+.select-event-error-label {
+	padding-right: 4%;
+	line-height: 35px;
+	font-size: 11pt;
+	color: #c4183c;
+	margin-bottom:0px!important;
+	float: right;
+ }

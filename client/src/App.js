@@ -10,13 +10,14 @@ import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import { PulseLoader } from 'react-spinners';
-import './css/logIn.css'
-import './css/createAccount.css'
-import './css/createEvent.css'
-import './css/calendarPage.css'
-import './css/submitEvent.css'
-import './css/announceEvent.css'
-import './css/addAdmin.css'
+import './css/logIn.css';
+import './css/createAccount.css';
+import './css/createEvent.css';
+import './css/calendarPage.css';
+import './css/submitEvent.css';
+import './css/announceEvent.css';
+import './css/addAdmin.css';
+import './css/selectEvent.css';
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1922,7 +1923,7 @@ class App extends Component {
                                                     <Col xs="6" sm="6" md="6" lg="6">
                                                     <Row  className="rightInputInBasicInfo">
                                                         <label>Description</label>
-                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control" : "form-control is-invalid"} placeholder="What is your event about?" style={{minHeight:'204pt', maxHeight:'204pt'}}></textarea>
+                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control select-event-input-description" : "form-control is-invalid select-event-input-description"} placeholder="What is your event about?"></textarea>
                                                         <div className="invalid-feedback">Can't be empty.</div>
                                                     </Row>
                                                     </Col>
@@ -1979,9 +1980,9 @@ class App extends Component {
                                         <ModalFooter>
                                         {this.state.instructor !== this.state.login.username &&
                                             (<Col xs="12" sm="12" md="12" lg="12">
-                                            <Button color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}} style={{float: 'right'}}>Add</Button>
-                                            <label className="myEventsErrorLabel" style={{float: 'right', paddingRight: '4%', display: this.state.allReadyRegisteredErrorLabel}}> You're already registered to this event. </label>
-                                            <label className="myEventsErrorLabel" style={{float: 'right', paddingRight: '4%', display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
+                                            <Button className="select-event-add-button" color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}}>Add</Button>
+                                            <label className="select-event-error-label" style={{display: this.state.allReadyRegisteredErrorLabel}}> You're already registered to this event. </label>
+                                            <label className="select-event-error-label" style={{display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
                                             </Col>)}
                                         {this.state.instructor === this.state.login.username &&
                                             (<Button color="warning" onClick={() => {this.editEvent()}}>Save</Button>)}
