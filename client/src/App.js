@@ -10,6 +10,7 @@ import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import { PulseLoader } from 'react-spinners';
+import './css/logIn.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1577,31 +1578,31 @@ class App extends Component {
         } else if (!this.state.login.username) {
             return (
                 <div className="section-invert">
-                    <div className="py-4" Style="margin-top: 10%">
+                    <div className="py-4 log-in-container">
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
                                     <form> 
-                                        <h3 Style="text-align: center; padding-bottom: 5%"> Log In </h3>
+                                        <h3 className="log-in-label"> Log In </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="username" Style="margin-left: 15%; width: 70%">Username</label>
-                                                        <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your username" Style="margin-left: 15%; width: 70%"></Input>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Username can't be left empty.</div>
+                                                    <div className="form-group log-in-form">
+                                                        <label htmlFor="username" className="log-in-elements">Username</label>
+                                                        <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your username"></Input>
+                                                        <div className="invalid-feedback log-in-elements">Username can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="password" Style="margin-left: 15%; width: 70%">Password</label>
-                                                        <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your password" Style="margin-left: 15%; width: 70%"></Input>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Password can't be left empty.</div>
+                                                    <div className="form-group log-in-form">
+                                                        <label htmlFor="password" className="log-in-elements">Password</label>
+                                                        <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your password"></Input>
+                                                        <div className="invalid-feedback log-in-elements">Password can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
-                                        <input className="btn btn-primary d-flex ml-auto mr-auto" onClick={this.handleLoginSubmit} Style="margin: 2%" type="button" value="Log in"></input>
+                                        <input className="btn btn-primary d-flex ml-auto mr-auto log-in-button" onClick={this.handleLoginSubmit} type="button" value="Log in"></input>
                                     </form>
                                 </div>
                             </div>

@@ -1,0 +1,21 @@
+.log-in-container {
+  margin-top: 10%
+}
+
+.log-in-label {
+  text-align: center;
+  padding-bottom: 5%;
+}
+
+.log-in-form {
+  text-align: left;
+}
+
+.log-in-elements {
+  margin-left: 15%;
+  width: 70%!important;
+}
+
+.log-in-button {
+  margin: 2%;
+}
