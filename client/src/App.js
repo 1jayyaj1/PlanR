@@ -1528,7 +1528,7 @@ class App extends Component {
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
                                     <form> 
-                                        <h3 className="create-account-label"> Create an account </h3>
+                                        <h3 className="create-account-label"> Create An Account </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group create-account-elements-container">
@@ -1611,7 +1611,7 @@ class App extends Component {
                                                     </div>
                                                 </div>
                                             </Row>
-                                        <input className="btn btn-primary d-flex ml-auto mr-auto log-in-button" onClick={this.handleLoginSubmit} type="button" value="Log in"></input>
+                                        <input className="btn btn-primary d-flex ml-auto mr-auto log-in-button" onClick={this.handleLoginSubmit} type="button" value="Log In"></input>
                                     </form>
                                 </div>
                             </div>
@@ -1692,7 +1692,7 @@ class App extends Component {
                                     
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12" className="calendar-my-events-col">
-                                            <Button outline className="btn btn-secondary calendar-my-events-button" onClick={this.toggleRegisterModal}>My Events</Button>
+                                            <Button className="btn btn-secondary calendar-my-events-button" onClick={this.toggleRegisterModal}>My Events</Button>
                                             <label className="calendar-my-events-label" style={{display: this.state.myEventsErrorLabel}}> No added events to show. </label>
                                         </Col>
                                     </Row>
@@ -2104,7 +2104,7 @@ class App extends Component {
                                                                 <td>{event.location}</td>
                                                                 <td>{event.capacity}</td>
                                                                 <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
                                                                 <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                             </tr>;
                                                     } else return
@@ -2129,7 +2129,7 @@ class App extends Component {
                                             <th>Date</th>
                                             <th>Time</th>
                                             <th>Location</th>
-                                            <th>Current Capacity</th>
+                                            <th>Capacity</th>
                                             <th>Registration Started</th>
                                         </tr>
                                         </thead>
@@ -2150,7 +2150,7 @@ class App extends Component {
                                                                     <td>{event.registeredEmail.length} / {event.capacity}</td>
                                                                     <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
                                                                     <td><Button outline color="success" onClick={() => {this.toggleAnnounceModal(event)}}>Announce</Button></td>
-                                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
+                                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
                                                                     <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                                 </tr>;
                                                         } else return
