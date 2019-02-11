@@ -316,12 +316,30 @@ class App extends Component {
     addAdmin() {
         axios.put('/users/' + this.state.idUserModal, {admin: true})
         .then(function (response) {
-            console.log(response.data)
+            console.log(response.data);
+            this.toggleAddAdminModal();
+            toast.success("The user was set as an administrator!", {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                closeButton: false,
+            });
         })
         .catch(function (error) {
             console.log(error);
+            toast.error('The user was not set as an administrator, please try again later.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                closeButton: false,
+            });
         });
-        this.toggleAddAdminModal();
     }
     updateRecurence(selection) {
         this.setState({ recurrence: selection, });
@@ -884,7 +902,7 @@ class App extends Component {
             })
             .catch(function (error) {
                 if (error.response.data.toString() === "Bad Request") {
-                    toast.error("Naem", {
+                    toast.error("The account was not created, please try again later.", {
                     position: "top-center",
                     autoClose: 4000,
                     hideProgressBar: true,
@@ -1066,6 +1084,15 @@ class App extends Component {
             });
             x.toggleCreateModal();
             this.setState({ events: this.state.events.concat(newEvent), });
+            toast.success('The event was created.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                closeButton: false,
+            })
         })
         .catch(function (error) {
             console.log(error);
@@ -1121,6 +1148,16 @@ class App extends Component {
                         recurrence: "",
                         currentEventId: null,
                     });
+                    myComponent.setState({ viewModal: !this.state.viewModal, });
+                    toast.success('The event was modified.', {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                    });
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -1129,7 +1166,6 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-        this.setState({ viewModal: !this.state.viewModal, });
     }
 
     componentWillMount() {
@@ -1158,6 +1194,15 @@ class App extends Component {
             console.log(res);
             console.log(res.data);
             this.toggleDeleteModal();
+            toast.success('The event was deleted.', {
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggablePercent: 60,
+                closeButton: false,
+            });
         })
         .catch(function (error) {
             console.log(error);
@@ -1256,7 +1301,9 @@ class App extends Component {
             }
                   
             axios.post('/notification', data)
-            .then(toast.success('The announcement was sent to the participants of your event.', {
+            .then(
+                myComponent.toggleAnnounceModal(),
+                toast.success('The announcement was sent to the participants of your event.', {
                 position: "top-center",
                 autoClose: 4000,
                 hideProgressBar: true,
@@ -1268,7 +1315,6 @@ class App extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-            
             document.getElementById("announceModal").reset();
         })
         .catch(function (error) {
@@ -1772,26 +1818,25 @@ class App extends Component {
                                         </ModalFooter>
                                     </Modal>
 
-
                                     {/*<----------------------- EVENT ANNOUNCE MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.announceModal} toggle={this.toggleAnnounceModal} className={this.props.className}>
-                                        <ModalHeader><h2 className="announce-event-announcement-label">Announcement</h2></ModalHeader>
-                                        <ModalBody>
                                         <form onSubmit={this.notifyEvent} id="announceModal">
-                                            <div className="row">
-                                                <div className="col">
-                                                <div className="form-group">
-                                                    <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4 announce-event-textarea" rows="10" required="required" placeholder="Enter your message..."></textarea>
+                                            <ModalHeader><h2 className="announce-event-announcement-label">Announcement</h2></ModalHeader>
+                                            <ModalBody>
+                                                <div className="row">
+                                                    <div className="col">
+                                                    <div className="form-group">
+                                                        <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4 announce-event-textarea" rows="10" required="required" placeholder="Enter your message..."></textarea>
+                                                    </div>
+                                                    </div>
                                                 </div>
+                                            </ModalBody>
+                                            <ModalFooter>
+                                                <div className="announce-event-button">
+                                                    <input className="btn btn-success announce-event-button" type="submit" value="Announce"></input>
                                                 </div>
-                                            </div>
+                                            </ModalFooter>
                                         </form>
-                                        </ModalBody>
-                                        <ModalFooter>
-                                            <div className="announce-event-button">
-                                                <input className="btn btn-success announce-event-button" type="submit" value="Announce"></input>
-                                            </div>
-                                        </ModalFooter>
                                     </Modal>
 
                                     {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
@@ -1835,6 +1880,7 @@ class App extends Component {
                                             </div>
                                         </ModalFooter>        
                                     </Modal>
+                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
 
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
@@ -1882,6 +1928,7 @@ class App extends Component {
                                                         </tbody>
                                                     </Table> 
                                                     </Col>
+                                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
                                                 </Row> )}
                                             {this.state.instructor === this.state.login.username &&
                                             (<Row>
