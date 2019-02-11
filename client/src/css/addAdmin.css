@@ -2,3 +2,39 @@
 	border-top-right-radius: 0px;
 	border-bottom-right-radius: 0px;
 }
+
+.add-admin-modal {
+	width: 100%;
+	margin-right:0px!important;
+	margin-left:0px!important;
+}
+
+.add-admin-table {
+	margin-bottom: 0px!important;
+}
+
+.add-admin-user-info {
+	font-weight: bold;
+}
+
+.add-admin-user-info-data {
+	padding-left: 10%;
+}
+
+.add-admin-user-top {
+	border-top: 0px!important;
+}
+
+.add-admin-input-email-container {
+	padding-right:0px!important;
+}
+
+.add-admin-search-button-container {
+	padding-left:0px!important;
+}
+
+.add-admin-search-button {
+	border-top-left-radius: 0px!important;
+  	border-bottom-left-radius: 0px!important;
+  	width: 100%
+}

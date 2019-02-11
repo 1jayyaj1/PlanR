@@ -1,14 +1,58 @@
+.create-event-container {
+	font-size: 15pt;
+	padding-left: 3%;
+ 	padding-right: 3%;
+}
+
+.create-event-recurrence-dropdown {
+	font-size: 15pt;
+	width: 100% !important;
+}
+
+.create-event-description-row {
+	padding-left: 8%;
+}
+
 .create-event-description {
 	max-height: 199pt;
 	min-height: 199pt;
 }
 
+.create-event-date-picker {
+	border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+}
+
+.create-event-date-picker-icon {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	border-top-left-radius: 3px !important;
+	border-bottom-left-radius: 3px !important;
+}
+
+.create-event-enddate-picker-icon {
+	border-top-left-radius: 0px !important;
+	border-bottom-left-radius: 0px !important;
+	border-top-right-radius: 3px !important;
+	border-bottom-right-radius: 3px !important;
+ }
+
+.create-event-row {
+	font-size: 15pt;
+}
+
 .create-event-recurrence-radio {
 	font-size: 12pt;
+	background-color: #e9ecef !important;
+  	border: 1px solid #ced4da !important;
+  	color: #495057 !important;
 }
 
 .create-event-weekday-check {
 	font-size: 11.5pt;
+	background-color: #e9ecef !important;
+  	border: 1px solid #ced4da !important;
+  	color: #495057 !important;
 }
 
 .create-event-summary-icon {
@@ -25,7 +69,23 @@
 	font-size: 15px;
 }
 
+.create-event-modal-button-container {
+	float:right;
+}
+
+.create-event-steps-content {
+  margin-top: 16px;
+}
+
+.create-event-modal-next-button {
+	margin-top: 16px;
+}
+
 .create-event-modal-previous-button {
-	margin-left: 8;
-	margin-right: 8;
+	margin-top: 16px;
+	margin-right: 16px;
+}
+
+.create-event-modal-create-button {
+	margin-top: 16px;
 }

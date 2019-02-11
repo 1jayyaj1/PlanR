@@ -18,6 +18,8 @@ import './css/submitEvent.css';
 import './css/announceEvent.css';
 import './css/addAdmin.css';
 import './css/selectEvent.css';
+import './css/deleteEvent.css';
+import './css/activateEvent.css';
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1279,7 +1281,7 @@ class App extends Component {
         if (this.state.step === 0) {
           wizardContentCreate = 
             <fieldset>
-              <Row className="basicInfo">
+              <Row className="create-event-container">
                 <Col xs="6" sm="6" md="6" lg="6">
                   <Row>
                       <label>Name</label>
@@ -1298,7 +1300,7 @@ class App extends Component {
                   </Row> 
                   <Row>
                       <label>Recurrence</label>
-                      <fieldset className="inputRecurrence">
+                      <fieldset className="create-event-recurrence-dropdown">
                           <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="isRecurrent" value={this.state.isRecurrent.value} onChange={this.handleChange}>
                             <option disabled='disabled' value="">Will it be a recurring event?</option>
                             <option value="recurring">Yes</option>
@@ -1309,7 +1311,7 @@ class App extends Component {
                   </Row>
                 </Col>
                 <Col xs="6" sm="6" md="6" lg="6">
-                  <Row  className="rightInputInBasicInfo">
+                  <Row  className="create-event-description-row">
                     <label>Description</label>
                       <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control create-event-description" : "form-control is-invalid create-event-description"} placeholder="What will it be about?" rows={5}/>
                       <div className="invalid-feedback">Can't be empty.</div>
@@ -1327,13 +1329,13 @@ class App extends Component {
                 <Col xs="12" sm="12" md="12" lg="12">
                   <label className="inputName" style={{color: this.state.dateValid}}>Date & time</label>
                     <div className="input-daterange input-group" id="datepicker-example-2">
-                      <span className="input-group-append" id="startIcon">
-                        <span className="input-group-text" id="startIcon">
+                      <span className="input-group-append create-event-date-picker-icon">
+                        <span className="input-group-text create-event-date-picker-icon">
                           <i className="fa fa-calendar"></i>
                         </span>
                       </span>
                       <DatePicker
-                        className="input-sm form-control startDate"
+                        className="input-sm form-control create-event-date-picker"
                         name="start"
                         placeholderText="Start date"
                         selected={this.state.startDate}
@@ -1348,7 +1350,7 @@ class App extends Component {
                         readOnly
                       />
                       <DatePicker
-                        className="input-sm form-control startDate"
+                        className="input-sm form-control create-event-date-picker"
                         name="end"
                         placeholderText="End date"
                         selected={this.state.endDate}
@@ -1362,8 +1364,8 @@ class App extends Component {
                         dateFormat="LLL"
                         readOnly
                       />
-                      <span className="input-group-prepend" id="endIcon">
-                        <span className="input-group-text" id="endIcon">
+                      <span className="input-group-prepend create-event-enddate-picker-icon">
+                        <span className="input-group-text create-event-enddate-picker-icon">
                           <i className="fa fa-calendar"></i>
                         </span>
                       </span>
@@ -1371,29 +1373,29 @@ class App extends Component {
                     </div>
                 </Col>
               </Row><br/>
-              <Row className="recurrenceLabel">
+              <Row className="create-event-row">
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName" style={{color: this.state.recurrenceValid}}>Recurrence</label>
                   <ButtonGroup>
-                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
-                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
-                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
-                    <Button className="radioButtons create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
                   </ButtonGroup>
                   <div className="invalid-input" style={{visibility: this.state.recurrenceValidLabel}}>Recurrence type is required</div>
                 </Col>
               </Row><br/>
-              <Row className="occurenceLabel">
+              <Row className="create-event-row">
                 <Col xs="10" sm="10" md="10" lg="10">
-                  <label className="inputName" style={{color: this.state.daysSelectedValid}}>Weekly Occurence</label>
+                  <label className="inputName" style={{color: this.state.daysSelectedValid}}>Weekday</label>
                   <ButtonGroup name="weeklyOcurrence">
-                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
-                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
-                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
-                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
-                    <Button className="checkButtons create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
                   </ButtonGroup>
-                  <div className="invalid-input" style={{visibility: this.state.daysSelectedValidLabel}}>Weekly occurence is required</div>
+                  <div className="invalid-input" style={{visibility: this.state.daysSelectedValidLabel}}>Weekday is required</div>
                 </Col>
               </Row>
             </fieldset>;
@@ -1401,7 +1403,7 @@ class App extends Component {
           else {
             wizardContentCreate = 
             <fieldset>
-              <Row className="allDayLabel">
+              <Row className="create-event-row">
                 <Col xs="8" sm="8" md="8" lg="8">
                   <label className="inputName">Type of event</label>
                   <fieldset>
@@ -1416,13 +1418,13 @@ class App extends Component {
                 <Col xs="12" sm="12" md="12" lg="12">
                   <label className="inputName" style={{color: this.state.dateValidNonRecurr}}>Date & time</label>
                     <div className="input-daterange input-group" id="datepicker-example-2">
-                      <span className="input-group-append" id="startIcon">
-                        <span className="input-group-text" id="startIcon">
+                      <span className="input-group-append create-event-date-picker-icon">
+                        <span className="input-group-text create-event-date-picker-icon">
                           <i className="fa fa-calendar"></i>
                         </span>
                       </span>
                       <DatePicker
-                        className="input-sm form-control startDate"
+                        className="input-sm form-control create-event-date-picker"
                         name="start"
                         placeholderText="Start date"
                         selected={this.state.startDate}
@@ -1437,7 +1439,7 @@ class App extends Component {
                         readOnly
                       />
                       <DatePicker
-                        className="input-sm form-control startDate"
+                        className="input-sm form-control create-event-date-picker"
                         name="end"
                         placeholderText="End date"
                         selected={this.state.endDate}
@@ -1452,8 +1454,8 @@ class App extends Component {
                         dateFormat="LLL"
                         readOnly
                       />
-                      <span className="input-group-prepend" id="endIcon">
-                        <span className="input-group-text" id="endIcon">
+                      <span className="input-group-prepend create-event-enddate-picker-icon">
+                        <span className="input-group-text create-event-enddate-picker-icon">
                           <i className="fa fa-calendar"></i>
                         </span>
                       </span>
@@ -1510,7 +1512,7 @@ class App extends Component {
 
         if (this.state.login.username === "default") {
             return (
-                <div className='sweet-loading center-screen'>
+                <div className='sweet-loading app-loader'>
                     <PulseLoader
                         color={'#D73636'} 
                         loading={true}
@@ -1626,7 +1628,7 @@ class App extends Component {
                     <div className="welcome d-flex justify-content-center flex-column">
                         <div className="container">
                             <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-                            <a className="navbar-brand">
+                            <a className="app-name">
                                 Umba
                             </a>
                             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -1635,7 +1637,7 @@ class App extends Component {
                             <div className="collapse navbar-collapse" id="navbarNavDropdown">
                                 <ul className="navbar-nav">
                                 <li className="nav-item">
-                                    <a onClick={this.logOut} className="nav-link">Log Out</a>
+                                    <a onClick={this.logOut} className="nav-link app-logout-button">Log Out</a>
                                 </li>
                                 </ul>
                             </div>
@@ -1647,7 +1649,7 @@ class App extends Component {
                             <div className="row">
                             <div className="col-md-7">
                                 <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.username)}</h1>
-                                <label className="bottomHomePageText">Scroll down to get started</label>
+                                <label className="app-welcome-subheading">Scroll down to get started</label>
                             </div>
                             </div>
                         </div>
@@ -1707,21 +1709,21 @@ class App extends Component {
                                                         <Steps current={this.state.step}>
                                                             {steps.map(item => <Step key={item.title} title={item.title} />)}
                                                         </Steps>
-                                                        <div className="steps-content">
+                                                        <div className="create-event-steps-content">
                                                             {wizardContentCreate}
                                                         </div>
-                                                        <div className="steps-action">
+                                                        <div className="create-event-modal-button-container">
                                                             {
                                                                 this.state.step > 0
                                                                 && (<Button color="primary" className="create-event-modal-previous-button" onClick={() => this.prevStep()}> Previous </Button>)
                                                             }
                                                             {
                                                                 this.state.step < steps.length - 1
-                                                                && <Button color="primary" className="" type="submit" onClick={this.nextStep}>Next</Button>
+                                                                && <Button color="primary" className="create-event-modal-next-button" type="submit" onClick={this.nextStep}>Next</Button>
                                                             }
                                                             {
                                                                 this.state.step === steps.length - 1
-                                                                && <Button color="primary" type="button" onClick={() => this.createEvent()}>Create</Button>
+                                                                && <Button color="primary" className="create-event-modal-create-button" type="button" onClick={() => this.createEvent()}>Create</Button>
                                                             }
                                                         </div>
                                                     </Col>
@@ -1744,7 +1746,7 @@ class App extends Component {
                                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                                 <i className="fa fa-check-circle icon-pass cycle-status submit-event-icon"></i>
                                                                                 <label className="submit-event-name-label">{event.calendarInfo.title}</label>
-                                                                                <i className="fas fa-times pull-right unregisterFromEvent" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
+                                                                                <i className="fas fa-times pull-right submit-event-remove-icon" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
                                                                                 <ul className="submit-event-list">
                                                                                     <li><span>Instructor:</span> <span>{event.instructor}</span></li>
                                                                                     <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
@@ -1783,8 +1785,8 @@ class App extends Component {
                                                 </div>
                                                 </div>
                                             </div>
-                                            <div className="announceButton">
-                                                <input className="btn btn-success announceButton" type="submit" value="Announce"></input>
+                                            <div className="announce-event-button">
+                                                <input className="btn btn-success announce-event-button" type="submit" value="Announce"></input>
                                             </div>
                                         </form>
                                         </ModalBody>
@@ -1797,28 +1799,28 @@ class App extends Component {
                                             
                                                 <label htmlFor="contactFormEmail">Search by email</label>
                                                 <Row>
-                                                    <div className="col-md-9 col-sm-9 searchInputEmailAddAdmin">
+                                                    <div className="col-md-9 col-sm-9 add-admin-input-email-container">
                                                         <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
                                                         <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
                                                     </div>
-                                                    <div className="col-md-3 col-sm-3 searchButtonEmailAddAdmin">
-                                                        <Button color="secondary light searchButtonEmailAddAdminChild" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
+                                                    <div className="col-md-3 col-sm-3 add-admin-search-button-container">
+                                                        <Button className="add-admin-search-button" color="secondary light" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
                                                     </div>
                                                 
-                                                    <Col xs="12" sm="12" md="12" lg="12" className="userSelectEventModal" style={{display: this.state.newAdminSearchTable}}>
-                                                    <Table className="userSelectEventTable">
+                                                    <Col xs="12" sm="12" md="12" lg="12" className="add-admin-modal" style={{display: this.state.newAdminSearchTable}}>
+                                                    <Table className="add-admin-table">
                                                         <tbody>
                                                             <tr>
-                                                                <td scope="row" className="userTableTop"><span className="userSelectLabel">Name:</span></td>
-                                                                <td className="userTableTop"><span className="userSelectData">{this.state.nameUserModal}</span></td>
+                                                                <td scope="row" className="add-admin-user-top"><span className="add-admin-user-info">Name:</span></td>
+                                                                <td className="add-admin-user-top"><span className="add-admin-user-info-data">{this.state.nameUserModal}</span></td>
                                                             </tr>
                                                             <tr>
-                                                                <td scope="row"><span className="userSelectLabel">Username:</span></td>
-                                                                <td><span className="userSelectData">{this.state.userNameModal}</span></td>
+                                                                <td scope="row"><span className="add-admin-user-info">Username:</span></td>
+                                                                <td><span className="add-admin-user-info-data">{this.state.userNameModal}</span></td>
                                                             </tr>
                                                             <tr>
-                                                                <td scope="row"><span className="userSelectLabel">Email:</span></td>
-                                                                <td><span className="userSelectData">{this.state.emailUserModal}</span></td>
+                                                                <td scope="row"><span className="add-admin-user-info">Email:</span></td>
+                                                                <td><span className="add-admin-user-info-data">{this.state.emailUserModal}</span></td>
                                                             </tr>
                                                         </tbody>
                                                     </Table> 
@@ -1832,46 +1834,46 @@ class App extends Component {
 
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
-                                        <ModalHeader className="userSelcectModalHeader editEventLabel">
+                                        <ModalHeader className="select-event-modal-header">
                                         {this.state.instructor !== this.state.login.username &&
                                             (<h2>{this.state.calendarInfo.title}</h2>)}
                                         {this.state.instructor === this.state.login.username &&
-                                            (<h2>Edit Event</h2>)}
+                                            (<h2 className="select-event-edit">Edit Event</h2>)}
                                         </ModalHeader>
-                                        <ModalBody className="userSelectEventModalParent">
+                                        <ModalBody className="select-event-modal-parent">
                                             {this.state.instructor !== this.state.login.username &&
-                                            (<Row className="userSelectEventModal">
+                                            (<Row className="select-event-modal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
-                                                    <Table className="userSelectEventTable">
+                                                    <Table className="select-event-table">
                                                         <tbody>
                                                         <tr>
-                                                            <td scope="row" className="userTableTop"><span className="userSelectLabel">Instructor:</span></td>
-                                                            <td className="userTableTop"><span className="userSelectData">{this.state.instructor}</span></td>
+                                                            <td scope="row" className="select-event-top"><span className="select-event-info">Instructor:</span></td>
+                                                            <td className="select-event-top"><span className="select-event-info-data">{this.state.instructor}</span></td>
                                                         </tr>
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Date:</span></td>
-                                                            <td><span className="userSelectData">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Date:</span></td>
+                                                            <td><span className="select-event-info-data">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
                                                         </tr>
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Time:</span></td>
-                                                            <td><span className="userSelectData">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Time:</span></td>
+                                                            <td><span className="select-event-info-data">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
                                                         </tr>
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Location:</span></td>
-                                                            <td><span className="userSelectData">{this.state.location.value}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Location:</span></td>
+                                                            <td><span className="select-event-info-data">{this.state.location.value}</span></td>
                                                         </tr>
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Capacity:</span></td>
-                                                            <td><span className="userSelectData">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Capacity:</span></td>
+                                                            <td><span className="select-event-info-data">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
                                                         </tr>
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Description:</span></td>
-                                                            <td><span className="userSelectData">{this.state.description.value}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Description:</span></td>
+                                                            <td><span className="select-event-info-data">{this.state.description.value}</span></td>
                                                         </tr>
                                                         {this.state.isRecurrent.value &&
                                                         <tr>
-                                                            <td scope="row"><span className="userSelectLabel">Recurrence:</span></td>
-                                                            <td><span className="userSelectData">{this.state.recurrence}</span></td>
+                                                            <td scope="row"><span className="select-event-info">Recurrence:</span></td>
+                                                            <td><span className="select-event-info-data">{this.state.recurrence}</span></td>
                                                         </tr>} 
                                                         </tbody>
                                                     </Table> 
@@ -1880,33 +1882,33 @@ class App extends Component {
                                             {this.state.instructor === this.state.login.username &&
                                             (<Row>
                                             <fieldset>
-                                                <Row className="basicInfo">
+                                                <Row className="select-event-row">
                                                     <Col xs="6" sm="6" md="6" lg="6">
                                                     <Row>
-                                                        <label>Name</label>
+                                                        <label className="select-event-edit-label-top">Name</label>
                                                         <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
                                                         <div className="invalid-feedback">Characters only and can't be empty.</div>
                                                     </Row>
                                                     <Row>
-                                                        <label>Capacity</label>
+                                                        <label className="select-event-edit-label-top">Capacity</label>
                                                         <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
                                                         <div className="invalid-feedback">Numbers only and can't be empty.</div>
                                                     </Row>
                                                     <Row>
-                                                        <label>Location</label>
+                                                        <label className="select-event-edit-label-top">Location</label>
                                                         <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
                                                         <div className="invalid-feedback">Alphanumeric only and can't be empty.</div>
                                                     </Row> 
                                                     <Row>
-                                                        <label className="inputName editLabel">Activation day</label>
+                                                        <label className="select-event-edit-label-top">Activation day</label>
                                                         <div className="input-daterange input-group" id="datepicker-example-2">
-                                                        <span className="input-group-append" id="startIcon">
-                                                            <span className="input-group-text" id="startIcon">
+                                                        <span className="input-group-append select-event-date-picker-icon">
+                                                            <span className="input-group-text select-event-date-picker-icon">
                                                             <i className="fa fa-calendar"></i>
                                                             </span>
                                                         </span>
                                                             <DatePicker
-                                                                className="input-sm form-control activationDate"
+                                                                className="input-sm form-control select-event-date-picker"
                                                                 placeholderText="Activation date"
                                                                 selected={this.state.activationDay}
                                                                 onChange={this.handleChangeActivationDate}
@@ -1921,24 +1923,24 @@ class App extends Component {
                                                     </Row>
                                                     </Col>
                                                     <Col xs="6" sm="6" md="6" lg="6">
-                                                    <Row  className="rightInputInBasicInfo">
-                                                        <label>Description</label>
-                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control select-event-input-description" : "form-control is-invalid select-event-input-description"} placeholder="What is your event about?"></textarea>
+                                                    <Row className="select-event-description-row">
+                                                        <label className="select-event-edit-label-top">Description</label>
+                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control select-event-description" : "form-control is-invalid select-event-description"} placeholder="What is your event about?"></textarea>
                                                         <div className="invalid-feedback">Can't be empty.</div>
                                                     </Row>
                                                     </Col>
                                                 </Row>
                                                 </fieldset>
-                                                <Col xs="12" sm="12" md="12" lg="12" className="editDatesLabel">
-                                                <label className="inputName editLabel">Date & time</label>
+                                                <Col xs="12" sm="12" md="12" lg="12" className="select-event-edit-date-col">
+                                                <label className="select-event-edit-label">Date & time</label>
                                                     <div className="input-daterange input-group" id="datepicker-example-2">
-                                                    <span className="input-group-append" id="startIcon">
-                                                        <span className="input-group-text" id="startIcon">
+                                                    <span className="input-group-append select-event-date-picker-icon">
+                                                        <span className="input-group-text select-event-date-picker-icon">
                                                         <i className="fa fa-calendar"></i>
                                                         </span>
                                                     </span>
                                                     <DatePicker
-                                                        className="input-sm form-control startDate"
+                                                        className="input-sm form-control create-event-date-picker"
                                                         name="start"
                                                         placeholderText="Start date"
                                                         selected={this.state.startDate}
@@ -1953,7 +1955,7 @@ class App extends Component {
                                                         readOnly
                                                     />
                                                     <DatePicker
-                                                        className="input-sm form-control startDate"
+                                                        className="input-sm form-control create-event-date-picker"
                                                         name="end"
                                                         placeholderText="End date"
                                                         selected={this.state.endDate}
@@ -1968,8 +1970,8 @@ class App extends Component {
                                                         dateFormat="LLL"
                                                         readOnly
                                                     />
-                                                    <span className="input-group-prepend" id="endIcon">
-                                                        <span className="input-group-text" id="endIcon">
+                                                    <span className="input-group-prepend select-event-enddate-picker-icon">
+                                                        <span className="input-group-text select-event-enddate-picker-icon">
                                                         <i className="fa fa-calendar"></i>
                                                         </span>
                                                     </span>
@@ -1995,7 +1997,7 @@ class App extends Component {
                                         <h2>Registration set-up</h2>
                                         </ModalHeader>
                                         <ModalBody>
-                                        <Row className="allDayLabel">
+                                        <Row className="activate-event-row">
                                             <Col xs="8" sm="8" md="8" lg="8">
                                             <fieldset>
                                                 <div className="custom-control custom-toggle d-block my-2">
@@ -2008,13 +2010,13 @@ class App extends Component {
                                         <Row>
                                             <Col xs="12" sm="12" md="12" lg="12">
                                                 <div className="input-daterange input-group" id="datepicker-example-2">
-                                                <span className="input-group-append" id="startIcon">
-                                                    <span className="input-group-text" id="startIcon">
+                                                <span className="input-group-append create-event-date-picker-icon">
+                                                    <span className="input-group-text create-event-date-picker-icon">
                                                     <i className="fa fa-calendar"></i>
                                                     </span>
                                                 </span>
                                                 <DatePicker
-                                                    className="input-sm form-control activationDate"
+                                                    className="input-sm form-control create-event-date-picker"
                                                     placeholderText="Activation date"
                                                     selected={this.state.activationDay}
                                                     onChange={this.handleChangeActivationDate}
@@ -2028,8 +2030,8 @@ class App extends Component {
                                                 </div>
                                             </Col>
                                         </Row>
-                                        <Row className="activateButtonRow pull-right">
-                                            <Button color="success" onClick={() => this.activateEvent()} >Activate</Button>  
+                                        <Row className="activate-event-button-row pull-right">
+                                            <Button color="success" onClick={() => this.activateEvent()}>Activate</Button>  
                                         </Row>
                                         </ModalBody>
                                     </Modal>
@@ -2040,10 +2042,10 @@ class App extends Component {
                                         <h2>Delete event</h2>
                                         </ModalHeader>
                                         <ModalBody>
-                                        <Row className="allDayLabel">
-                                        <p className="deleteMessage">Are you sure you wish to delete this event?</p>
+                                        <Row className="delete-event-row">
+                                        <p className="delete-event-message">Are you sure you wish to delete this event?</p>
                                         </Row><br/>
-                                        <Row className="deleteButtonRow pull-right">
+                                        <Row className="delete-event-button-row pull-right">
                                             <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
                                         </Row>
                                         </ModalBody>
@@ -2053,75 +2055,20 @@ class App extends Component {
                         </div>
                     </div>
 
-
-
-                    <div className="contact section-invert py-4">
-                        {this.state.login.admin === false &&
-                        (<div>
-                            <Row>
-                                <div className="col-md-12 col-sm-12">
-                                    <h1 className="adminName">My Events</h1>
-                                </div>
-                            </Row>
-                            <Row className="unpublishedTable">
-                                <div className="col-md-12 col-sm-12">
-                                    <Table>
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Location</th>
-                                            <th>Capacity</th>
-                                        </tr>
-                                        </thead>
-                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
-                                            <label className="noEventsMessage">Get started by creating an event</label>
-                                        }    
-                                        {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
-                                            <tbody>
-                                            {
-                                                activeChecker(this.state.events, this.state.login.username).map((events, index) => {
-                                                    var event = events;
-                                                    if (event) {
-                                                        return <tr key={index + 1}>
-                                                                <th>{event.calendarInfo.title}</th>
-                                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                                <td>{event.location}</td>
-                                                                <td>{event.capacity}</td>
-                                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>Edit</Button></td>
-                                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                            </tr>;
-                                                    } else return
-                                                })
-                                            }
-                                            </tbody>
-                                        }
-                                    </Table>
-                                </div>
-                            </Row>
-                        </div>)}
-                    </div>
-                    
-
-
-
                     <div className="contact section-invert py-4">
                         {this.state.login.admin === true &&
                         (<div>
                             <Row>
                                 <div className="col-md-12 col-sm-12">
-                                    <h1 className="adminName">Admin</h1>
+                                    <h1 className="app-admin-page-header">Admin</h1>
                                 </div>
                             </Row>
                             <Row>
                                 <div className="col-md-12 col-sm-12">
-                                    <h3 className="adminInactiveName">Inactive Events</h3>
+                                    <h3 className="app-admin-page-subheader">Inactive Events</h3>
                                 </div>
                             </Row>
-                            <Row className="unpublishedTable">
+                            <Row className="app-admin-page-inactive-events">
                                 <div className="col-md-12 col-sm-12">
                                     <Table>
                                         <thead>
@@ -2134,7 +2081,7 @@ class App extends Component {
                                         </tr>
                                         </thead>
                                         {activeChecker(this.state.events, this.state.login.username).length === 0 &&
-                                            <label className="noEventsMessage">Get started by creating an event</label>
+                                            <label className="app-no-events-message">Get started by creating an event</label>
                                         }    
                                         {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
                                             <tbody>
@@ -2162,10 +2109,10 @@ class App extends Component {
                             </Row>
                             <Row>
                                 <div className="col-md-12 col-sm-12">
-                                    <h3 className="adminInactiveName">Active Events</h3>
+                                    <h3 className="app-admin-page-subheader">Active Events</h3>
                                 </div>
                             </Row>
-                            <Row className="publishedTable">
+                            <Row className="app-admin-page-active-events">
                                 <div className="col-md-12 col-sm-12">
                                     <Table>
                                         <thead>
@@ -2179,7 +2126,7 @@ class App extends Component {
                                         </tr>
                                         </thead>
                                         {flatten3(this.state.events, this.state.login.username).length === 0 &&
-                                            <label className="noEventsMessage">Activate an event to make it public</label>
+                                            <label className="app-no-events-message">Activate an event to make it public</label>
                                         }
                                         {flatten3(this.state.events, this.state.login.username).length !== 0 &&
                                             <tbody>
@@ -2207,12 +2154,12 @@ class App extends Component {
                                 </div>
                             </Row>
                                 <div className="col-md-12 col-sm-12">
-                                    <Row className="createEventButton">
-                                        <div className="bottomAdminButton">
-                                            <Button className="templateButton" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                    <Row className="app-button-container-row">
+                                        <div className="app-button-container">
+                                            <Button className="app-button" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
                                         </div>
-                                        <div className="bottomAdminButton">
-                                            <Button className="templateButton" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
+                                        <div className="app-button-container">
+                                            <Button className="app-button" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
                                         </div>
                                     </Row>
                                 </div>
@@ -2224,7 +2171,7 @@ class App extends Component {
                     <footer>
                         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
                             <div className="container">
-                                <a className="navbar-brand">Umba</a>
+                                <a className="app-name">Umba</a>
                                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                                     <span className="navbar-toggler-icon"></span>
                                 </button>

@@ -1,6 +1,16 @@
-.select-event-input-description {
-	min-height: 204pt;
-	max-height: 204pt;
+.select-event-row {
+	font-size: 15pt;
+	padding-left: 4.2%;
+}
+
+.select-event-description-row {
+	padding-left: 8%;
+	padding-right: 9%;
+}
+
+.select-event-description {
+	min-height: 211pt;
+	max-height: 211pt;
 }
 
 .select-event-add-button {
@@ -12,6 +22,77 @@
 	line-height: 35px;
 	font-size: 11pt;
 	color: #c4183c;
-	margin-bottom:0px!important;
+	margin-bottom: 0px!important;
 	float: right;
  }
+
+ .select-event-date-picker {
+	width: 203px!important;
+    border-top-right-radius: 4px!important;
+    border-bottom-right-radius: 4px!important;
+    border-top-left-radius: 0px!important;
+    border-bottom-left-radius: 0px!important;
+ }
+
+ .select-event-date-picker-icon {
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	border-top-left-radius: 3px !important;
+	border-bottom-left-radius: 3px !important;
+}
+
+.select-event-enddate-picker-icon {
+	border-top-left-radius: 0px !important;
+	border-bottom-left-radius: 0px !important;
+	border-top-right-radius: 3px !important;
+	border-bottom-right-radius: 3px !important;
+ }
+
+ .select-event-modal {
+ 	width: 100%;
+	margin-right: 0px!important;
+	margin-left: 0px!important;
+ }
+
+ .select-event-modal-parent {
+	margin-left: 2%;
+	margin-right: 2%;
+}
+
+.select-event-modal-header {
+	padding-left: 3.5% !important;
+}
+
+.select-event-table {
+	margin-bottom: 0px!important;
+}
+
+.select-event-info {
+	font-weight: bold;
+}
+
+.select-event-info-data {
+	padding-left: 10%;
+}
+
+.select-event-top {
+	border-top: 0px!important;
+}
+
+.select-event-edit-label {
+	padding-top:1%!important;
+	font-size: 20px;
+}
+
+.select-event-edit-label-top {
+	padding-top: 2%!important;
+}
+
+.select-event-edit-date-col {
+	padding-left: 1%!important;
+  	padding-right: 0px!important;
+}
+
+.select-event-edit {
+	margin-bottom:0px!important;
+}

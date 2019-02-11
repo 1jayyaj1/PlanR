@@ -7,109 +7,74 @@
   height: 80px;
 }
 
-.basicInfo {
-  padding-left: 3%;
-  padding-right: 3%;
-}
-
-.form-control:disabled, .form-control[readonly] {
-  background-color: white !important;
-  opacity: 1;
-  cursor: pointer!important;
-}
-
-.startDate {
-    border-radius: 0 !important;
-    -moz-border-radius: 0 !important;
-}
-
-.activationDate {
-  border-radius: 0 !important;
-  -moz-border-radius: 0 !important;
-}
-
-.endDate {
-  border-radius: 0 !important;
-  -moz-border-radius: 0 !important;
-}
-
-#startIcon {
-  border-top-right-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
-  border-top-left-radius: 3px !important;
-  border-bottom-left-radius: 3px !important;
-}
-
-#endIcon {
-  border-top-left-radius: 0px !important;
-  border-bottom-left-radius: 0px !important;
-  border-top-right-radius: 3px !important;
-  border-bottom-right-radius: 3px !important;
-}
-
-.radioButtons {
-  background-color: #e9ecef !important;
-  border: 1px solid #ced4da !important;
-  color: #495057 !important;
-}
-
 .invalid-feedback {
   font-size: 10pt !important;
 }
 
-.checkButtons {
-  background-color: #e9ecef !important;
-  border: 1px solid #ced4da !important;
-  color: #495057 !important;
+.invalid-input {
+  color: #c4183c;
+  font-size: 10pt;
+  padding-top: 1%;
 }
 
 .custom-control-label {
   font-size: 12pt;
   padding-left: 19% !important;
 }
+
 .custom-toggle {
   padding-left: 0px !important;
 }
 
-.dateSelector {
-  padding-left: 3% !important;
-  font-size: 15pt;
-}
-.rightInputInBasicInfo {
-  padding-left: 8%;
-}
-
-.recurrenceLabel {
-  font-size: 15pt;
+.app-welcome-subheading {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 200;
+  line-height: 1.0;
 }
 
-.occurenceLabel {
-  font-size: 15pt;
+.app-admin-page-header {
+  padding-left: 10%;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
-.allDayLabel {
-  font-size: 15pt;
+.app-admin-page-subheader {
+  padding-left: 10%;
+  padding-bottom: 1%;
 }
 
-.basicInfo {
-  font-size: 15pt;
+.app-admin-page-inactive-events {
+  padding-left: 10%;
+  padding-right: 10%;
+  padding-bottom: 2%;
 }
 
-.startTime {
-  font-size: 15pt;
+.app-admin-page-active-events {
+  padding-left: 10%;
+  padding-right: 10%;
 }
 
-.inputRecurrence {
-  font-size: 15pt;
-  width: 100% !important;
+.app-button-container-row {
+  padding-left: 10%;
+  padding-bottom: 1%;
 }
 
-.steps-action {
-  float:right;
+.app-no-events-message {
+  margin-top: 15px;
 }
 
-.eventCreationModal {
-  width:90%;
+.app-button-container {
+  padding-right:1%;
+}
+
+.app-button {
+  background-color: #65737e!important;
+  border-color: #65737e!important;
+}
+
+.app-name {
+  color: white!important;
 }
 
 .App-header {
@@ -127,154 +92,7 @@
   font-size: large;
 }
 
-.templateButton {
-  background-color: #65737e!important;
-  border-color: #65737e!important;
-}
-
-.navbar-brand {
-  color: white!important;
-}
-
-.bottomHomePageText {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 200;
-  line-height: 1.0;
-}
-
-.bottomAdminButton {
-  padding-right:1%;
-}
-
-.announceButton {
-  text-align: right
-}
-
-.fadeout {
-  display: none;
-}
-
-.userSelectEventModal
-{
-  width: 100%;
-  margin-right:0px!important;
-  margin-left:0px!important;
-}
-
-.userSelectEventModalParent
-{
-  margin-left: 2%;
-  margin-right: 2%;
-}
-
-.userSelectEventTable
-{
-  margin-bottom: 0px!important;
-}
-
-.userSelectLabel
-{
-  font-weight: bold;
-}
-
-.userSelectData
-{
-  padding-left:10%;
-}
-
-.userSelcectModalHeader
-{
-  padding-left: 10% !important;
-}
-
-.userTableTop
-{
-  border-top: 0px!important;
-}
-
-.editLabel
-{
-  padding-top:2%!important;
-}
-
-.editDatesLabel
-{
-  padding-left:0px!important;
-  padding-right:0px!important;
-}
-
-.editEventLabel
-{
-  padding-left:1rem!important
-}
-
-.fadeout.active {
-  display: block;
-}
-
-.steps-content {
-  margin-top: 16px;
-}
-
-.steps-action {
-  margin-top: 3%;
-}
-
-.adminName {
-  padding-left: 10%;
-  padding-top: 2%;
-  padding-bottom: 2%;
-}
-
-.adminInactiveName {
-  padding-left: 10%;
-  padding-bottom: 1%;
-}
-
-.unpublishedTable {
-  padding-left: 10%;
-  padding-right: 10%;
-  padding-bottom: 2%;
-}
-
-.publishedTable {
-  padding-left: 10%;
-  padding-right: 10%;
-}
-
-.invalid-input {
-  color: #c4183c;
-  font-size: 10pt;
-  padding-top: 1%;
-}
-
-.createEventButton {
-  padding-left: 10%;
-  padding-bottom: 1%;
-}
-
-.deleteMessage {
-  padding-left: 5%;
-}
-
-.activateButtonRow {
-  padding-right: 5%;
-  padding-bottom: 1%;
-  padding-top: 3%;
-}
-
-.deleteButtonRow {
-  padding-right: 5%;
-  padding-bottom: 1%;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.center-screen {
+.app-loader {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -283,20 +101,16 @@
   min-height: 100vh;
 }
 
-.searchInputEmailAddAdmin {
-  padding-right:0px!important;
+.form-control:disabled, .form-control[readonly] {
+  background-color: white !important;
+  opacity: 1;
+  cursor: pointer!important;
 }
 
-.searchButtonEmailAddAdmin {
-  padding-left:0px!important;
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
-
-.searchButtonEmailAddAdminChild {
-  border-top-left-radius: 0px!important;
-  border-bottom-left-radius: 0px!important;
-  width: 100%
-}
-
 .stopwatch-timer {
   margin-top: 0px!important;
   margin-bottom: 0px!important;
@@ -309,22 +123,7 @@
   margin-right:auto;
 }
 
-.unregisterFromEvent {
-  padding-right: 5%!important;
-  padding-top: 5%!important;
-  font-size: 18px;
-  cursor: pointer;
+.app-logout-button {
+  padding-left: 25%!important;
+  width: 150%;
 }
-
-.myEventsErrorLabel {
-  padding-right: 1%;
-  line-height: 35px;
-  font-size: 11pt;
-  color: #c4183c;
-  margin-bottom:0px!important
-}
-
-.noEventsMessage {
-  margin-top: 15px;
-}
-

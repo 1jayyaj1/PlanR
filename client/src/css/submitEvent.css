@@ -1,13 +1,20 @@
 .submit-event-icon {
-  font-size: 21px;
-  color: #28A745;
-  padding-right: 1%;
+	font-size: 21px;
+	color: #28A745;
+	padding-right: 1%;
 }
 
 .submit-event-name-label {
-  font-size: 21px;
+	font-size: 21px;
 }
 
 .submit-event-list {
-  font-size: 15px;
+	font-size: 15px;
+}
+
+.submit-event-remove-icon {
+	padding-right: 5%!important;
+	padding-top: 5%!important;
+	font-size: 18px;
+	cursor: pointer;
 }
