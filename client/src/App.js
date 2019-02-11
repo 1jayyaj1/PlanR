@@ -1667,7 +1667,7 @@ class App extends Component {
                                     {this.state.secondsElapsed === 0 &&
                                     ( this.unRegisterEvent() )}
                             </div>
-                            <h3 className="section-title text-center my-5">Your schedule</h3>
+                            <h3 className="section-title text-center my-5">Your Schedule</h3>
                     
                             <div className="container py-4">
                                 <div className="row justify-content-md-center px-4">
@@ -1700,7 +1700,7 @@ class App extends Component {
                                     {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
                                         <ModalHeader>
-                                            <h2> New Event </h2>
+                                            <h2 className="create-event-new-event-label">New Event</h2>
                                         </ModalHeader>
                                         <ModalBody>
                                             <Form>
@@ -1766,7 +1766,7 @@ class App extends Component {
                                         <ModalFooter>
                                                 {(this.state.secondsElapsed !== 0 &&
                                                 this.incrementer === this.state.lastClearedIncrementer
-                                                ? <button type="button" className="btn btn-outline-success pull-right" align="right"onClick={() => {this.registerForEvents()}}>Register</button>
+                                                ? <button type="button" className="btn btn-success pull-right" align="right"onClick={() => {this.registerForEvents()}}>Register</button>
                                                 : null
                                                 )}
                                         </ModalFooter>
@@ -1775,7 +1775,7 @@ class App extends Component {
 
                                     {/*<----------------------- EVENT ANNOUNCE MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.announceModal} toggle={this.toggleAnnounceModal} className={this.props.className}>
-                                        <ModalHeader><h2>Announcement</h2></ModalHeader>
+                                        <ModalHeader><h2 className="announce-event-announcement-label">Announcement</h2></ModalHeader>
                                         <ModalBody>
                                         <form onSubmit={this.notifyEvent} id="announceModal">
                                             <div className="row">
@@ -1785,16 +1785,18 @@ class App extends Component {
                                                 </div>
                                                 </div>
                                             </div>
+                                        </form>
+                                        </ModalBody>
+                                        <ModalFooter>
                                             <div className="announce-event-button">
                                                 <input className="btn btn-success announce-event-button" type="submit" value="Announce"></input>
                                             </div>
-                                        </form>
-                                        </ModalBody>
+                                        </ModalFooter>
                                     </Modal>
 
                                     {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.addAdminModal} toggle={this.toggleAddAdminModal} className={this.props.className}>
-                                        <ModalHeader><h2>Add Admin</h2></ModalHeader>
+                                        <ModalHeader><h2 className="add-admin-label">Add Admin</h2></ModalHeader>
                                         <ModalBody>
                                             
                                                 <label htmlFor="contactFormEmail">Search by email</label>
@@ -1825,22 +1827,24 @@ class App extends Component {
                                                         </tbody>
                                                     </Table> 
                                                     </Col>
-                                                    <div className="col-md-12 col-sm-12">
-                                                        <button type="button" className="btn btn-secondary pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
-                                                    </div>
                                                 </Row>
                                         </ModalBody>
+                                        <ModalFooter className="add-admin-modal-footer" style={{display: this.state.newAdminSearchTable}}>
+                                            <div className="col-md-12 col-sm-12">
+                                                <button type="button" className="btn btn-secondary pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
+                                            </div>
+                                        </ModalFooter>        
                                     </Modal>
 
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
-                                        <ModalHeader className="select-event-modal-header">
+                                        <ModalHeader>
                                         {this.state.instructor !== this.state.login.username &&
-                                            (<h2>{this.state.calendarInfo.title}</h2>)}
+                                            (<h2 className="select-event-view-header-label">{this.state.calendarInfo.title}</h2>)}
                                         {this.state.instructor === this.state.login.username &&
-                                            (<h2 className="select-event-edit">Edit Event</h2>)}
+                                            (<h2 className="select-event-edit-header-label">Edit Event</h2>)}
                                         </ModalHeader>
-                                        <ModalBody className="select-event-modal-parent">
+                                        <ModalBody>
                                             {this.state.instructor !== this.state.login.username &&
                                             (<Row className="select-event-modal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
@@ -1994,7 +1998,7 @@ class App extends Component {
                                     {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
                                         <ModalHeader>
-                                        <h2>Registration set-up</h2>
+                                        <h2 className="activate-event-label">Activate Event</h2>
                                         </ModalHeader>
                                         <ModalBody>
                                         <Row className="activate-event-row">
@@ -2016,7 +2020,7 @@ class App extends Component {
                                                     </span>
                                                 </span>
                                                 <DatePicker
-                                                    className="input-sm form-control create-event-date-picker"
+                                                    className="input-sm form-control activate-event-date-picker"
                                                     placeholderText="Activation date"
                                                     selected={this.state.activationDay}
                                                     onChange={this.handleChangeActivationDate}
@@ -2030,25 +2034,29 @@ class App extends Component {
                                                 </div>
                                             </Col>
                                         </Row>
-                                        <Row className="activate-event-button-row pull-right">
-                                            <Button color="success" onClick={() => this.activateEvent()}>Activate</Button>  
-                                        </Row>
                                         </ModalBody>
+                                        <ModalFooter>
+                                            <Row className="activate-event-button-row pull-right">
+                                                <Button color="success" onClick={() => this.activateEvent()}>Activate</Button>  
+                                            </Row>
+                                        </ModalFooter>
                                     </Modal>
                                     {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
 
                                     <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
                                         <ModalHeader>
-                                        <h2>Delete event</h2>
+                                        <h2 className="delete-event-delete-event-label">Delete Event</h2>
                                         </ModalHeader>
                                         <ModalBody>
                                         <Row className="delete-event-row">
                                         <p className="delete-event-message">Are you sure you wish to delete this event?</p>
-                                        </Row><br/>
-                                        <Row className="delete-event-button-row pull-right">
-                                            <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
                                         </Row>
                                         </ModalBody>
+                                        <ModalFooter>
+                                            <Row className="delete-event-button-row pull-right">
+                                                <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
+                                            </Row>
+                                        </ModalFooter>
                                     </Modal>
                                 </div>
                             </div>
@@ -2167,17 +2175,6 @@ class App extends Component {
 
                     </div>
                     <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
-                    
-                    <footer>
-                        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                            <div className="container">
-                                <a className="app-name">Umba</a>
-                                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                    <span className="navbar-toggler-icon"></span>
-                                </button>
-                            </div>
-                        </nav>
-                    </footer>
                 </div>
             );
         }

@@ -3,7 +3,22 @@
 }
 
 .activate-event-button-row {
-	padding-right: 5%;
- 	padding-bottom: 1%;
-  	padding-top: 3%;
+	padding-right: 3%;
+}
+
+.activate-event-label {
+	margin-bottom: 0px!important;
+    width: 200px!important
+}
+
+.activate-event-modal-body {
+	
+}
+
+.activate-event-date-picker {
+	width: 203px!important;
+    border-top-right-radius: 4px!important;
+    border-bottom-right-radius: 4px!important;
+    border-top-left-radius: 0px!important;
+    border-bottom-left-radius: 0px!important;
 }

@@ -1,6 +1,6 @@
 .add-admin-input-email {
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
+	border-top-right-radius: 0px!important;
+	border-bottom-right-radius: 0px!important;
 }
 
 .add-admin-modal {
@@ -37,4 +37,12 @@
 	border-top-left-radius: 0px!important;
   	border-bottom-left-radius: 0px!important;
   	width: 100%
+}
+
+.add-admin-label {
+	margin-bottom: 0px!important;
+}
+
+.add-admin-modal-footer {
+	padding-right: 0px!important;
 }

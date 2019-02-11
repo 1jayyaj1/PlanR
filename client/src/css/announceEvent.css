@@ -1,8 +1,14 @@
 .announce-event-textarea {
 	min-height: 250pt;
 	max-height: 250pt;
+	margin-bottom: 0!important;
 }
 
 .announce-event-button {
 	text-align: right;
+}
+
+.announce-event-announcement-label {
+	margin-bottom: 0px!important;
+	margin-left: 3px!important;
 }

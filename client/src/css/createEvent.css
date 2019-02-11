@@ -4,6 +4,10 @@
  	padding-right: 3%;
 }
 
+.create-event-new-event-label {
+	margin-bottom: 0px!important;
+}
+
 .create-event-recurrence-dropdown {
 	font-size: 15pt;
 	width: 100% !important;

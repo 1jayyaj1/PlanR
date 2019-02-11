@@ -1,11 +1,13 @@
 .select-event-row {
 	font-size: 15pt;
-	padding-left: 4.2%;
+	padding-left: 3.1%;
+	margin-left: 0px!important;
+	margin-right: 0px!important;
 }
 
 .select-event-description-row {
-	padding-left: 8%;
-	padding-right: 9%;
+	padding-left: 7%;
+	padding-right: 6.8%;
 }
 
 .select-event-description {
@@ -27,7 +29,7 @@
  }
 
  .select-event-date-picker {
-	width: 203px!important;
+	width: 197px!important;
     border-top-right-radius: 4px!important;
     border-bottom-right-radius: 4px!important;
     border-top-left-radius: 0px!important;
@@ -53,15 +55,6 @@
 	margin-right: 0px!important;
 	margin-left: 0px!important;
  }
-
- .select-event-modal-parent {
-	margin-left: 2%;
-	margin-right: 2%;
-}
-
-.select-event-modal-header {
-	padding-left: 3.5% !important;
-}
 
 .select-event-table {
 	margin-bottom: 0px!important;
@@ -89,10 +82,16 @@
 }
 
 .select-event-edit-date-col {
-	padding-left: 1%!important;
+	padding-left: 3.1%!important;
   	padding-right: 0px!important;
 }
 
-.select-event-edit {
+.select-event-edit-header-label {
 	margin-bottom:0px!important;
+}
+
+.select-event-view-header-label {
+	margin-bottom:0px!important;
+	margin-left: 7%!important;
+	width: 250px!important;
 }

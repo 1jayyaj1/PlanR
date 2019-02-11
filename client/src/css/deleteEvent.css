@@ -3,10 +3,14 @@
 }
 
 .delete-event-message {
-	padding-left: 5%;
+	padding-left: 3.2%;
 }
 
 .delete-event-button-row {
-	padding-right: 5%;
-  	padding-bottom: 1%;
+	padding-right: 3.2%;
+}
+
+.delete-event-delete-event-label {
+	margin-bottom: 0px!important;
+	width: 200px!important;
 }
