@@ -1,0 +1,21 @@
+.reate-account-container {
+	margin-top: 2%;
+}
+
+.create-account-label {
+	text-align: center;
+	padding-bottom: 5%;
+}
+
+.create-account-elements {
+	margin-left: 15%;
+	width: 70%!important;
+}
+
+.create-account-elements-container {
+	text-align: left;
+}
+
+.create-account-button {
+	margin: 2%;
+}

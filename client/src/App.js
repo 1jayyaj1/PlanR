@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import { PulseLoader } from 'react-spinners';
 import './css/logIn.css'
+import './css/createAccount.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1514,58 +1515,58 @@ class App extends Component {
         } else if (this.state.login.username === "account") {
             return (
                 <div className="section-invert">
-                    <div className="py-4" Style="margin-top: 2%">
+                    <div className="py-4 create-account-container">
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
                                     <form> 
-                                        <h3 Style="text-align: center; padding-bottom: 5%"> Create an account </h3>
+                                        <h3 className="create-account-label"> Create an account </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="name" Style="margin-left: 15%; width: 70%">Full name</label>
-                                                        <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your full name" Style="margin-left: 15%; width: 70%"/>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Name can't be left empty.</div>
+                                                    <div className="form-group create-account-elements-container">
+                                                        <label htmlFor="name" className="create-account-elements">Full name</label>
+                                                        <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your full name"/>
+                                                        <div className="invalid-feedback create-account-elements">Name can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="email" Style="margin-left: 15%; width: 70%">Email</label>
-                                                        <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your email" Style="margin-left: 15%; width: 70%"/>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Email format should be a@b.c.</div>
+                                                    <div className="form-group create-account-elements-container">
+                                                        <label htmlFor="email" className="create-account-elements">Email</label>
+                                                        <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your email"/>
+                                                        <div className="invalid-feedback create-account-elements">Email format should be a@b.c.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="username" Style="margin-left: 15%; width: 70%">Username</label>
-                                                        <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your username" Style="margin-left: 15%; width: 70%"/>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Username can't be left empty.</div>
+                                                    <div className="form-group create-account-elements-container">
+                                                        <label htmlFor="username" className="create-account-elements">Username</label>
+                                                        <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your username"/>
+                                                        <div className="invalid-feedback create-account-elements">Username can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="password" Style="margin-left: 15%; width: 70%">Password</label>
-                                                        <Input type="text" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control" : "form-control is-invalid"} placeholder="Enter your password" Style="margin-left: 15%; width: 70%"/>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Password can't be left empty.</div>
+                                                    <div className="form-group create-account-elements-container">
+                                                        <label htmlFor="password" className="create-account-elements">Password</label>
+                                                        <Input type="text" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password"/>
+                                                        <div className="invalid-feedback create-account-elements">Password can't be left empty.</div>
                                                     </div>
                                                 </div>
                                             </Row>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group" Style="text-align: left">
-                                                        <label htmlFor="confirmPassword" Style="margin-left: 15%; width: 70%">Confirm your password</label>
-                                                        <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid? "form-control" : "form-control is-invalid"} placeholder="Confirm your password" Style="margin-left: 15%; width: 70%"></Input>
-                                                        <div className="invalid-feedback" Style="margin-left: 15%; width: 70%">Passwords do not match.</div>
+                                                    <div className="form-group reate-account-elements-container">
+                                                        <label htmlFor="confirmPassword" className="create-account-elements">Confirm your password</label>
+                                                        <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Confirm your password"/>
+                                                        <div className="invalid-feedback create-account-elements">Passwords do not match.</div>
                                                     </div>
                                                 </div>
                                             </Row>  
-                                        <input className="btn btn-primary d-flex ml-auto mr-auto" onClick={this.createAccount} Style="margin: 2%" type="button" value="Create"></input>
+                                        <input className="btn btn-primary d-flex ml-auto mr-auto create-account-button" onClick={this.createAccount} type="button" value="Create"></input>
                                     </form>
                                 </div>
                             </div>
