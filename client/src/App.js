@@ -16,6 +16,7 @@ import './css/createEvent.css'
 import './css/calendarPage.css'
 import './css/submitEvent.css'
 import './css/announceEvent.css'
+import './css/addAdmin.css'
 const axios = require('axios');
 
 const Step = Steps.Step;
@@ -1796,7 +1797,7 @@ class App extends Component {
                                                 <label htmlFor="contactFormEmail">Search by email</label>
                                                 <Row>
                                                     <div className="col-md-9 col-sm-9 searchInputEmailAddAdmin">
-                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control" : "form-control is-invalid"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email" style={{borderTopRightRadius: '0px', borderBottomRightRadius: '0px'}}></input>
+                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
                                                         <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
                                                     </div>
                                                     <div className="col-md-3 col-sm-3 searchButtonEmailAddAdmin">
