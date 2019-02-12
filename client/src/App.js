@@ -1162,7 +1162,7 @@ class App extends Component {
                         recurrence: "",
                         currentEventId: null,
                     });
-                    myComponent.setState({ viewModal: !this.state.viewModal, });
+                    myComponent.setState({ viewModal: !myComponent.state.viewModal, });
                     toast.success('The event was modified.', {
                             position: "top-center",
                             autoClose: 4000,
@@ -1620,7 +1620,7 @@ class App extends Component {
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group create-account-elements-container">
                                                         <label htmlFor="password" className="create-account-elements">Password</label>
-                                                        <Input type="text" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password"/>
+                                                        <Input type="password" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password"/>
                                                         <div className="invalid-feedback create-account-elements">Password can't be left empty.</div>
                                                     </div>
                                                 </div>
