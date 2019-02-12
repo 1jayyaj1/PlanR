@@ -665,29 +665,29 @@ class App extends Component {
                             axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
                                 .then(function (response) {
                                     console.log(response.data)
-                                    if (response.data.registeredEmail.length === response.data.capacity){
+                                    if (response.data.registeredEmail.length === response.data.capacity){   //If the number of email registered = event capacity, event is full -> can't add it.
                                         fullCapacity = true
                                     }
                                     myComponent.setState({
-                                        registerEventId: myComponent.state.registerEventId.concat(currentEventId),
-                                        registerEventEmail: user.email,
+                                        registerEventId: myComponent.state.registerEventId.concat(currentEventId),  //Add the event id to the local list of registered events.
+                                        registerEventEmail: user.email, //Sets the state of the current user's email for later purposes.
                                     });
-                                    response.data.registeredEmail.forEach(function(email) {
+                                    response.data.registeredEmail.forEach(function(email) { //Checks if logged in user email is already in the registered email field of the event.
                                         if (user.email === email) {
                                             alreadyRegistered = true;
                                         }
                                     });
                                     if (alreadyRegistered === false && fullCapacity === false) {
-                                        axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)})
+                                        axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)}) //Adds the logged in user's email to the registered email field of the event.
                                             .then(function (response) {
                                                 console.log(response.data)
-                                                myComponent.handleResetClick()
-                                                myComponent.handleStartClick()
+                                                myComponent.handleResetClick()  //Resets the registration counter to 5 min.
+                                                myComponent.handleStartClick()  //Starts again the registration counter.
                                                 myComponent.setState({ 
                                                     visible: true,
                                                     myEventsErrorLabel: 'none',
                                                 });
-                                                axios.get('/events/' + currentEventId)
+                                                axios.get('/events/' + currentEventId)  //Gets the updated event info, adds it to the local list of registered events, and closes the view event modal.
                                                 .then(function (response) {
                                                     myComponent.setState({ 
                                                         registerEvents: myComponent.state.registerEvents.concat(response.data),
@@ -702,12 +702,12 @@ class App extends Component {
                                                 console.log(error);
                                         });
                                     }
-                                    else if(alreadyRegistered === true) {
+                                    else if(alreadyRegistered === true) {   //Alerts the user if they are already registered to the event.
                                         myComponent.setState({ 
                                             allReadyRegisteredErrorLabel: 'block',
                                         });
                                     }
-                                    else if(fullCapacity === true) {
+                                    else if(fullCapacity === true) {    //Alerts the user if the event is full.
                                         myComponent.setState({ 
                                             fullCapacityErrorLabel: 'block',
                                         });
