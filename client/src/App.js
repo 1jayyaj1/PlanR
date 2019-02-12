@@ -1007,13 +1007,13 @@ class App extends Component {
     handleChange(event) {
         const target = event.target;
         var valid = true;
-        if (target.name === "name" && !/^[#/&a-zA-Z0-9- ]*$/.test(target.value)) {
+        if (target.name === "name" && !/^[#/&a-z,.()àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœA-Z0-9- ]*$/.test(target.value)) {
             valid = false;
         }
         else if (target.name === "capacity" && /\D+/.test(target.value)) {
             valid = false;
         }
-        else if (target.name === "location" && /[^A-Za-z0-9- ]+/.test(target.value)) {
+        else if (target.name === "location" && /[^,.()#/$àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœA-Za-z0-9- ]+/.test(target.value)) {
             valid = false;
         }
         this.setState({ [target.name]: { value: target.value, valid: valid }, });
