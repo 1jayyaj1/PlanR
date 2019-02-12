@@ -111,7 +111,7 @@ router.post('/', function(req, res, next) {
                     if (err.code === 11000) {
                         return res.status(500).send("The provided email is already associated to an existing account.");
                     }
-                    return res.status(500).send("Unable to create user in database")
+                    return res.status(500).send("Unable to create user in database.")
                 })
             });
         } else {

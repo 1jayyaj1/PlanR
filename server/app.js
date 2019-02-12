@@ -59,19 +59,10 @@ app.use(session({
     }
 }));
 
-// check if logged in, if not, redirect to login
-function loggedIn(req, res, next) {
-    if (!req.session.logged) {
-        return res.sendStatus(401);
-    }
-    next();
-}
-
-app.use('/users', usersRouter);  //TODO
+app.use('/users', usersRouter);
 
 app.use(helmet())
 app.use('/login', loginRouter);
-// app.use(loggedIn)
 app.use('/', indexRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);

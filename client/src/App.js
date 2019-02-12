@@ -317,7 +317,7 @@ class App extends Component {
     //This method sets the user's "admin" field to true.
     addAdmin() {
         axios.put('/users/' + this.state.idUserModal, {admin: true})    //"put" accesses user info with id and sends modified param (admin).
-        .then(function (response) {
+        .then(response => {
             this.toggleAddAdminModal(); //  Closes the add admin modal.
             toast.success("The user was set as an administrator!", {    //Alerts the user that the operation was successful.
                 position: "top-center",
@@ -561,28 +561,28 @@ class App extends Component {
         this.handleResetClick();    //Resets event registration timer to 5 min so that user successfuly completes event registration.
     }
 
+    //This method removes the event from the user's added events list -- only if they didn't complete registration yet.
     unregisterFromSingleEvent(id) {
         const myComponent = this;
-            axios.get('/events/' + id)
+            axios.get('/events/' + id)  //Get specific event using id.
             .then(function (event) {
                 console.log(event)
                     var i = 0;
                     var index;
-                    myComponent.state.registerEvents.forEach(function(event){
-                        if(event._id === id) {
+                    myComponent.state.registerEvents.forEach(function(event){   //Loop through all the uncompleted registered events.
+                        if(event._id === id) {  //If the event's id matches the one passed with parameters, get the index of the uncompleted registered event.
                             index = i;
                         }
                         i++;
                     })
-                    var emailCounter = 0;
-                    event.data.registeredEmail.forEach(function(email){
-                        if (myComponent.state.registerEventEmail === email) {
+                    var emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
+                    event.data.registeredEmail.forEach(function(email){ //Loops through each registered email of an event.
+                        if (myComponent.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
                             event.data.registeredEmail.splice(emailCounter, 1)
-                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
+                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})   //Removes event from database.
                             .then(function (response) {
                                 console.log(response.data)
-                                if (myComponent.state.registerEvents.length === 1) {
-                                    console.log(index);
+                                if (myComponent.state.registerEvents.length === 1) {    //If the unregistered event was the only one in the list, remove event from local list and close modal.
                                     myComponent.state.registerEvents.splice(index, 1);
                                     console.log(myComponent.state.registerEvents);
                                     myComponent.setState({
@@ -590,10 +590,9 @@ class App extends Component {
                                         registerModal: false,
                                         visible: false,
                                     });
-                                    myComponent.handleResetClick();
+                                    myComponent.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
                                 }
-                                else {
-                                    console.log(index);
+                                else {  //If the unregistered event was not the only one in the list, remove it from the local list and keep the modal open.
                                     myComponent.state.registerEvents.splice(index, 1);
                                     console.log(myComponent.state.registerEvents);
                                     myComponent.setState({
@@ -604,7 +603,7 @@ class App extends Component {
                             })
                             .catch(function (error) {
                                 console.log(error);
-                                });
+                            });
                         }
                         emailCounter++;
                     })
@@ -616,15 +615,16 @@ class App extends Component {
             });
     }
 
+    //This method removes all of the added events after 5 min if the registration is not completed.
     unRegisterEvent() {
         const myComponent = this;
-        this.state.registerEventId.forEach(function(id){
-            axios.get('/events/' + id)
+        this.state.registerEventId.forEach(function(id){    //Loops through each event that hasn't confirm its registration.
+            axios.get('/events/' + id)  //Get specific event from database using id.
             .then(function (event) {
                 console.log(event)
-                    var i = 0;
-                    event.data.registeredEmail.forEach(function(email){
-                        if (myComponent.state.registerEventEmail === email) {
+                    var i = 0;  //Used to find the index.
+                    event.data.registeredEmail.forEach(function(email){ //Loops through each registered email of an event.
+                        if (myComponent.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
                             event.data.registeredEmail.splice(i, 1)
                             axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
                             .then(function (response) {
@@ -633,7 +633,7 @@ class App extends Component {
                                     registerEvents: [],
                                     visible: false,
                                 });
-                                myComponent.handleResetClick();
+                                myComponent.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
                             })
                             .catch(function (error) {
                                 console.log(error);
@@ -650,18 +650,19 @@ class App extends Component {
             })
     }
 
-    addEventBasket(eventId, currentEventId) {
+    //This method partially registers the user to an event -- user still needs to confirm registration later.
+    addEventBasket(currentEventId) {
         let myComponent = this;
         let alreadyRegistered = false;
         let fullCapacity = false;
-        axios.get('/users/')
+        axios.get('/users/')    //Get users from database.
         .then(function (response) {
             var users = response.data
             var BreakException = {};
             try {
-                users.forEach(function(user) {
-                    if (myComponent.state.login.username === user.name) {
-                            axios.get('/events/' + currentEventId)
+                users.forEach(function(user) {  //Loops through each user from the database.
+                    if (myComponent.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
+                            axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
                                 .then(function (response) {
                                     console.log(response.data)
                                     if (response.data.registeredEmail.length === response.data.capacity){
@@ -1191,7 +1192,6 @@ class App extends Component {
             user.admin = response.data.admin;
             console.log(response);
             component.setState({ login: user, });
-
             component.fetchEvents();
         })
         .catch(function (error) {
@@ -2047,7 +2047,7 @@ class App extends Component {
                                         <ModalFooter>
                                         {this.state.instructor !== this.state.login.username &&
                                             (<Col xs="12" sm="12" md="12" lg="12">
-                                            <Button className="select-event-add-button" color="primary" onClick={() => {this.addEventBasket(this.state.eventId, this.state.currentEventId)}}>Add</Button>
+                                            <Button className="select-event-add-button" color="primary" onClick={() => {this.addEventBasket(this.state.currentEventId)}}>Add</Button>
                                             <label className="select-event-error-label" style={{display: this.state.allReadyRegisteredErrorLabel}}> You're already registered to this event. </label>
                                             <label className="select-event-error-label" style={{display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
                                             </Col>)}
