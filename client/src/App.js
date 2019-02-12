@@ -1453,9 +1453,9 @@ class App extends Component {
                 <Col xs="8" sm="8" md="8" lg="8">
                   <label className="inputName">Type of event</label>
                   <fieldset>
-                    <div className="custom-control custom-toggle d-block my-2">
+                    <div className="custom-control app-custom-toggle d-block my-2">
                       <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
-                      <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                      <label className="app-custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
                     </div>
                   </fieldset>
                 </Col>
@@ -1703,11 +1703,11 @@ class App extends Component {
                     
                             {/*<----------------------- CALENDAR PAGE ----------------------->*/}
                             <div id="our-services" className="our-services section py-4">
-                            <div className="counter-alert">
+                            <div className="app-counter-alert">
                                 {this.state.secondsElapsed > 0 &&
                                     (<Alert color="primary" isOpen={this.state.visible} fade={false}>
                                         <div>
-                                            <h4 className="stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
+                                            <h4 className="app-stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
                                         </div>
                                     </Alert>)}
                                     {this.state.secondsElapsed === 0 &&
@@ -2051,9 +2051,9 @@ class App extends Component {
                                         <Row className="activate-event-row">
                                             <Col xs="8" sm="8" md="8" lg="8">
                                             <fieldset>
-                                                <div className="custom-control custom-toggle d-block my-2">
+                                                <div className="custom-control app-custom-toggle d-block my-2">
                                                 <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
-                                                <label className="custom-control-label" htmlFor="customToggle1">Today</label>
+                                                <label className="app-custom-control-label" htmlFor="customToggle1">Today</label>
                                                 </div>
                                             </fieldset>
                                             </Col>
