@@ -154,9 +154,9 @@ class App extends Component {
         this.handleChangeActivationDate = this.handleChangeActivationDate.bind(this);
         this.handleChangeSearchNewAdmin = this.handleChangeSearchNewAdmin.bind(this);
         this.activateEvent = this.activateEvent.bind(this);
-        this.updateRecurence = this.updateRecurence.bind(this);
+        this.updateRecurrence = this.updateRecurrence.bind(this);
         this.updateDaysSelection = this.updateDaysSelection.bind(this);
-        this.toggleCreateModal = this.toggleCreateModal.bind(this);
+        this.toggleCreateEventModal = this.toggleCreateEventModal.bind(this);
         this.toggleRegisterModal = this.toggleRegisterModal.bind(this);
         this.toggleViewModal = this.toggleViewModal.bind(this);
         this.toggleActivateModal = this.toggleActivateModal.bind(this);
@@ -270,22 +270,23 @@ class App extends Component {
         }
     }
 
+    //This method searches for users in the database using their email address.
     searchAdminEmail(email) {
         let myComponent = this;
-        axios.get('/users/')
+        axios.get('/users/')    //Get all the users from the database.
         .then(function (response) {
-            var users = response.data
+            var users = response.data   //We set up the data structure for users so that relevant user data has its own field.
             var BreakException = {};
             try {
-                users.forEach(function(user) {
-                    if (email === user.email) {
-                        if (user.admin === true) {
+                users.forEach(function(user) {  //Loops through each user (data) in the database.
+                    if (email === user.email) { //If the user's email matches the email searched, the user was found.
+                        if (user.admin === true) {  //If the searched user is already an admin, their info is not displayed.
                             myComponent.setState({
                                 newAdminSearchTable: 'none',
                                 email: { value: myComponent.state.email.value, valid: false },
                             });
                         }
-                        else if (user.admin === false) {
+                        else if (user.admin === false) {    //If the searched user in not an admin, their info and an "Add" button are displayed.
                             myComponent.setState({ 
                                 nameUserModal: user.name,
                                 userNameModal: user.username,
@@ -297,14 +298,14 @@ class App extends Component {
                         }
                     throw BreakException;
                     } else{
-                        myComponent.setState({
+                        myComponent.setState({  //If the user's email doesn't match the email searched, alert and no info is displayed.
                             newAdminSearchTable: 'none',
                             email: { value: myComponent.state.email.value, valid: false },
                         });
                     }
                 });
             }
-            catch (e) {
+            catch (e) { //Catch any errors that occur in the try block
                 if (e !== BreakException) throw e;
                 }
             })
@@ -313,12 +314,12 @@ class App extends Component {
         })
     }
 
+    //This method sets the user's "admin" field to true.
     addAdmin() {
-        axios.put('/users/' + this.state.idUserModal, {admin: true})
+        axios.put('/users/' + this.state.idUserModal, {admin: true})    //"put" accesses user info with id and sends modified param (admin).
         .then(function (response) {
-            console.log(response.data);
-            this.toggleAddAdminModal();
-            toast.success("The user was set as an administrator!", {
+            this.toggleAddAdminModal(); //  Closes the add admin modal.
+            toast.success("The user was set as an administrator!", {    //Alerts the user that the operation was successful.
                 position: "top-center",
                 autoClose: 4000,
                 hideProgressBar: true,
@@ -330,7 +331,7 @@ class App extends Component {
         })
         .catch(function (error) {
             console.log(error);
-            toast.error('The user was not set as an administrator, please try again later.', {
+            toast.error('The user was not set as an administrator, please try again later.', {  //Alerts the user that the operation was not successful.
                 position: "top-center",
                 autoClose: 4000,
                 hideProgressBar: true,
@@ -341,40 +342,45 @@ class App extends Component {
             });
         });
     }
-    updateRecurence(selection) {
+
+    //When event recurrence radio button is pressed, update state of recurrence so that it's available when event is created.
+    updateRecurrence(selection) {
         this.setState({ recurrence: selection, });
     }
 
+    //This method is used to determine the minimum time of an event (15 minutes) based on its start time.
     startTime() {
-        if (this.state.startDate === null && this.state.endDate === null) {
+        if (this.state.startDate === null && this.state.endDate === null) { //If no start and end date set, set them to the current day.
           return moment().hours(9).minutes(15);
-        } else {
+        } else {    //If date and time set, 15 minutes because event can't be less than 15 minutes.
           return moment(this.state.startDate).add(15, "minutes");
         }
     }
 
+    //This method updates state of start and end times when "all day" radio button switch is triggered -- only for non-recurring events.
     onRadioBtnClick() {
-        if (this.state.allDay === false) {
-            if (this.state.startDate === null || this.state.endDate === null) {
+        if (this.state.allDay === false) {  //If the event won't last all day.
+            if (this.state.startDate === null || this.state.endDate === null) { //If date not specified, set min time to 9am, and maxtime to 6pm for the current day.
                 this.setState({ startDate: moment().hours(9).minutes(0), });
                 this.setState({ endDate: moment().hours(18).minutes(0), });
-            } else {
+            } else {    //If date is specified, set min time to 9am, and maxtime to 6pm for the specified day.
                 this.setState({ startDate: moment(this.state.startDate).hours(9).minutes(0), });
                 this.setState({ endDate: moment(this.state.endDate).hours(18).minutes(0), });
             }
-            this.setState({ allDay: true, });
-        } else {
+            this.setState({ allDay: true, });   //Set the switch to "on", which means all day.
+        } else {    //If the event will last all day, don't sepcify any start or end time.
             this.setState({ startDate: null, });
             this.setState({ endDate: null, });
-            this.setState({ allDay: false, });
+            this.setState({ allDay: false, });  //Set the switch to "off", which means won't last all day.
         }
     }
 
+    //This method updates the state of the event activation day when the "Today" radio button switch is triggered.
     onRadioBtnActivateClick() {
-        if (this.state.activateToday === false) {
+        if (this.state.activateToday === false) {   //When triggered, if switch is initially false (off), set it to true and update activation day to today.
             this.setState({ activateToday: true, });
             this.setState({ activationDay: moment(), });
-        } else if (this.state.activateToday === true) {
+        } else if (this.state.activateToday === true) { //When triggered, if switch is initially true (on), set it to false and update activation day to today.
             this.setState({ activateToday: false, });
             this.setState({ activationDay: null, });
         }
@@ -391,38 +397,42 @@ class App extends Component {
         this.setState({ daysSelected: [...this.state.daysSelected], });
     }
 
-    toggleCreateModal() {
+    //This method toggles the event creation modal.
+    toggleCreateEventModal() {
         this.setState({ createModal: !this.state.createModal, });
     }
 
+    //This method toggles the event registration modal and updates the registration timer accordingly.
     toggleRegisterModal() {
-        if(this.state.registerEvents.length > 0) {
-            if(this.state.registerModal === false) {
+        if(this.state.registerEvents.length > 0) {  //If user is registered to any events.
+            if(this.state.registerModal === false) {    //If modal was initially closed, stop the registration timer when modal opens.
                 this.handleStopClick();
             } 
-            else if(this.state.registerModal === true) {
+            else if(this.state.registerModal === true) {    //If modal was initially open, continue the registration timer when modal closes.
                 this.handleStartClick();
             }
             this.setState({
                 registerModal: !this.state.registerModal,
-                myEventsErrorLabel: 'none',
+                myEventsErrorLabel: 'none', //The error labels here refer to the full event and already registered error labels.
             });
         }
-        else {
+        else {  //If user is not registered to any events do not open the modal and notify the user.
             this.setState({
                 myEventsErrorLabel: 'block',
             });
         }
     }
 
+    //This method toggles the event activation modal and sets the state of current event id so that it's available if user completes activation.
     toggleActivateModal(id, start, end) {
         this.handleChangeActivationDate(null);
         this.setState({ 
             activateModal: !this.state.activateModal,
             currentEventId: id,
-         });
+        });
     }
 
+    //This method toggles the event deletion modal and sets the state ofcurrent event id so that it's available if user completes deletion.
     toggleDeleteModal(id) {
         this.setState({ 
             deleteModal: !this.state.deleteModal,
@@ -430,14 +440,15 @@ class App extends Component {
         });
     }
 
+    //This method toggles the view/edit event modal.
     toggleViewModal(obj) {
-        const x = this;
-        this.state.events.forEach(function(e) {
-            var dataSet = e.data;
-            dataSet.forEach(function(event){
-                if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) {
-                    x.setState({
-                        eventId: e._id,
+        const myComponent = this;
+        this.state.events.forEach(function(parentEvent) { //Loops through each event (parent) of the events list.
+            var dataSet = parentEvent.data; //Data structure for event (parent) contains "data" field that has the actual events (child) -> Did this for recurring events.
+            dataSet.forEach(function(event){ //Loops through each actual event from the parent event object.
+                if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) { //If event title and start date matches, set states for event info fields.
+                    myComponent.setState({
+                        eventId: parentEvent._id,
                         name: {value: event.calendarInfo.title, valid: true}, 
                         capacity: {value: event.capacity, valid: true}, 
                         description: {value: event.description, valid: true},
@@ -456,14 +467,14 @@ class App extends Component {
                         allReadyRegisteredErrorLabel: 'none',
                         fullCapacityErrorLabel: 'none',
                     })
-                    if (event.recurrence === "") {
-                        x.setState({ recurrence: "non-recurring", })
+                    if (event.recurrence === "") {  //If the event recurrence is empty, then the event is not recurring.
+                        myComponent.setState({ recurrence: "non-recurring", })
                     }
                 }
             })
             
         });
-        if (this.state.viewModal === true) {
+        if (this.state.viewModal === true) {    //If view/edit modal is initially open, reset states of event info fields prior to closing the modal.
             this.setState({ 
                 eventId: "",
                 name: {value: "", valid: true}, 
@@ -485,8 +496,9 @@ class App extends Component {
         this.setState({ viewModal: !this.state.viewModal, });
     }
 
+    //This method toggles the add admin modal.
     toggleAddAdminModal() {
-        this.setState({
+        this.setState({ //Reset states of admin info fields prior to opening/closing the modal.
             addAdminModal: !this.state.addAdminModal,
             nameUserModal: "",
             userNameModal: "",
@@ -1082,7 +1094,7 @@ class App extends Component {
                 instructor: "",
                 step: 0,
             });
-            x.toggleCreateModal();
+            x.toggleCreateEventModal();
             this.setState({ events: this.state.events.concat(newEvent), });
             toast.success('The event was created.', {
                 position: "top-center",
@@ -1423,10 +1435,10 @@ class App extends Component {
                 <Col xs="10" sm="10" md="10" lg="10">
                   <label className="inputName" style={{color: this.state.recurrenceValid}}>Recurrence</label>
                   <ButtonGroup>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
                   </ButtonGroup>
                   <div className="invalid-input" style={{visibility: this.state.recurrenceValidLabel}}>Recurrence type is required</div>
                 </Col>
@@ -1638,7 +1650,7 @@ class App extends Component {
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
                                     <form> 
-                                        <h3 className="log-in-label"> Log In </h3>
+                                        <h3 className="log-in-label"> Umba </h3>
                                             <Row>
                                                 <div className="col-md-12 col-sm-12">
                                                     <div className="form-group log-in-form">
@@ -1744,7 +1756,7 @@ class App extends Component {
                                     </Row>
                     
                                     {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
-                                    <Modal isOpen={this.state.createModal} toggle={this.toggleCreateModal} className={this.props.className}>
+                                    <Modal isOpen={this.state.createModal} toggle={this.toggleCreateEventModal} className={this.props.className}>
                                         <ModalHeader>
                                             <h2 className="create-event-new-event-label">New Event</h2>
                                         </ModalHeader>
@@ -2211,7 +2223,7 @@ class App extends Component {
                                 <div className="col-md-12 col-sm-12">
                                     <Row className="app-button-container-row">
                                         <div className="app-button-container">
-                                            <Button className="app-button" color="secondary" onClick={() => this.toggleCreateModal()} >Create Event</Button>
+                                            <Button className="app-button" color="secondary" onClick={() => this.toggleCreateEventModal()} >Create Event</Button>
                                         </div>
                                         <div className="app-button-container">
                                             <Button className="app-button" color="secondary" onClick={() => this.toggleAddAdminModal()} >Add Admin</Button>
