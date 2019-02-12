@@ -1465,9 +1465,9 @@ class App extends Component {
                 <Col xs="8" sm="8" md="8" lg="8">
                   <label className="inputName">Type of event</label>
                   <fieldset>
-                    <div className="custom-control app-custom-toggle d-block my-2">
+                    <div className="custom-control custom-toggle d-block my-2">
                       <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
-                      <label className="app-custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                      <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
                     </div>
                   </fieldset>
                 </Col>
@@ -2060,12 +2060,12 @@ class App extends Component {
                                         <h2 className="activate-event-label">Activate Event</h2>
                                         </ModalHeader>
                                         <ModalBody>
-                                        <Row className="activate-event-row">
+                                        <Row >
                                             <Col xs="8" sm="8" md="8" lg="8">
                                             <fieldset>
-                                                <div className="custom-control app-custom-toggle d-block my-2">
+                                                <div className="custom-control custom-toggle d-block my-2">
                                                 <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
-                                                <label className="app-custom-control-label" htmlFor="customToggle1">Today</label>
+                                                <label className="custom-control-label" htmlFor="customToggle1">Today</label>
                                                 </div>
                                             </fieldset>
                                             </Col>

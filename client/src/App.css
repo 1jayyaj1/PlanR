@@ -75,12 +75,12 @@
   width: 150%;
 }
 
-.app-custom-control-label {
+.custom-control-label {
   font-size: 12pt;
   padding-left: 19% !important;
 }
 
-.app-custom-toggle {
+.custom-toggle {
   padding-left: 0px !important;
 }
 
