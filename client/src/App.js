@@ -275,10 +275,10 @@ class App extends Component {
         let myComponent = this;
         axios.get('/users/')    //Get all the users from the database.
         .then(function (response) {
-            var users = response.data   //We set up the data structure for users so that relevant user data has its own field.
+            var users = response.data   //Users are in the data field of the response.
             var BreakException = {};
             try {
-                users.forEach(function(user) {  //Loops through each user (data) in the database.
+                users.forEach(function(user) {  //Loops through each user in the database.
                     if (email === user.email) { //If the user's email matches the email searched, the user was found.
                         if (user.admin === true) {  //If the searched user is already an admin, their info is not displayed.
                             myComponent.setState({
@@ -509,16 +509,17 @@ class App extends Component {
         });
     }
 
+    //This method toggles the announce event modal.
     toggleAnnounceModal(event) {
         var myComponent = this;
-        axios.get('/users/')
+        axios.get('/users/')    //Gets all the users from the database.
         .then(function (response) {
-            var users = response.data
+            var users = response.data  //Users are in the data field of the response.
             var BreakException = {};
             try {
-                users.forEach(function(user) {
-                    if (myComponent.state.login.username === user.name) {
-                            myComponent.setState({ 
+                users.forEach(function(user) {  //Loops through each user received from the database.
+                    if (myComponent.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
+                            myComponent.setState({                          //gives us the logged in user email that will be used to sent the announcement.
                                 email: { value: user.email, valid: true },
                              });
                     throw BreakException;
@@ -532,7 +533,7 @@ class App extends Component {
         .catch(function (error) {
             console.log(error);
         })
-        if(this.state.announceModal === false){
+        if(this.state.announceModal === false){ //Fill in event info fields when opening the event announce modal.
             this.setState({ 
                 announceModal: !this.state.announceModal,
                 currentEventId: event._id,
@@ -540,7 +541,7 @@ class App extends Component {
                 startDate: event.calendarInfo.start,
             });
         }
-        if(this.state.announceModal === true){
+        if(this.state.announceModal === true){  //Reset the event info fields when closing the event announce modal.
             this.setState({ 
                 announceModal: !this.state.announceModal,
                 currentEventId: "",
@@ -550,13 +551,14 @@ class App extends Component {
         }
     }
 
+    //This method completed the registration of the user for an event.
     registerForEvents() {
-        this.setState({ 
+        this.setState({     //Reset states and closes modal.
             registerEvents: [],
             registerModal: !this.state.registerModal,
             visible: false,
         });
-        this.handleResetClick();
+        this.handleResetClick();    //Resets event registration timer to 5 min so that user successfuly completes event registration.
     }
 
     unregisterFromSingleEvent(id) {
