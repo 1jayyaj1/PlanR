@@ -729,6 +729,7 @@ class App extends Component {
         })
     }
    
+    //This method sets the minimum time so that a user can't set a date from the past.
     minMaxTime() {
         if(this.state.startDate === null && this.state.endDate === null) {
           return moment();
