@@ -35,7 +35,7 @@ const steps = [{
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
 function flatten(arr) {
-    var test = arr.reduce(function (flat, toFlatten) {
+    let test = arr.reduce(function (flat, toFlatten) {
 
         return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
@@ -44,7 +44,7 @@ function flatten(arr) {
 }
 
 function flatten2(l) {
-    var test = l.map(events => {
+    let test = l.map(events => {
         return events.data
     })
     
@@ -54,7 +54,7 @@ function flatten2(l) {
 }
 
 function flatten3(l, currentUser) {
-    var test = l.map(events => {
+    let test = l.map(events => {
         return events.data
     })
     
@@ -64,7 +64,7 @@ function flatten3(l, currentUser) {
 }
 
 function activeChecker(l, currentUser) {
-    var test = l.map(events => {
+    let test = l.map(events => {
         return events.data
     })
     test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else {return null; } });
@@ -222,8 +222,8 @@ class App extends Component {
     //This method serves as a handler for when the event start date is changed.
     handleChangeStart(date) {
         if (this.state.isRecurrent.value === "non-recurring") {
-            var nonRecurStartDate = moment(this.state.startDate);
-            var nonRecurEndDate = moment(date).add(15, "minutes");  //Set default end date to 15 minutes after the start date (because event can't last less than 15 mintutes).
+            let nonRecurStartDate = moment(this.state.startDate);
+            let nonRecurEndDate = moment(date).add(15, "minutes");  //Set default end date to 15 minutes after the start date (because event can't last less than 15 mintutes).
             this.setState({
                 startDate: nonRecurStartDate,
                 endDate: nonRecurEndDate,
@@ -256,14 +256,14 @@ class App extends Component {
     //This method serves as a handler for when a new admin is searched.
     handleChangeSearchNewAdmin(emailAdress) {
         const target = emailAdress.target;
-        var valid = true;
+        let valid = true;
         this.setState({ [target.name]: { value: target.value, valid: valid }, });
     }
 
     //This method finds the first name of the current logged in user.
     findFirstName(fullName) {
         if (/\s/g.test(fullName) === true) {    //This regex checks if fullName does contain a space " ".
-            var firstName = fullName.substr(0,fullName.indexOf(' '));   //Takes the characters before the first space " ", and sets the first character to upper case.
+            let firstName = fullName.substr(0,fullName.indexOf(' '));   //Takes the characters before the first space " ", and sets the first character to upper case.
             return firstName.charAt(0).toUpperCase() + firstName.substr(1);
         } else {    //Here, fullName does not contain a space " ".
             return fullName.charAt(0).toUpperCase() + fullName.substr(1);   //Sets the first character to uppercase.
@@ -274,8 +274,8 @@ class App extends Component {
     searchAdminEmail(email) {
         axios.get('/users/')    //Get all the users from the database.
         .then(response => {
-            var users = response.data   //Users are in the data field of the response.
-            var BreakException = {};
+            let users = response.data   //Users are in the data field of the response.
+            let BreakException = {};
             try {
                 users.forEach(user => {  //Loops through each user in the database.
                     if (email === user.email) { //If the user's email matches the email searched, the user was found.
@@ -442,7 +442,7 @@ class App extends Component {
     //This method toggles the view/edit event modal.
     toggleViewModal(obj) {
         this.state.events.forEach(parentEvent => { //Loops through each event (parent) of the events list.
-            var dataSet = parentEvent.data; //Data structure for event (parent) contains "data" field that has the actual events (child) -> Did this for recurring events.
+            let dataSet = parentEvent.data; //Data structure for event (parent) contains "data" field that has the actual events (child) -> Did this for recurring events.
             dataSet.forEach(event => { //Loops through each actual event from the parent event object.
                 if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) { //If event title and start date matches, set states for event info fields.
                     this.setState({
@@ -511,8 +511,8 @@ class App extends Component {
     toggleAnnounceModal(event) {
         axios.get('/users/')    //Gets all the users from the database.
         .then(response => {
-            var users = response.data  //Users are in the data field of the response.
-            var BreakException = {};
+            let users = response.data  //Users are in the data field of the response.
+            let BreakException = {};
             try {
                 users.forEach(user => {  //Loops through each user received from the database.
                     if (this.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
@@ -563,15 +563,15 @@ class App extends Component {
             axios.get('/events/' + id)  //Get specific event using id.
             .then(event => {
                 console.log(event)
-                    var i = 0;
-                    var index;
+                    let i = 0;
+                    let index;
                     this.state.registerEvents.forEach(event => {   //Loop through all the uncompleted registered events.
                         if(event._id === id) {  //If the event's id matches the one passed with parameters, get the index of the uncompleted registered event.
                             index = i;
                         }
                         i++;
                     })
-                    var emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
+                    let emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
                     event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
                         if (this.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
                             event.data.registeredEmail.splice(emailCounter, 1)
@@ -617,7 +617,7 @@ class App extends Component {
             axios.get('/events/' + id)  //Get specific event from database using id.
             .then(event => {
                 console.log(event)
-                    var i = 0;  //Used to find the index.
+                    let i = 0;  //Used to find the index.
                     event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
                         if (this.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
                             event.data.registeredEmail.splice(i, 1)
@@ -651,8 +651,8 @@ class App extends Component {
         let fullCapacity = false;
         axios.get('/users/')    //Get users from database.
         .then(response => {
-            var users = response.data
-            var BreakException = {};
+            let users = response.data
+            let BreakException = {};
             try {
                 users.forEach(user => {  //Loops through each user from the database.
                     if (this.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
@@ -734,7 +734,7 @@ class App extends Component {
 
     //This method brings the user to the "create an account" page.
     displayCreateAccount() {
-        var user = { username: "account", admin: false };
+        let user = { username: "account", admin: false };
         this.setState({
             login: user,
             username: {value: "", valid: true},
@@ -744,7 +744,7 @@ class App extends Component {
 
     //This method brings the user to the "log in" page.
     displayLogIn() {
-        var user = { username: null, admin: false };
+        let user = { username: null, admin: false };
         this.setState({ 
             login: user,
             createName: {value: "", valid: true},
@@ -757,7 +757,7 @@ class App extends Component {
 
     //This method logs the user out by clearing cookies and resetting the user related states.
     logOut() {
-        var user = { username: null, admin: false };
+        let user = { username: null, admin: false };
         this.setState({ login: user, });
     }
 
@@ -765,12 +765,12 @@ class App extends Component {
     nextStep(event) {
         event.preventDefault();
         if (this.state.step === 0) {    //Step 0 represents "basic info".
-            var recurrenceValid = this.state.isRecurrent;
-            var nameValid = this.state.name;
-            var capacityValid = this.state.capacity;
-            var locationValid = this.state.location;
-            var descriptionValid = this.state.description;
-            var valid = true;
+            let recurrenceValid = this.state.isRecurrent;
+            let nameValid = this.state.name;
+            let capacityValid = this.state.capacity;
+            let locationValid = this.state.location;
+            let descriptionValid = this.state.description;
+            let valid = true;
             //Checks if fields are empty, or if their valid field is false (checked in the handler method).
             if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
                 if (recurrenceValid.value === "") {
@@ -894,7 +894,7 @@ class App extends Component {
 
         //Checks: if fields are empty, if email input respects email format, and if passwords match.
         if (name !== "" && email !== "" && emailRegex.test(email) && username !== "" && password !== ""  && confirm !== "" && password === confirm) {
-            var user = {    //Create user object from the provided user info, note that new user is not an admin by default.
+            let user = {    //Create user object from the provided user info, note that new user is not an admin by default.
                 name: name,
                 username: username,
                 email: email,
@@ -1022,7 +1022,7 @@ class App extends Component {
     //This method acts as the handler for the fields in the step 1 of the create event modal.
     handleChange(event) {
         const target = event.target;
-        var valid = true;
+        let valid = true;
         //Regex for name and location are *hugeeeee* cuz of accents #frenchgang.
         if (target.name === "name" && !/^[#/&a-z,.()àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœA-Z0-9- ]*$/.test(target.value)) {
             valid = false;
@@ -1043,7 +1043,7 @@ class App extends Component {
 
     //This method converts the week day selected when creating an event to its index in the week -> used in splitEvent() method.
     weekDaysToNumbers(dayINeed) {
-        var number = 0;
+        let number = 0;
         if (dayINeed === "Monday") {
             number = 1;
         } else if (dayINeed === "Tuesday") {
@@ -1060,16 +1060,16 @@ class App extends Component {
 
     //This method creates an event.
     createEvent() {
-        var sDate = moment(this.state.startDate).format();  //Start date.
-        var eDate = moment(this.state.endDate).format();    //End date.
-        var aDate = moment(this.state.startDate).add(1, 'days').format();   //Activation date, default sets it to 1 day after start date.
-        var eventCalendarInfo = {   //Calendar info object contains the *only* event fields accepted by react-big-calendar.
+        let sDate = moment(this.state.startDate).format();  //Start date.
+        let eDate = moment(this.state.endDate).format();    //End date.
+        let aDate = moment(this.state.startDate).add(1, 'days').format();   //Activation date, default sets it to 1 day after start date.
+        let eventCalendarInfo = {   //Calendar info object contains the *only* event fields accepted by react-big-calendar.
             title: this.state.name.value,
             allDay: false,
             start:  new Date(sDate),
             end: new Date(eDate)
         }
-        var newEvent = {    //New event object contains all of the event fields accepted (calendar info object) or not (remaining fields) by react-big-calendar.
+        let newEvent = {    //New event object contains all of the event fields accepted (calendar info object) or not (remaining fields) by react-big-calendar.
             capacity: this.state.capacity.value, 
             description: this.state.description.value, 
             location: this.state.location.value, 
@@ -1080,7 +1080,7 @@ class App extends Component {
             calendarInfo: eventCalendarInfo,
         }
 
-        var events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
+        let events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
 
         axios.post('/events', events)   //Create the new event in the database.
         .then(response => {
@@ -1188,7 +1188,7 @@ class App extends Component {
 
     //This method executes as soon as the page loads.
     componentWillMount() {
-        var user = {};
+        let user = {};
         axios.get('/info')  //Gets the username (full name) and admin status of the logged in user.
         .then(response => {
             user.username = response.data.username;
@@ -1226,11 +1226,11 @@ class App extends Component {
       
     //This method splits recurring events to many events, or simply returns the event list "event" past as param if non-recurring event.
     splitEvent(event) {
-        var eventList = [];
-        var hours = moment(event.calendarInfo.start).hour();    //Gets start time.
-        var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');    //Event duration (delta) is found by subtracting start time from end time.
+        let eventList = [];
+        let hours = moment(event.calendarInfo.start).hour();    //Gets start time.
+        let delta = moment(event.calendarInfo.end).subtract(hours, 'hours');    //Event duration (delta) is found by subtracting start time from end time.
         if (this.state.isRecurrent.value === "recurring") { //Converts the recurrence option (string) to its equivalent number (integer).
-            var recurrenceWeeks = 0;
+            let recurrenceWeeks = 0;
             if (this.state.recurrence === "Weekly") {
                 recurrenceWeeks = 1;
             }
@@ -1243,19 +1243,19 @@ class App extends Component {
             else if (this.state.recurrence === "Monthly") {
                 recurrenceWeeks = 4;
             }
-            var i = 0;
+            let i = 0;
             outer:
             while (true) {
-                for (var z = 0; z < this.state.daysSelected.length; z++) {
-                    var dayINeed = this.state.daysSelected[z];
+                for (let z = 0; z < this.state.daysSelected.length; z++) {
+                    let dayINeed = this.state.daysSelected[z];
                     if (new Date(moment().add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
                         break outer;
                     } else {
-                        var s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed));
-                        var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
-                        var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(1, 'days');
+                        let s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed));
+                        let e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
+                        let a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
-                            var newEvent = {
+                            let newEvent = {
                                 capacity: event.capacity, 
                                 description: event.description, 
                                 location: event.location, 
@@ -1304,8 +1304,8 @@ class App extends Component {
         event.preventDefault();
         axios.get('/events/' + this.state.currentEventId)   //Gets a specific event from database using its id.
         .then(response => {
-            var startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
-            var data = {    //Creates an object with all of the information required to send the announcement.
+            let startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
+            let data = {    //Creates an object with all of the information required to send the announcement.
                 notifyFullName: this.state.login.username,
                 notifyEmailSender: this.state.email.value,
                 notifyEmailRecepients: response.data.registeredEmail, 
@@ -1801,7 +1801,7 @@ class App extends Component {
                                                 {this.state.registerEvents.length > 0 &&
                                                 (
                                                     this.state.registerEvents.map((registerEvents, index) => {
-                                                        var event = registerEvents;
+                                                        let event = registerEvents;
                                                             if (event) {
                                                                 return <Row key={index + 1}>
                                                                             <Col xs="12" sm="12" md="12" lg="12">
@@ -2169,7 +2169,7 @@ class App extends Component {
                                             <tbody>
                                             {
                                                 activeChecker(this.state.events, this.state.login.username).map((events, index) => {
-                                                    var event = events;
+                                                    let event = events;
                                                     if (event) {
                                                         return <tr key={index + 1}>
                                                                 <th>{event.calendarInfo.title}</th>
@@ -2214,7 +2214,7 @@ class App extends Component {
                                             <tbody>
                                                 {
                                                     flatten3(this.state.events, this.state.login.username).map((events, index) => {
-                                                        var event = events;
+                                                        let event = events;
                                                         if (event) {
                                                             return <tr key={index + 1}>
                                                                     <th>{event.calendarInfo.title}</th>
