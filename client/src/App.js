@@ -150,7 +150,6 @@ class App extends Component {
 
         this.handleChangeStart = this.handleChangeStart.bind(this);
         this.handleChangeEnd = this.handleChangeEnd.bind(this);
-        this.handleChangeAdminInactive = this.handleChangeAdminInactive.bind(this);
         this.handleChangeActivationDate = this.handleChangeActivationDate.bind(this);
         this.handleChangeSearchNewAdmin = this.handleChangeSearchNewAdmin.bind(this);
         this.activateEvent = this.activateEvent.bind(this);
@@ -192,6 +191,7 @@ class App extends Component {
         this.logOut = this.logOut.bind(this);
     }
 
+    //This method serves as a handler for when the event registration timer starts.
     handleStartClick() {
         if(this.state.secondsElapsed !== 0) {
             this.incrementer = setInterval( () =>
@@ -202,71 +202,71 @@ class App extends Component {
         }
     }
       
+    //This method serves as a handler for when the event registration timer stops.
     handleStopClick() {
     clearInterval(this.incrementer);
-    this.setState({
-        lastClearedIncrementer: this.incrementer,
-    });
+        this.setState({
+            lastClearedIncrementer: this.incrementer,
+        });
     }
     
+    //This method serves as a handler for when the event registration timer is reset to 5 min (300 sec).
     handleResetClick() {
     clearInterval(this.incrementer);
-    this.setState({
-        secondsElapsed: 300,
-        laps: [],
-    });
-    }
-    
-    handleLabClick() {
-    this.setState({
-        laps: this.state.laps.concat([this.state.secondsElapsed]),
-    })
+        this.setState({
+            secondsElapsed: 300,
+            laps: [],
+        });
     }
 
+    //This method serves as a handler for when the event start date is changed.
     handleChangeStart(date) {
         if (this.state.isRecurrent.value === "non-recurring") {
             var nonRecurStartDate = moment(this.state.startDate);
-            var nonRecurEndDate = moment(date).add(15, "minutes");
-            this.setState({ startDate: nonRecurStartDate, });
-            this.setState({ endDate: nonRecurEndDate, });
+            var nonRecurEndDate = moment(date).add(15, "minutes");  //Set default end date to 15 minutes after the start date (because event can't last less than 15 mintutes).
+            this.setState({
+                startDate: nonRecurStartDate,
+                endDate: nonRecurEndDate,
+            });
         }
-
         if (this.state.allDay === true) {
-            this.setState({ startDate: moment(date).hours(9).minutes(0), });
-            this.setState({ endDate: moment(date).hours(18).minutes(0), });
+            this.setState({  //All day event lasts from 9am to 6pm.
+                startDate: moment(date).hours(9).minutes(0),
+                endDate: moment(date).hours(18).minutes(0),
+            });
         }
-        this.setState({ startDate: date, });
+        else {
+            this.setState({ startDate: date, });
+        }
     }
 
+    //This method serves as a handler for when the event end date is changed.
     handleChangeEnd(date) {
         this.setState({ endDate: date, });
     }
 
+    //This method serves as a handler for when the event activation date is changed.
     handleChangeActivationDate(date) {
         this.setState({
             activationDay: date,
-            activateToday: false,
+            activateToday: false,  //Sets the "Today" switch to its off position.   
         });
     }
 
-    handleChangeAdminInactive(eventData) {
-        this.setState({ 
-            events: this.state.events.concat([eventData]),
-        })
-    }
-
+    //This method serves as a handler for when a new admin is searched.
     handleChangeSearchNewAdmin(emailAdress) {
         const target = emailAdress.target;
         var valid = true;
         this.setState({ [target.name]: { value: target.value, valid: valid }, });
     }
 
+    //This method finds the first name of the current logged in user.
     findFirstName(fullName) {
-        if (/\s/g.test(fullName) === true) {
-            var firstName = fullName.substr(0,fullName.indexOf(' '));
+        if (/\s/g.test(fullName) === true) {    //This regex checks if fullName does contain a space " ".
+            var firstName = fullName.substr(0,fullName.indexOf(' '));   //Takes the characters before the first space " ", and sets the first character to upper case.
             return firstName.charAt(0).toUpperCase() + firstName.substr(1);
-        } else {
-            return fullName.charAt(0).toUpperCase() + fullName.substr(1);
+        } else {    //Here, fullName does not contain a space " ".
+            return fullName.charAt(0).toUpperCase() + fullName.substr(1);   //Sets the first character to uppercase.
         }
     }
 
@@ -738,6 +738,7 @@ class App extends Component {
         }
     }
 
+    //This method brings the user to the "create an account" page.
     displayCreateAccount() {
         var user = { username: "account", admin: false };
         this.setState({
@@ -747,6 +748,7 @@ class App extends Component {
         });
     }
 
+    //This method brings the user to the "log in" page.
     displayLogIn() {
         var user = { username: null, admin: false };
         this.setState({ 
@@ -759,20 +761,23 @@ class App extends Component {
         });
     }
 
+    //This method logs the user out by clearing cookies and resetting the user related states.
     logOut() {
         var user = { username: null, admin: false };
         this.setState({ login: user, });
     }
 
+    //This method takes care of moving to the next step of the create event modal.
     nextStep(event) {
         event.preventDefault();
-        if (this.state.step === 0) {
+        if (this.state.step === 0) {    //Step 0 represents "basic info".
             var recurrenceValid = this.state.isRecurrent;
             var nameValid = this.state.name;
             var capacityValid = this.state.capacity;
             var locationValid = this.state.location;
             var descriptionValid = this.state.description;
             var valid = true;
+            //Checks if fields are empty, or if their valid field is false (checked in the handler method).
             if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
                 if (recurrenceValid.value === "") {
                     valid = false;
@@ -805,46 +810,41 @@ class App extends Component {
                     });
                 }
             }
-                else {
-                    if (this.state.isRecurrent.value === "non-recurring" && this.state.startDate  !== null && this.state.endDate !== null) {
-                        var nonRecurStartDate = moment(this.state.startDate);
-                        var nonRecurEndDate = moment(this.state.startDate).add(15, "minutes");
-                        this.setState({ startDate: nonRecurStartDate, });
-                        this.setState({ endDate: nonRecurEndDate, });
-                    }
-                    const step = this.state.step + 1;
-                    this.setState({ step, });
-                }
+            else {
+                const step = this.state.step + 1;   //If all fields are valid, moves on to step 1 "schedule".
+                this.setState({ step, });
+            }
         }
-        else if (this.state.step === 1) {
-            if (this.state.isRecurrent.value === "recurring") {
+        else if (this.state.step === 1) {   //Step 1 represents "schedule".
+            if (this.state.isRecurrent.value === "recurring") { //If recurring, will display the according fields.
+                //Checks validity of all fields.
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.recurrence === "" || this.state.startDate === null || this.state.endDate === null || this.state.daysSelected.length === 0) {
-                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
+                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {   //Invalid date fields.
                         this.setState({ dateValid: '#c4183c', });
                         this.setState({ dateValidLabel: 'visible', });
                     }
-                    if (this.state.recurrence === "") {
+                    if (this.state.recurrence === "") { //Invalid recurrence field.
                         this.setState({ recurrenceValid: '#c4183c', });
                         this.setState({ recurrenceValidLabel: 'visible', });
                     }
-                    if (this.state.daysSelected.length === 0) {
+                    if (this.state.daysSelected.length === 0) { //Invalid weekday selected field.
                         this.setState({ daysSelectedValid: '#c4183c', });
                         this.setState({ daysSelectedValidLabel: 'visible', });
                     }
-                    if (this.state.startDate !== null && this.state.endDate !== null) {
+                    if (this.state.startDate !== null && this.state.endDate !== null) { //User corrected the invalid date fields.
                         this.setState({ dateValid: 'black', });
                         this.setState({ dateValidLabel: 'hidden', });
                     }
-                    if (this.state.recurrence !== "") {
+                    if (this.state.recurrence !== "") { //User corrected the invalid recurrence field.
                         this.setState({ recurrenceValid: 'black', });
                         this.setState({ recurrenceValidLabel: 'hidden', });
                     }
-                    if (this.state.daysSelected.length !== 0) {
+                    if (this.state.daysSelected.length !== 0) { //User corrected the invalid weekday selected field.
                         this.setState({ daysSelectedValid: 'black', });
                         this.setState({ daysSelectedValidLabel: 'hidden', });
                     }
                 }
-                else {
+                else {  //All fields are valid, removes any error alerts and moves on to step 2 (final step) "Summary".
                     this.setState({ dateValid: 'black', });
                     this.setState({ dateValidLabel: 'hidden', });
                     this.setState({ recurrenceValid: 'black', });
@@ -855,18 +855,18 @@ class App extends Component {
                     this.setState({ step, });
                 }
             }
-            else {
+            else {  //If non-recurring, will display the according fields.
                 if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
                     //CODE TO MAKE FIELDS UNVALID NON-RECURRING
-                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) {
+                    if (new Date(this.state.startDate) >= new Date(this.state.endDate) || this.state.startDate === null || this.state.endDate === null) { //Invalid date fields.
                         this.setState({ dateValidNonRecurr: '#c4183c', });
                         this.setState({ dateValidLabelNonRecurr: 'visible', });
                     }
-                    if (this.state.startDate !== null && this.state.endDate !== null) {
+                    if (this.state.startDate !== null && this.state.endDate !== null) { //User corrected the invalid date fields.
                         this.setState({ dateValidNonRecurr: 'black', });
                         this.setState({ dateValidLabelNonRecurr: 'hidden', });
                     }
-                } else {
+                } else {    //All fields are valid, removes any error alerts and moves on to step 2 (final step) "Summary".
                     this.setState({ dateValidNonRecurr: 'black', });
                     this.setState({ dateValidLabelNonRecurr: 'hidden', });
                     const step = this.state.step + 1;
@@ -876,16 +876,20 @@ class App extends Component {
         }
     }
     
+    //This method takes care of moving to the previous step of the create event modal.
     prevStep() {
-        if (this.state.allDay === true) {
-            this.setState({ allDay: false, });
-            this.setState({ startDate: null, });
-            this.setState({ endDate: null, });
+        if (this.state.allDay === true) {   //If non-recurring event lasts all day, reset the "Schedule" step field's state.
+            this.setState({
+                allDay: false,
+                startDate: null,
+                endDate: null,
+            });
         }
-        const step = this.state.step - 1;
+        const step = this.state.step - 1;   //Decrements step counter to go to previous step of create event modal.
         this.setState({ step, });
     }
 
+    //This method creates a user account.
     createAccount() {
         const myComponent = this;
         const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
@@ -895,17 +899,18 @@ class App extends Component {
         const name = this.state.createName.value;
         const confirm = this.state.createConfirmPassword.value;
 
+        //Checks: if fields are empty, if email input respects email format, and if passwords match.
         if (name !== "" && email !== "" && emailRegex.test(email) && username !== "" && password !== ""  && confirm !== "" && password === confirm) {
-            var user = {
+            var user = {    //Create user object from the provided user info, note that new user is not an admin by default.
                 name: name,
                 username: username,
                 email: email,
                 admin: false,
                 password: password
             }
-            axios.post('/users', user)
+            axios.post('/users', user)  //Sends user object to be added in database.
             .then(function (response) {
-                myComponent.displayLogIn();
+                myComponent.displayLogIn(); //Goes back to log in page.
                 toast.success("Woohoo, your account has been created!", {
                     position: "top-center",
                     autoClose: 4000,
@@ -917,7 +922,7 @@ class App extends Component {
                 })
             })
             .catch(function (error) {
-                if (error.response.data.toString() === "Bad Request") {
+                if (error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
                     toast.error("The account was not created, please try again later.", {
                     position: "top-center",
                     autoClose: 4000,
@@ -928,7 +933,7 @@ class App extends Component {
                     closeButton: false,
                     })
                 }
-                else {
+                else {  //Alerts the user of error 500 (user email already exists in database).
                     toast.error(error.response.data, {
                     position: "top-center",
                     autoClose: 4000,
@@ -941,7 +946,7 @@ class App extends Component {
                 }
             })
         }
-        else {
+        else {  //If any of the fields is not valid, check which one and set their valid state to false.
             if (name === "") {
                 this.setState({
                     createName: {value: "", valid: false},
@@ -970,17 +975,18 @@ class App extends Component {
         }
     }
 
+    //This method is triggered when the user logs in.
     handleLoginSubmit() {
         const name = this.state.username.value;
         const password = this.state.password.value;
-        if (name !== "" && password !== "") {
+        if (name !== "" && password !== "") {   //Makes sure that log in fields are valid.
             axios.post('/login', { username: name, password: password })
-            .then(function (response) {
+            .then(function (response) { //Sends credentials to backend, cookie created, and reload to main page.
                 console.log(response);
                 window.location.reload();
             })
             .catch(function (error) {
-                if (error.response.status.toString() === "401") {
+                if (error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
                     toast.error('The username or password you entered is incorrect.', {
                     position: "top-center",
                     autoClose: 4000,
@@ -991,7 +997,7 @@ class App extends Component {
                     closeButton: false,
                     })
                 }
-                else if (error.response.status.toString() === "404") {
+                else if (error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
                     toast.error('The username entered does not match any account.', {
                     position: "top-center",
                     autoClose: 4000,
@@ -1006,7 +1012,7 @@ class App extends Component {
                 }
             });
         }
-        else {
+        else {  //If log in fields are invalid, find which and alert the user.
             if (name === "") {
                 this.setState({
                     username: {value: "", valid: false},
@@ -1020,25 +1026,29 @@ class App extends Component {
         }
     }
 
+    //This method acts as the handler for the fields in the step 1 of the create event modal.
     handleChange(event) {
         const target = event.target;
         var valid = true;
+        //Regex for name and location are *hugeeeee* cuz of accents #frenchgang.
         if (target.name === "name" && !/^[#/&a-z,.()àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœA-Z0-9- ]*$/.test(target.value)) {
             valid = false;
         }
-        else if (target.name === "capacity" && /\D+/.test(target.value)) {
+        else if (target.name === "capacity" && /\D+/.test(target.value)) {  //Regex makes sure that capacity value is numeric.
             valid = false;
         }
         else if (target.name === "location" && /[^,.()#/$àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœA-Za-z0-9- ]+/.test(target.value)) {
             valid = false;
         }
-        this.setState({ [target.name]: { value: target.value, valid: valid }, });
+        this.setState({ [target.name]: { value: target.value, valid: valid }, });   //Set state to reflect if fields are valid or not.
     }
 
+    //This method acts as a handler for when the event recurrence changes.
     handleRecurrenceChange(event) {
         this.setState({ recurrence: event.target.value, });
     }
 
+    //This method converts the week day selected when creating an event to its index in the week -> used in splitEvent() method.
     weekDaysToNumbers(dayINeed) {
         var number = 0;
         if (dayINeed === "Monday") {
@@ -1055,18 +1065,19 @@ class App extends Component {
         return number
     }
 
+    //This method creates an event.
     createEvent() {
         const x = this;
-        var sDate = moment(this.state.startDate).format();
-        var eDate = moment(this.state.endDate).format();
-        var aDate = moment(this.state.startDate).add(1, 'days').format();
-        var event = {
+        var sDate = moment(this.state.startDate).format();  //Start date.
+        var eDate = moment(this.state.endDate).format();    //End date.
+        var aDate = moment(this.state.startDate).add(1, 'days').format();   //Activation date, default sets it to 1 day after start date.
+        var eventCalendarInfo = {   //Calendar info object contains the *only* event fields accepted by react-big-calendar.
             title: this.state.name.value,
             allDay: false,
             start:  new Date(sDate),
             end: new Date(eDate)
         }
-        var newEvent = {
+        var newEvent = {    //New event object contains all of the event fields accepted (calendar info object) or not (remaining fields) by react-big-calendar.
             capacity: this.state.capacity.value, 
             description: this.state.description.value, 
             location: this.state.location.value, 
@@ -1074,16 +1085,16 @@ class App extends Component {
             activationDay: new Date(aDate),
             instructor: this.state.login.username,
             registeredEmail: this.state.registerEvents,
-            calendarInfo: event 
+            calendarInfo: eventCalendarInfo,
         }
 
-        var events = this.splitEvent(newEvent);
+        var events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
 
-        axios.post('/events', events)
+        axios.post('/events', events)   //Create the new event in the database.
         .then(function (response) {
             console.log(response);
-            x.fetchEvents();
-            x.setState({
+            x.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
+            x.setState({    //Clear out the event field's states from the create event modal.
                 name: { value: "", valid: true },
                 description: { value: "", valid: true },
                 location: { value: "", valid: true },
@@ -1098,8 +1109,7 @@ class App extends Component {
                 instructor: "",
                 step: 0,
             });
-            x.toggleCreateEventModal();
-            this.setState({ events: this.state.events.concat(newEvent), });
+            x.toggleCreateEventModal(); //Closes the create event modal.
             toast.success('The event was created.', {
                 position: "top-center",
                 autoClose: 4000,
@@ -1115,11 +1125,12 @@ class App extends Component {
         });
     }
 
+    //This method sets the activation day of an event so that all users can view, and register for it.
     activateEvent() {
         const x = this;
-        axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})
+        axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})  //Modifies the activationDay field of the selected event using its id.
         .then(function (response) {
-            x.fetchEvents();
+            x.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
         })
         .catch(function (error) {
             console.log(error);
@@ -1128,14 +1139,15 @@ class App extends Component {
             activationDay: null,
             activateToday: false,
         });
-        this.toggleActivateModal();
+        this.toggleActivateModal(); //Closes activation modal.
     }
 
+    //This method edits the event information.
     editEvent () {
         let myComponent = this;
-        axios.get('/events/' + myComponent.state.currentEventId)
+        axios.get('/events/' + myComponent.state.currentEventId)    //Get specific event from database.
         .then(function (response) {
-                 axios.put('/events/' + myComponent.state.currentEventId, {
+                 axios.put('/events/' + myComponent.state.currentEventId, { //Update event fields in database.
                     calendarInfo: {
                         title: myComponent.state.name.value,
                         allDay: false,
@@ -1148,8 +1160,8 @@ class App extends Component {
                     activationDay: new Date(myComponent.state.activationDay)
                 })
                 .then(function (response) {
-                    myComponent.fetchEvents();
-                    myComponent.setState({
+                    myComponent.fetchEvents();  //This method updates the event list displayed to reflect the new changes.
+                    myComponent.setState({  //Clear out the event field's states from the edit event modal.
                         name: { value: "", valid: true },
                         description: { value: "", valid: true },
                         location: { value: "", valid: true },
@@ -1163,8 +1175,8 @@ class App extends Component {
                         isRecurrent: { value: "", valid: true },
                         recurrence: "",
                         currentEventId: null,
+                        viewModal: !myComponent.state.viewModal,
                     });
-                    myComponent.setState({ viewModal: !myComponent.state.viewModal, });
                     toast.success('The event was modified.', {
                             position: "top-center",
                             autoClose: 4000,
@@ -1184,31 +1196,31 @@ class App extends Component {
         })
     }
 
+    //This method executes as soon as the page loads.
     componentWillMount() {
         var user = {};
         let component = this;
-        axios.get('/info')
+        axios.get('/info')  //Gets the username (full name) and admin status of the logged in user.
         .then(function (response) {
             user.username = response.data.username;
             user.admin = response.data.admin;
-            console.log(response);
             component.setState({ login: user, });
-            component.fetchEvents();
+            component.fetchEvents();    //This method will fetch and display the most recent events.
         })
         .catch(function (error) {
-            console.log("Redirecting to login");
+            console.log("Redirecting to login");    //If fails to get logged in user info, goes back to log in page.
             component.setState({ login: {}, });
         });
     }
 
+    //This method deletes an event using the event (child) id.
     deleteEvent() {
         const x = this;
         axios.delete('/events/' + this.state.currentEventId)
         .then(res => {
-            x.fetchEvents();
-            console.log(res);
+            x.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
             console.log(res.data);
-            this.toggleDeleteModal();
+            this.toggleDeleteModal();   //Close the delete event modal.
             toast.success('The event was deleted.', {
                 position: "top-center",
                 autoClose: 4000,
@@ -1224,12 +1236,13 @@ class App extends Component {
         });
     }
       
+    //This method splits recurring events to many events, or simply returns the event list "event" past as param if non-recurring event.
     splitEvent(event) {
         var myComponent = this;
         var eventList = [];
-        var hours = moment(event.calendarInfo.start).hour();
-        var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');
-        if (this.state.isRecurrent.value === "recurring") {
+        var hours = moment(event.calendarInfo.start).hour();    //Gets start time.
+        var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');    //Event duration (delta) is found by subtracting start time from end time.
+        if (this.state.isRecurrent.value === "recurring") { //Converts the recurrence option (string) to its equivalent number (integer).
             var recurrenceWeeks = 0;
             if (this.state.recurrence === "Weekly") {
                 recurrenceWeeks = 1;
@@ -1281,43 +1294,43 @@ class App extends Component {
         }
     }
 
+    //This method updates the event list displayed to reflect new changes.
     fetchEvents() {
         let myComponent = this;
         axios.get('/events')
         .then(function (response) {
-            // handle success
             response.data.forEach(events => {
-                events.data.forEach(event => {
+                events.data.forEach(event => {  //The event dates need to be converted to JS date type before being displayed.
                     event.calendarInfo.start = new Date(event.calendarInfo.start);
                     event.calendarInfo.end = new Date(event.calendarInfo.end);
                     event.activationDay = new Date(event.activationDay);
                 })
             });
-            myComponent.setState({ events: response.data });
+            myComponent.setState({ events: response.data });    //Update the state of the events list.
         })
         .catch(function (error) {
             console.log(error);
         })
     }
 
+    //This method notifies the user registered to an event by sending them an announcement via email.
     notifyEvent(event) {
         var myComponent = this;
         event.preventDefault();
-        axios.get('/events/' + this.state.currentEventId)
+        axios.get('/events/' + this.state.currentEventId)   //Gets a specific event from database using its id.
         .then(function (response) {
-            var startDateNotifyEmail = moment(myComponent.state.startDate).format('LLLL')
-            var data = {
+            var startDateNotifyEmail = moment(myComponent.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
+            var data = {    //Creates an object with all of the information required to send the announcement.
                 notifyFullName: myComponent.state.login.username,
                 notifyEmailSender: myComponent.state.email.value,
                 notifyEmailRecepients: response.data.registeredEmail, 
                 notifyMessage: myComponent.announceMessage.current.value,
                 notifyEventName: myComponent.state.name.value,
-                notifyEventStart: startDateNotifyEmail.toString()
+                notifyEventStart: startDateNotifyEmail.toString(),
             }
-                  
-            axios.post('/notification', data)
+            axios.post('/notification', data)   //Send announcement data object to backend.
             .then(
-                myComponent.toggleAnnounceModal(),
+                myComponent.toggleAnnounceModal(),  //Close the announce modal.
                 toast.success('The announcement was sent to the participants of your event.', {
                 position: "top-center",
                 autoClose: 4000,
@@ -1330,7 +1343,7 @@ class App extends Component {
             .catch(function (error) {
                 console.log(error);
             });
-            document.getElementById("announceModal").reset();
+            document.getElementById("announceModal").reset();   //Clears our the announce message.
         })
         .catch(function (error) {
             console.log(error);
