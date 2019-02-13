@@ -272,35 +272,34 @@ class App extends Component {
 
     //This method searches for users in the database using their email address.
     searchAdminEmail(email) {
-        let myComponent = this;
         axios.get('/users/')    //Get all the users from the database.
-        .then(function (response) {
+        .then(response => {
             var users = response.data   //Users are in the data field of the response.
             var BreakException = {};
             try {
-                users.forEach(function(user) {  //Loops through each user in the database.
+                users.forEach(user => {  //Loops through each user in the database.
                     if (email === user.email) { //If the user's email matches the email searched, the user was found.
                         if (user.admin === true) {  //If the searched user is already an admin, their info is not displayed.
-                            myComponent.setState({
+                            this.setState({
                                 newAdminSearchTable: 'none',
-                                email: { value: myComponent.state.email.value, valid: false },
+                                email: { value: this.state.email.value, valid: false },
                             });
                         }
                         else if (user.admin === false) {    //If the searched user in not an admin, their info and an "Add" button are displayed.
-                            myComponent.setState({ 
+                            this.setState({ 
                                 nameUserModal: user.name,
                                 userNameModal: user.username,
                                 emailUserModal: user.email,
                                 idUserModal: user._id,
                                 newAdminSearchTable: 'block',
-                                email: { value: myComponent.state.email.value, valid: true },
+                                email: { value: this.state.email.value, valid: true },
                             });
                         }
                     throw BreakException;
-                    } else{
-                        myComponent.setState({  //If the user's email doesn't match the email searched, alert and no info is displayed.
+                    } else {
+                        this.setState({  //If the user's email doesn't match the email searched, alert and no info is displayed.
                             newAdminSearchTable: 'none',
-                            email: { value: myComponent.state.email.value, valid: false },
+                            email: { value: this.state.email.value, valid: false },
                         });
                     }
                 });
@@ -309,8 +308,8 @@ class App extends Component {
                 if (e !== BreakException) throw e;
                 }
             })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
     }
 
@@ -329,8 +328,8 @@ class App extends Component {
                 closeButton: false,
             });
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
             toast.error('The user was not set as an administrator, please try again later.', {  //Alerts the user that the operation was not successful.
                 position: "top-center",
                 autoClose: 4000,
@@ -442,12 +441,11 @@ class App extends Component {
 
     //This method toggles the view/edit event modal.
     toggleViewModal(obj) {
-        const myComponent = this;
-        this.state.events.forEach(function(parentEvent) { //Loops through each event (parent) of the events list.
+        this.state.events.forEach(parentEvent => { //Loops through each event (parent) of the events list.
             var dataSet = parentEvent.data; //Data structure for event (parent) contains "data" field that has the actual events (child) -> Did this for recurring events.
-            dataSet.forEach(function(event){ //Loops through each actual event from the parent event object.
+            dataSet.forEach(event => { //Loops through each actual event from the parent event object.
                 if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) { //If event title and start date matches, set states for event info fields.
-                    myComponent.setState({
+                    this.setState({
                         eventId: parentEvent._id,
                         name: {value: event.calendarInfo.title, valid: true}, 
                         capacity: {value: event.capacity, valid: true}, 
@@ -468,7 +466,7 @@ class App extends Component {
                         fullCapacityErrorLabel: 'none',
                     })
                     if (event.recurrence === "") {  //If the event recurrence is empty, then the event is not recurring.
-                        myComponent.setState({ recurrence: "non-recurring", })
+                        this.setState({ recurrence: "non-recurring", })
                     }
                 }
             })
@@ -511,15 +509,14 @@ class App extends Component {
 
     //This method toggles the announce event modal.
     toggleAnnounceModal(event) {
-        var myComponent = this;
         axios.get('/users/')    //Gets all the users from the database.
-        .then(function (response) {
+        .then(response => {
             var users = response.data  //Users are in the data field of the response.
             var BreakException = {};
             try {
-                users.forEach(function(user) {  //Loops through each user received from the database.
-                    if (myComponent.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
-                            myComponent.setState({                          //gives us the logged in user email that will be used to sent the announcement.
+                users.forEach(user => {  //Loops through each user received from the database.
+                    if (this.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
+                            this.setState({                          //gives us the logged in user email that will be used to sent the announcement.
                                 email: { value: user.email, valid: true },
                              });
                     throw BreakException;
@@ -530,8 +527,8 @@ class App extends Component {
                 if (e !== BreakException) throw e;
                 }
             })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
         if(this.state.announceModal === false){ //Fill in event info fields when opening the event announce modal.
             this.setState({ 
@@ -563,46 +560,45 @@ class App extends Component {
 
     //This method removes the event from the user's added events list -- only if they didn't complete registration yet.
     unregisterFromSingleEvent(id) {
-        const myComponent = this;
             axios.get('/events/' + id)  //Get specific event using id.
-            .then(function (event) {
+            .then(event => {
                 console.log(event)
                     var i = 0;
                     var index;
-                    myComponent.state.registerEvents.forEach(function(event){   //Loop through all the uncompleted registered events.
+                    this.state.registerEvents.forEach(event => {   //Loop through all the uncompleted registered events.
                         if(event._id === id) {  //If the event's id matches the one passed with parameters, get the index of the uncompleted registered event.
                             index = i;
                         }
                         i++;
                     })
                     var emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
-                    event.data.registeredEmail.forEach(function(email){ //Loops through each registered email of an event.
-                        if (myComponent.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
+                    event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
+                        if (this.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
                             event.data.registeredEmail.splice(emailCounter, 1)
                             axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})   //Removes event from database.
-                            .then(function (response) {
+                            .then(response => {
                                 console.log(response.data)
-                                if (myComponent.state.registerEvents.length === 1) {    //If the unregistered event was the only one in the list, remove event from local list and close modal.
-                                    myComponent.state.registerEvents.splice(index, 1);
-                                    console.log(myComponent.state.registerEvents);
-                                    myComponent.setState({
-                                        registerEvents: myComponent.state.registerEvents,
+                                if (this.state.registerEvents.length === 1) {    //If the unregistered event was the only one in the list, remove event from local list and close modal.
+                                    this.state.registerEvents.splice(index, 1);
+                                    console.log(this.state.registerEvents);
+                                    this.setState({
+                                        registerEvents: this.state.registerEvents,
                                         registerModal: false,
                                         visible: false,
                                     });
-                                    myComponent.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
+                                    this.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
                                 }
                                 else {  //If the unregistered event was not the only one in the list, remove it from the local list and keep the modal open.
-                                    myComponent.state.registerEvents.splice(index, 1);
-                                    console.log(myComponent.state.registerEvents);
-                                    myComponent.setState({
-                                        registerEvents: myComponent.state.registerEvents,
+                                    this.state.registerEvents.splice(index, 1);
+                                    console.log(this.state.registerEvents);
+                                    this.setState({
+                                        registerEvents: this.state.registerEvents,
                                     });
                                 }
                                 
                             })
-                            .catch(function (error) {
-                                console.log(error);
+                            .catch(error => {
+                                console.log(this.error);
                             });
                         }
                         emailCounter++;
@@ -610,111 +606,109 @@ class App extends Component {
                         
                     
                 })
-            .catch(function (error) {
-                console.log(error);
+            .catch(error => {
+                console.log(this.error);
             });
     }
 
     //This method removes all of the added events after 5 min if the registration is not completed.
     unRegisterEvent() {
-        const myComponent = this;
-        this.state.registerEventId.forEach(function(id){    //Loops through each event that hasn't confirm its registration.
+        this.state.registerEventId.forEach(id => {    //Loops through each event that hasn't confirm its registration.
             axios.get('/events/' + id)  //Get specific event from database using id.
-            .then(function (event) {
+            .then(event => {
                 console.log(event)
                     var i = 0;  //Used to find the index.
-                    event.data.registeredEmail.forEach(function(email){ //Loops through each registered email of an event.
-                        if (myComponent.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
+                    event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
+                        if (this.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
                             event.data.registeredEmail.splice(i, 1)
                             axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
-                            .then(function (response) {
+                            .then(response => {
                                 console.log(response.data)
                                 this.setState({ 
                                     registerEvents: [],
                                     visible: false,
                                 });
-                                myComponent.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
+                                this.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
                             })
-                            .catch(function (error) {
-                                console.log(error);
-                                });
+                            .catch(error => {
+                                console.log(this.error);
+                            });
                         }
                         i++;
                     })
                         
                     
                 })
-            .catch(function (error) {
-                console.log(error);
+            .catch(error => {
+                console.log(this.error);
             });
             })
     }
 
     //This method partially registers the user to an event -- user still needs to confirm registration later.
     addEventBasket(currentEventId) {
-        let myComponent = this;
         let alreadyRegistered = false;
         let fullCapacity = false;
         axios.get('/users/')    //Get users from database.
-        .then(function (response) {
+        .then(response => {
             var users = response.data
             var BreakException = {};
             try {
-                users.forEach(function(user) {  //Loops through each user from the database.
-                    if (myComponent.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
+                users.forEach(user => {  //Loops through each user from the database.
+                    if (this.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
                             axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
-                                .then(function (response) {
+                                .then(response => {
                                     console.log(response.data)
                                     if (response.data.registeredEmail.length === response.data.capacity){   //If the number of email registered = event capacity, event is full -> can't add it.
                                         fullCapacity = true
                                     }
-                                    myComponent.setState({
-                                        registerEventId: myComponent.state.registerEventId.concat(currentEventId),  //Add the event id to the local list of registered events.
+                                    this.setState({
+                                        registerEventId: this.state.registerEventId.concat(currentEventId),  //Add the event id to the local list of registered events.
                                         registerEventEmail: user.email, //Sets the state of the current user's email for later purposes.
                                     });
-                                    response.data.registeredEmail.forEach(function(email) { //Checks if logged in user email is already in the registered email field of the event.
+                                    response.data.registeredEmail.forEach(email => { //Checks if logged in user email is already in the registered email field of the event.
                                         if (user.email === email) {
                                             alreadyRegistered = true;
                                         }
                                     });
                                     if (alreadyRegistered === false && fullCapacity === false) {
                                         axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)}) //Adds the logged in user's email to the registered email field of the event.
-                                            .then(function (response) {
+                                            .then(response => {
                                                 console.log(response.data)
-                                                myComponent.handleResetClick()  //Resets the registration counter to 5 min.
-                                                myComponent.handleStartClick()  //Starts again the registration counter.
-                                                myComponent.setState({ 
+                                                this.handleResetClick()  //Resets the registration counter to 5 min.
+                                                this.handleStartClick()  //Starts again the registration counter.
+                                                this.setState({ 
                                                     visible: true,
                                                     myEventsErrorLabel: 'none',
                                                 });
                                                 axios.get('/events/' + currentEventId)  //Gets the updated event info, adds it to the local list of registered events, and closes the view event modal.
-                                                .then(function (response) {
-                                                    myComponent.setState({ 
-                                                        registerEvents: myComponent.state.registerEvents.concat(response.data),
+                                                .then(response => {
+                                                    this.setState({ 
+                                                        registerEvents: this.state.registerEvents.concat(response.data),
+                                                        viewModal: !this.state.viewModal,
                                                     });
-                                                    myComponent.setState({ viewModal: !myComponent.state.viewModal });
                                                 })
-                                                .catch(function (error) {
-                                                    console.log(error);
+                                                .catch(error => {
+                                                    console.log(this.error);
                                                 })
                                             })
-                                            .catch(function (error) {
-                                                console.log(error);
+                                            .catch(error => {
+                                                console.log(this.error);
                                         });
                                     }
                                     else if(alreadyRegistered === true) {   //Alerts the user if they are already registered to the event.
-                                        myComponent.setState({ 
+                                        this.setState({ 
                                             allReadyRegisteredErrorLabel: 'block',
                                         });
                                     }
                                     else if(fullCapacity === true) {    //Alerts the user if the event is full.
-                                        myComponent.setState({ 
+                                        this.setState({ 
                                             fullCapacityErrorLabel: 'block',
                                         });
                                     }
                                 })
-                                .catch(function (error) {
-                                    console.log(error);
+                                .catch(error => {
+                                    console.log(this.error);
                             });
                     throw BreakException;
                     }
@@ -724,8 +718,8 @@ class App extends Component {
                 if (e !== BreakException) throw e;
                 }
             })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
     }
    
@@ -891,7 +885,6 @@ class App extends Component {
 
     //This method creates a user account.
     createAccount() {
-        const myComponent = this;
         const emailRegex = /^(([^<>()[\].,;:\s@"]+(.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+.)+[^<>()[\].,;:\s@"]{2,})$/i;
         const username = this.state.createUserName.value;
         const password = this.state.createPassword.value;
@@ -909,8 +902,8 @@ class App extends Component {
                 password: password
             }
             axios.post('/users', user)  //Sends user object to be added in database.
-            .then(function (response) {
-                myComponent.displayLogIn(); //Goes back to log in page.
+            .then(response => {
+                this.displayLogIn(); //Goes back to log in page.
                 toast.success("Woohoo, your account has been created!", {
                     position: "top-center",
                     autoClose: 4000,
@@ -921,8 +914,8 @@ class App extends Component {
                     closeButton: false,
                 })
             })
-            .catch(function (error) {
-                if (error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
+            .catch(error => {
+                if (this.error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
                     toast.error("The account was not created, please try again later.", {
                     position: "top-center",
                     autoClose: 4000,
@@ -981,12 +974,12 @@ class App extends Component {
         const password = this.state.password.value;
         if (name !== "" && password !== "") {   //Makes sure that log in fields are valid.
             axios.post('/login', { username: name, password: password })
-            .then(function (response) { //Sends credentials to backend, cookie created, and reload to main page.
+            .then(response => { //Sends credentials to backend, cookie created, and reload to main page.
                 console.log(response);
                 window.location.reload();
             })
-            .catch(function (error) {
-                if (error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
+            .catch(error => {
+                if (this.error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
                     toast.error('The username or password you entered is incorrect.', {
                     position: "top-center",
                     autoClose: 4000,
@@ -1008,7 +1001,7 @@ class App extends Component {
                     closeButton: false,
                     })
                 } else {
-                    console.log(error);
+                    console.log(this.error);
                 }
             });
         }
@@ -1067,7 +1060,6 @@ class App extends Component {
 
     //This method creates an event.
     createEvent() {
-        const x = this;
         var sDate = moment(this.state.startDate).format();  //Start date.
         var eDate = moment(this.state.endDate).format();    //End date.
         var aDate = moment(this.state.startDate).add(1, 'days').format();   //Activation date, default sets it to 1 day after start date.
@@ -1091,10 +1083,10 @@ class App extends Component {
         var events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
 
         axios.post('/events', events)   //Create the new event in the database.
-        .then(function (response) {
+        .then(response => {
             console.log(response);
-            x.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
-            x.setState({    //Clear out the event field's states from the create event modal.
+            this.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
+            this.setState({    //Clear out the event field's states from the create event modal.
                 name: { value: "", valid: true },
                 description: { value: "", valid: true },
                 location: { value: "", valid: true },
@@ -1109,7 +1101,7 @@ class App extends Component {
                 instructor: "",
                 step: 0,
             });
-            x.toggleCreateEventModal(); //Closes the create event modal.
+            this.toggleCreateEventModal(); //Closes the create event modal.
             toast.success('The event was created.', {
                 position: "top-center",
                 autoClose: 4000,
@@ -1120,20 +1112,19 @@ class App extends Component {
                 closeButton: false,
             })
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         });
     }
 
     //This method sets the activation day of an event so that all users can view, and register for it.
     activateEvent() {
-        const x = this;
         axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})  //Modifies the activationDay field of the selected event using its id.
-        .then(function (response) {
-            x.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
+        .then(response => {
+            this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         });
         this.setState({
             activationDay: null,
@@ -1144,24 +1135,23 @@ class App extends Component {
 
     //This method edits the event information.
     editEvent () {
-        let myComponent = this;
-        axios.get('/events/' + myComponent.state.currentEventId)    //Get specific event from database.
-        .then(function (response) {
-                 axios.put('/events/' + myComponent.state.currentEventId, { //Update event fields in database.
+        axios.get('/events/' + this.state.currentEventId)    //Get specific event from database.
+        .then(response => {
+                 axios.put('/events/' + this.state.currentEventId, { //Update event fields in database.
                     calendarInfo: {
-                        title: myComponent.state.name.value,
+                        title: this.state.name.value,
                         allDay: false,
-                        start: new Date(myComponent.state.startDate),
-                        end: new Date(myComponent.state.endDate)
+                        start: new Date(this.state.startDate),
+                        end: new Date(this.state.endDate)
                     }, 
-                    capacity:  myComponent.state.capacity.value,
-                    description: myComponent.state.description.value,
-                    location: myComponent.state.location.value,
-                    activationDay: new Date(myComponent.state.activationDay)
+                    capacity:  this.state.capacity.value,
+                    description: this.state.description.value,
+                    location: this.state.location.value,
+                    activationDay: new Date(this.state.activationDay)
                 })
-                .then(function (response) {
-                    myComponent.fetchEvents();  //This method updates the event list displayed to reflect the new changes.
-                    myComponent.setState({  //Clear out the event field's states from the edit event modal.
+                .then(response => {
+                    this.fetchEvents();  //This method updates the event list displayed to reflect the new changes.
+                    this.setState({  //Clear out the event field's states from the edit event modal.
                         name: { value: "", valid: true },
                         description: { value: "", valid: true },
                         location: { value: "", valid: true },
@@ -1175,7 +1165,7 @@ class App extends Component {
                         isRecurrent: { value: "", valid: true },
                         recurrence: "",
                         currentEventId: null,
-                        viewModal: !myComponent.state.viewModal,
+                        viewModal: !this.state.viewModal,
                     });
                     toast.success('The event was modified.', {
                             position: "top-center",
@@ -1187,38 +1177,36 @@ class App extends Component {
                             closeButton: false,
                     });
                 })
-                .catch(function (error) {
-                    console.log(error);
+                .catch(error => {
+                    console.log(this.error);
                 });
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
     }
 
     //This method executes as soon as the page loads.
     componentWillMount() {
         var user = {};
-        let component = this;
         axios.get('/info')  //Gets the username (full name) and admin status of the logged in user.
-        .then(function (response) {
+        .then(response => {
             user.username = response.data.username;
             user.admin = response.data.admin;
-            component.setState({ login: user, });
-            component.fetchEvents();    //This method will fetch and display the most recent events.
+            this.setState({ login: user, });
+            this.fetchEvents();    //This method will fetch and display the most recent events.
         })
-        .catch(function (error) {
+        .catch(error => {
             console.log("Redirecting to login");    //If fails to get logged in user info, goes back to log in page.
-            component.setState({ login: {}, });
+            this.setState({ login: {}, });
         });
     }
 
     //This method deletes an event using the event (child) id.
     deleteEvent() {
-        const x = this;
         axios.delete('/events/' + this.state.currentEventId)
         .then(res => {
-            x.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
+            this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
             console.log(res.data);
             this.toggleDeleteModal();   //Close the delete event modal.
             toast.success('The event was deleted.', {
@@ -1231,14 +1219,13 @@ class App extends Component {
                 closeButton: false,
             });
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         });
     }
       
     //This method splits recurring events to many events, or simply returns the event list "event" past as param if non-recurring event.
     splitEvent(event) {
-        var myComponent = this;
         var eventList = [];
         var hours = moment(event.calendarInfo.start).hour();    //Gets start time.
         var delta = moment(event.calendarInfo.end).subtract(hours, 'hours');    //Event duration (delta) is found by subtracting start time from end time.
@@ -1261,12 +1248,12 @@ class App extends Component {
             while (true) {
                 for (var z = 0; z < this.state.daysSelected.length; z++) {
                     var dayINeed = this.state.daysSelected[z];
-                    if (new Date(moment().add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
+                    if (new Date(moment().add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
                         break outer;
                     } else {
-                        var s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed));
-                        var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
-                        var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(myComponent.weekDaysToNumbers(dayINeed)).add(1, 'days');
+                        var s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed));
+                        var e2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(delta.hours(), "hours").add(delta.minutes(), "minutes");
+                        var a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
                             var newEvent = {
                                 capacity: event.capacity, 
@@ -1296,9 +1283,8 @@ class App extends Component {
 
     //This method updates the event list displayed to reflect new changes.
     fetchEvents() {
-        let myComponent = this;
         axios.get('/events')
-        .then(function (response) {
+        .then(response => {
             response.data.forEach(events => {
                 events.data.forEach(event => {  //The event dates need to be converted to JS date type before being displayed.
                     event.calendarInfo.start = new Date(event.calendarInfo.start);
@@ -1306,31 +1292,30 @@ class App extends Component {
                     event.activationDay = new Date(event.activationDay);
                 })
             });
-            myComponent.setState({ events: response.data });    //Update the state of the events list.
+            this.setState({ events: response.data });    //Update the state of the events list.
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
     }
 
     //This method notifies the user registered to an event by sending them an announcement via email.
     notifyEvent(event) {
-        var myComponent = this;
         event.preventDefault();
         axios.get('/events/' + this.state.currentEventId)   //Gets a specific event from database using its id.
-        .then(function (response) {
-            var startDateNotifyEmail = moment(myComponent.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
+        .then(response => {
+            var startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
             var data = {    //Creates an object with all of the information required to send the announcement.
-                notifyFullName: myComponent.state.login.username,
-                notifyEmailSender: myComponent.state.email.value,
+                notifyFullName: this.state.login.username,
+                notifyEmailSender: this.state.email.value,
                 notifyEmailRecepients: response.data.registeredEmail, 
-                notifyMessage: myComponent.announceMessage.current.value,
-                notifyEventName: myComponent.state.name.value,
+                notifyMessage: this.announceMessage.current.value,
+                notifyEventName: this.state.name.value,
                 notifyEventStart: startDateNotifyEmail.toString(),
             }
             axios.post('/notification', data)   //Send announcement data object to backend.
             .then(
-                myComponent.toggleAnnounceModal(),  //Close the announce modal.
+                this.toggleAnnounceModal(),  //Close the announce modal.
                 toast.success('The announcement was sent to the participants of your event.', {
                 position: "top-center",
                 autoClose: 4000,
@@ -1340,13 +1325,13 @@ class App extends Component {
                 draggablePercent: 60,
                 closeButton: false,
                 }))
-            .catch(function (error) {
-                console.log(error);
+            .catch(error => {
+                console.log(this.error);
             });
             document.getElementById("announceModal").reset();   //Clears our the announce message.
         })
-        .catch(function (error) {
-            console.log(error);
+        .catch(error => {
+            console.log(this.error);
         })
     }
 
