@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
-import { Button, ButtonGroup, Table, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form, Alert} from 'reactstrap';
-import { Steps} from 'antd';
+import { Button, ButtonGroup, Table, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Input, Form, Alert } from 'reactstrap';
+import { Steps } from 'antd';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'antd/dist/antd.css';
@@ -47,9 +47,9 @@ function flatten2(l) {
     let test = l.map(events => {
         return events.data
     })
-    
-    test = flatten(test).filter(x => { return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
-   
+
+    test = flatten(test).filter(x => { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
+
     return test;
 }
 
@@ -57,8 +57,8 @@ function flatten3(l, currentUser) {
     let test = l.map(events => {
         return events.data
     })
-    
-    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())); } else {return null;} });
+
+    test = flatten(test).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())); } else { return null; } });
 
     return test;
 }
@@ -67,14 +67,14 @@ function activeChecker(l, currentUser) {
     let test = l.map(events => {
         return events.data
     })
-    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else {return null; } });
+    test = flatten(test).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else { return null; } });
     return test;
 }
 
 const formattedSeconds = (sec) =>
-  Math.floor(sec / 60) +
+    Math.floor(sec / 60) +
     ':' +
-  ('0' + sec % 60).slice(-2)
+    ('0' + sec % 60).slice(-2)
 
 class App extends Component {
 
@@ -86,11 +86,11 @@ class App extends Component {
             registerEvents: [],
             registerUserEmails: [],
             registerEventId: [],
-            secondsElapsed: 300, 
+            secondsElapsed: 300,
             laps: [],
             lastClearedIncrementer: null,
             registerEventEmail: "",
-            createModal : false,
+            createModal: false,
             registerModal: false,
             viewModal: false,
             activateModal: false,
@@ -107,7 +107,7 @@ class App extends Component {
             createEmail: { value: "", valid: true },
             createUserName: { value: "", valid: true },
             createPassword: { value: "", valid: true },
-            createConfirmPassword: { value: "", valid: true},
+            createConfirmPassword: { value: "", valid: true },
             username: { value: "", valid: true },
             password: { value: "", valid: true },
             daysSelected: [],
@@ -116,9 +116,9 @@ class App extends Component {
             allDay: false,
             activateToday: false,
             instructor: "",
-            startDate: null, 
+            startDate: null,
             endDate: null,
-            activationDay: null, 
+            activationDay: null,
             selectedEvent: {},
             calendarInfo: {},
             dateValidNonRecurr: 'black',
@@ -193,26 +193,26 @@ class App extends Component {
 
     //This method serves as a handler for when the event registration timer starts.
     handleStartClick() {
-        if(this.state.secondsElapsed !== 0) {
-            this.incrementer = setInterval( () =>
+        if (this.state.secondsElapsed !== 0) {
+            this.incrementer = setInterval(() =>
                 this.setState({
                     secondsElapsed: this.state.secondsElapsed - 1,
                 })
-            , 1000);
+                , 1000);
         }
     }
-      
+
     //This method serves as a handler for when the event registration timer stops.
     handleStopClick() {
-    clearInterval(this.incrementer);
+        clearInterval(this.incrementer);
         this.setState({
             lastClearedIncrementer: this.incrementer,
         });
     }
-    
+
     //This method serves as a handler for when the event registration timer is reset to 5 min (300 sec).
     handleResetClick() {
-    clearInterval(this.incrementer);
+        clearInterval(this.incrementer);
         this.setState({
             secondsElapsed: 300,
             laps: [],
@@ -263,7 +263,7 @@ class App extends Component {
     //This method finds the first name of the current logged in user.
     findFirstName(fullName) {
         if (/\s/g.test(fullName) === true) {    //This regex checks if fullName does contain a space " ".
-            let firstName = fullName.substr(0,fullName.indexOf(' '));   //Takes the characters before the first space " ", and sets the first character to upper case.
+            let firstName = fullName.substr(0, fullName.indexOf(' '));   //Takes the characters before the first space " ", and sets the first character to upper case.
             return firstName.charAt(0).toUpperCase() + firstName.substr(1);
         } else {    //Here, fullName does not contain a space " ".
             return fullName.charAt(0).toUpperCase() + fullName.substr(1);   //Sets the first character to uppercase.
@@ -273,73 +273,73 @@ class App extends Component {
     //This method searches for users in the database using their email address.
     searchAdminEmail(email) {
         axios.get('/users/')    //Get all the users from the database.
-        .then(response => {
-            let users = response.data   //Users are in the data field of the response.
-            let BreakException = {};
-            try {
-                users.forEach(user => {  //Loops through each user in the database.
-                    if (email === user.email) { //If the user's email matches the email searched, the user was found.
-                        if (user.admin === true) {  //If the searched user is already an admin, their info is not displayed.
-                            this.setState({
+            .then(response => {
+                let users = response.data   //Users are in the data field of the response.
+                let BreakException = {};
+                try {
+                    users.forEach(user => {  //Loops through each user in the database.
+                        if (email === user.email) { //If the user's email matches the email searched, the user was found.
+                            if (user.admin === true) {  //If the searched user is already an admin, their info is not displayed.
+                                this.setState({
+                                    newAdminSearchTable: 'none',
+                                    email: { value: this.state.email.value, valid: false },
+                                });
+                            }
+                            else if (user.admin === false) {    //If the searched user in not an admin, their info and an "Add" button are displayed.
+                                this.setState({
+                                    nameUserModal: user.name,
+                                    userNameModal: user.username,
+                                    emailUserModal: user.email,
+                                    idUserModal: user._id,
+                                    newAdminSearchTable: 'block',
+                                    email: { value: this.state.email.value, valid: true },
+                                });
+                            }
+                            throw BreakException;
+                        } else {
+                            this.setState({  //If the user's email doesn't match the email searched, alert and no info is displayed.
                                 newAdminSearchTable: 'none',
                                 email: { value: this.state.email.value, valid: false },
                             });
                         }
-                        else if (user.admin === false) {    //If the searched user in not an admin, their info and an "Add" button are displayed.
-                            this.setState({ 
-                                nameUserModal: user.name,
-                                userNameModal: user.username,
-                                emailUserModal: user.email,
-                                idUserModal: user._id,
-                                newAdminSearchTable: 'block',
-                                email: { value: this.state.email.value, valid: true },
-                            });
-                        }
-                    throw BreakException;
-                    } else {
-                        this.setState({  //If the user's email doesn't match the email searched, alert and no info is displayed.
-                            newAdminSearchTable: 'none',
-                            email: { value: this.state.email.value, valid: false },
-                        });
-                    }
-                });
-            }
-            catch (e) { //Catch any errors that occur in the try block
-                if (e !== BreakException) throw e;
+                    });
+                }
+                catch (e) { //Catch any errors that occur in the try block
+                    if (e !== BreakException) throw e;
                 }
             })
-        .catch(error => {
-            console.log(this.error);
-        })
+            .catch(error => {
+                console.log(this.error);
+            })
     }
 
     //This method sets the user's "admin" field to true.
     addAdmin() {
-        axios.put('/users/' + this.state.idUserModal, {admin: true})    //"put" accesses user info with id and sends modified param (admin).
-        .then(response => {
-            this.toggleAddAdminModal(); //  Closes the add admin modal.
-            toast.success("The user was set as an administrator!", {    //Alerts the user that the operation was successful.
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
+        axios.put('/users/' + this.state.idUserModal, { admin: true })    //"put" accesses user info with id and sends modified param (admin).
+            .then(response => {
+                this.toggleAddAdminModal(); //  Closes the add admin modal.
+                toast.success("The user was set as an administrator!", {    //Alerts the user that the operation was successful.
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                });
+            })
+            .catch(error => {
+                console.log(this.error);
+                toast.error('The user was not set as an administrator, please try again later.', {  //Alerts the user that the operation was not successful.
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                });
             });
-        })
-        .catch(error => {
-            console.log(this.error);
-            toast.error('The user was not set as an administrator, please try again later.', {  //Alerts the user that the operation was not successful.
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
-            });
-        });
     }
 
     //When event recurrence radio button is pressed, update state of recurrence so that it's available when event is created.
@@ -350,9 +350,9 @@ class App extends Component {
     //This method is used to determine the minimum time of an event (15 minutes) based on its start time.
     startTime() {
         if (this.state.startDate === null && this.state.endDate === null) { //If no start and end date set, set them to the current day.
-          return moment().hours(9).minutes(15);
+            return moment().hours(9).minutes(15);
         } else {    //If date and time set, 15 minutes because event can't be less than 15 minutes.
-          return moment(this.state.startDate).add(15, "minutes");
+            return moment(this.state.startDate).add(15, "minutes");
         }
     }
 
@@ -391,8 +391,8 @@ class App extends Component {
             this.state.daysSelected.push(selected);
         } else {
             this.state.daysSelected.splice(index, 1);
-        } 
-        
+        }
+
         this.setState({ daysSelected: [...this.state.daysSelected], });
     }
 
@@ -403,11 +403,11 @@ class App extends Component {
 
     //This method toggles the event registration modal and updates the registration timer accordingly.
     toggleRegisterModal() {
-        if(this.state.registerEvents.length > 0) {  //If user is registered to any events.
-            if(this.state.registerModal === false) {    //If modal was initially closed, stop the registration timer when modal opens.
+        if (this.state.registerEvents.length > 0) {  //If user is registered to any events.
+            if (this.state.registerModal === false) {    //If modal was initially closed, stop the registration timer when modal opens.
                 this.handleStopClick();
-            } 
-            else if(this.state.registerModal === true) {    //If modal was initially open, continue the registration timer when modal closes.
+            }
+            else if (this.state.registerModal === true) {    //If modal was initially open, continue the registration timer when modal closes.
                 this.handleStartClick();
             }
             this.setState({
@@ -425,7 +425,7 @@ class App extends Component {
     //This method toggles the event activation modal and sets the state of current event id so that it's available if user completes activation.
     toggleActivateModal(id, start, end) {
         this.handleChangeActivationDate(null);
-        this.setState({ 
+        this.setState({
             activateModal: !this.state.activateModal,
             currentEventId: id,
         });
@@ -433,7 +433,7 @@ class App extends Component {
 
     //This method toggles the event deletion modal and sets the state ofcurrent event id so that it's available if user completes deletion.
     toggleDeleteModal(id) {
-        this.setState({ 
+        this.setState({
             deleteModal: !this.state.deleteModal,
             currentEventId: id,
         });
@@ -447,11 +447,11 @@ class App extends Component {
                 if (obj.title === event.calendarInfo.title && obj.start === event.calendarInfo.start) { //If event title and start date matches, set states for event info fields.
                     this.setState({
                         eventId: parentEvent._id,
-                        name: {value: event.calendarInfo.title, valid: true}, 
-                        capacity: {value: event.capacity, valid: true}, 
-                        description: {value: event.description, valid: true},
-                        location: {value: event.location, valid: true},
-                        isRecurrent: {value: event.isRecurrent, valid: true}, 
+                        name: { value: event.calendarInfo.title, valid: true },
+                        capacity: { value: event.capacity, valid: true },
+                        description: { value: event.description, valid: true },
+                        location: { value: event.location, valid: true },
+                        isRecurrent: { value: event.isRecurrent, valid: true },
                         daysSelected: event.daysSelected,
                         recurrence: event.recurrence,
                         allDay: event.allDay,
@@ -470,16 +470,16 @@ class App extends Component {
                     }
                 }
             })
-            
+
         });
         if (this.state.viewModal === true) {    //If view/edit modal is initially open, reset states of event info fields prior to closing the modal.
-            this.setState({ 
+            this.setState({
                 eventId: "",
-                name: {value: "", valid: true}, 
-                capacity: {value: "", valid: true}, 
-                description: {value: "", valid: true},
-                location: {value: "", valid: true},
-                isRecurrent: {value: "", valid: true}, 
+                name: { value: "", valid: true },
+                capacity: { value: "", valid: true },
+                description: { value: "", valid: true },
+                location: { value: "", valid: true },
+                isRecurrent: { value: "", valid: true },
                 daysSelected: [],
                 recurrence: "",
                 allDay: false,
@@ -510,39 +510,39 @@ class App extends Component {
     //This method toggles the announce event modal.
     toggleAnnounceModal(event) {
         axios.get('/users/')    //Gets all the users from the database.
-        .then(response => {
-            let users = response.data  //Users are in the data field of the response.
-            let BreakException = {};
-            try {
-                users.forEach(user => {  //Loops through each user received from the database.
-                    if (this.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
+            .then(response => {
+                let users = response.data  //Users are in the data field of the response.
+                let BreakException = {};
+                try {
+                    users.forEach(user => {  //Loops through each user received from the database.
+                        if (this.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
                             this.setState({                          //gives us the logged in user email that will be used to sent the announcement.
                                 email: { value: user.email, valid: true },
-                             });
-                    throw BreakException;
-                    }
-                });
-            }
-            catch (e) {
-                if (e !== BreakException) throw e;
+                            });
+                            throw BreakException;
+                        }
+                    });
+                }
+                catch (e) {
+                    if (e !== BreakException) throw e;
                 }
             })
-        .catch(error => {
-            console.log(this.error);
-        })
-        if(this.state.announceModal === false){ //Fill in event info fields when opening the event announce modal.
-            this.setState({ 
+            .catch(error => {
+                console.log(this.error);
+            })
+        if (this.state.announceModal === false) { //Fill in event info fields when opening the event announce modal.
+            this.setState({
                 announceModal: !this.state.announceModal,
                 currentEventId: event._id,
-                name: {value: event.calendarInfo.title, valid: true},
+                name: { value: event.calendarInfo.title, valid: true },
                 startDate: event.calendarInfo.start,
             });
         }
-        if(this.state.announceModal === true){  //Reset the event info fields when closing the event announce modal.
-            this.setState({ 
+        if (this.state.announceModal === true) {  //Reset the event info fields when closing the event announce modal.
+            this.setState({
                 announceModal: !this.state.announceModal,
                 currentEventId: "",
-                name: {value: "", valid: true},
+                name: { value: "", valid: true },
                 startDate: "",
             });
         }
@@ -560,22 +560,22 @@ class App extends Component {
 
     //This method removes the event from the user's added events list -- only if they didn't complete registration yet.
     unregisterFromSingleEvent(id) {
-            axios.get('/events/' + id)  //Get specific event using id.
+        axios.get('/events/' + id)  //Get specific event using id.
             .then(event => {
                 console.log(event)
-                    let i = 0;
-                    let index;
-                    this.state.registerEvents.forEach(event => {   //Loop through all the uncompleted registered events.
-                        if(event._id === id) {  //If the event's id matches the one passed with parameters, get the index of the uncompleted registered event.
-                            index = i;
-                        }
-                        i++;
-                    })
-                    let emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
-                    event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
-                        if (this.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
-                            event.data.registeredEmail.splice(emailCounter, 1)
-                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})   //Removes event from database.
+                let i = 0;
+                let index;
+                this.state.registerEvents.forEach(event => {   //Loop through all the uncompleted registered events.
+                    if (event._id === id) {  //If the event's id matches the one passed with parameters, get the index of the uncompleted registered event.
+                        index = i;
+                    }
+                    i++;
+                })
+                let emailCounter = 0; //Is used to find the index of the email to remove from the list of registered email of an event.
+                event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
+                    if (this.state.registerEventEmail === email) {   //If event email matches email in parameter, remove it fromt he local AND database list.
+                        event.data.registeredEmail.splice(emailCounter, 1)
+                        axios.put('/events/' + id, { registeredEmail: event.data.registeredEmail })   //Removes event from database.
                             .then(response => {
                                 console.log(response.data)
                                 if (this.state.registerEvents.length === 1) {    //If the unregistered event was the only one in the list, remove event from local list and close modal.
@@ -595,17 +595,17 @@ class App extends Component {
                                         registerEvents: this.state.registerEvents,
                                     });
                                 }
-                                
+
                             })
                             .catch(error => {
                                 console.log(this.error);
                             });
-                        }
-                        emailCounter++;
-                    })
-                        
-                    
+                    }
+                    emailCounter++;
                 })
+
+
+            })
             .catch(error => {
                 console.log(this.error);
             });
@@ -615,34 +615,34 @@ class App extends Component {
     unRegisterEvent() {
         this.state.registerEventId.forEach(id => {    //Loops through each event that hasn't confirm its registration.
             axios.get('/events/' + id)  //Get specific event from database using id.
-            .then(event => {
-                console.log(event)
+                .then(event => {
+                    console.log(event)
                     let i = 0;  //Used to find the index.
                     event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
                         if (this.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
                             event.data.registeredEmail.splice(i, 1)
-                            axios.put('/events/' + id, {registeredEmail: event.data.registeredEmail})
-                            .then(response => {
-                                console.log(response.data)
-                                this.setState({ 
-                                    registerEvents: [],
-                                    visible: false,
+                            axios.put('/events/' + id, { registeredEmail: event.data.registeredEmail })
+                                .then(response => {
+                                    console.log(response.data)
+                                    this.setState({
+                                        registerEvents: [],
+                                        visible: false,
+                                    });
+                                    this.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
+                                })
+                                .catch(error => {
+                                    console.log(this.error);
                                 });
-                                this.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
-                            })
-                            .catch(error => {
-                                console.log(this.error);
-                            });
                         }
                         i++;
                     })
-                        
-                    
+
+
                 })
-            .catch(error => {
-                console.log(this.error);
-            });
-            })
+                .catch(error => {
+                    console.log(this.error);
+                });
+        })
     }
 
     //This method partially registers the user to an event -- user still needs to confirm registration later.
@@ -650,16 +650,16 @@ class App extends Component {
         let alreadyRegistered = false;
         let fullCapacity = false;
         axios.get('/users/')    //Get users from database.
-        .then(response => {
-            let users = response.data
-            let BreakException = {};
-            try {
-                users.forEach(user => {  //Loops through each user from the database.
-                    if (this.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
+            .then(response => {
+                let users = response.data
+                let BreakException = {};
+                try {
+                    users.forEach(user => {  //Loops through each user from the database.
+                        if (this.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
                             axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
                                 .then(response => {
                                     console.log(response.data)
-                                    if (response.data.registeredEmail.length === response.data.capacity){   //If the number of email registered = event capacity, event is full -> can't add it.
+                                    if (response.data.registeredEmail.length === response.data.capacity) {   //If the number of email registered = event capacity, event is full -> can't add it.
                                         fullCapacity = true
                                     }
                                     this.setState({
@@ -672,63 +672,63 @@ class App extends Component {
                                         }
                                     });
                                     if (alreadyRegistered === false && fullCapacity === false) {
-                                        axios.put('/events/' + currentEventId, {registeredEmail: response.data.registeredEmail.concat(user.email)}) //Adds the logged in user's email to the registered email field of the event.
+                                        axios.put('/events/' + currentEventId, { registeredEmail: response.data.registeredEmail.concat(user.email) }) //Adds the logged in user's email to the registered email field of the event.
                                             .then(response => {
                                                 console.log(response.data)
                                                 this.handleResetClick()  //Resets the registration counter to 5 min.
                                                 this.handleStartClick()  //Starts again the registration counter.
-                                                this.setState({ 
+                                                this.setState({
                                                     visible: true,
                                                     myEventsErrorLabel: 'none',
                                                 });
                                                 axios.get('/events/' + currentEventId)  //Gets the updated event info, adds it to the local list of registered events, and closes the view event modal.
-                                                .then(response => {
-                                                    this.setState({ 
-                                                        registerEvents: this.state.registerEvents.concat(response.data),
-                                                        viewModal: !this.state.viewModal,
-                                                    });
-                                                })
-                                                .catch(error => {
-                                                    console.log(this.error);
-                                                })
+                                                    .then(response => {
+                                                        this.setState({
+                                                            registerEvents: this.state.registerEvents.concat(response.data),
+                                                            viewModal: !this.state.viewModal,
+                                                        });
+                                                    })
+                                                    .catch(error => {
+                                                        console.log(this.error);
+                                                    })
                                             })
                                             .catch(error => {
                                                 console.log(this.error);
-                                        });
+                                            });
                                     }
-                                    else if(alreadyRegistered === true) {   //Alerts the user if they are already registered to the event.
-                                        this.setState({ 
+                                    else if (alreadyRegistered === true) {   //Alerts the user if they are already registered to the event.
+                                        this.setState({
                                             allReadyRegisteredErrorLabel: 'block',
                                         });
                                     }
-                                    else if(fullCapacity === true) {    //Alerts the user if the event is full.
-                                        this.setState({ 
+                                    else if (fullCapacity === true) {    //Alerts the user if the event is full.
+                                        this.setState({
                                             fullCapacityErrorLabel: 'block',
                                         });
                                     }
                                 })
                                 .catch(error => {
                                     console.log(this.error);
-                            });
-                    throw BreakException;
-                    }
-                });
-            }
-            catch (e) {
-                if (e !== BreakException) throw e;
+                                });
+                            throw BreakException;
+                        }
+                    });
+                }
+                catch (e) {
+                    if (e !== BreakException) throw e;
                 }
             })
-        .catch(error => {
-            console.log(this.error);
-        })
+            .catch(error => {
+                console.log(this.error);
+            })
     }
-   
+
     //This method sets the minimum time so that a user can't set a date from the past.
     minMaxTime() {
-        if(this.state.startDate === null && this.state.endDate === null) {
-          return moment();
+        if (this.state.startDate === null && this.state.endDate === null) {
+            return moment();
         } else {
-          return moment(this.state.startDate);
+            return moment(this.state.startDate);
         }
     }
 
@@ -737,21 +737,21 @@ class App extends Component {
         let user = { username: "account", admin: false };
         this.setState({
             login: user,
-            username: {value: "", valid: true},
-            password: {value: "", valid: true},
+            username: { value: "", valid: true },
+            password: { value: "", valid: true },
         });
     }
 
     //This method brings the user to the "log in" page.
     displayLogIn() {
         let user = { username: null, admin: false };
-        this.setState({ 
+        this.setState({
             login: user,
-            createName: {value: "", valid: true},
-            createEmail: {value: "", valid: true},
-            createUserName: {value: "", valid: true},
-            createPassword: {value: "", valid: true},
-            createConfirmPassword: {value: "", valid: true},
+            createName: { value: "", valid: true },
+            createEmail: { value: "", valid: true },
+            createUserName: { value: "", valid: true },
+            createPassword: { value: "", valid: true },
+            createConfirmPassword: { value: "", valid: true },
         });
     }
 
@@ -772,35 +772,35 @@ class App extends Component {
             let descriptionValid = this.state.description;
             let valid = true;
             //Checks if fields are empty, or if their valid field is false (checked in the handler method).
-            if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false){
+            if (recurrenceValid.value === "" || nameValid.value === "" || capacityValid.value === "" || locationValid.value === "" || descriptionValid.value === "" || nameValid.valid === false || capacityValid.valid === false || locationValid.valid === false || descriptionValid.valid === false) {
                 if (recurrenceValid.value === "") {
                     valid = false;
                     this.setState({
-                        isRecurrent: {value: recurrenceValid.value, valid: valid},
+                        isRecurrent: { value: recurrenceValid.value, valid: valid },
                     });
                 }
                 if (nameValid.value === "") {
                     valid = false;
                     this.setState({
-                        name: {value: nameValid.value, valid: valid},
+                        name: { value: nameValid.value, valid: valid },
                     });
                 }
                 if (capacityValid.value === "") {
                     valid = false;
                     this.setState({
-                        capacity: {value: capacityValid.value, valid: valid},
+                        capacity: { value: capacityValid.value, valid: valid },
                     });
                 }
                 if (locationValid.value === "") {
                     valid = false;
                     this.setState({
-                        location: {value: locationValid.value, valid: valid},
+                        location: { value: locationValid.value, valid: valid },
                     });
                 }
                 if (descriptionValid.value === "") {
                     valid = false;
                     this.setState({
-                        description: {value: descriptionValid.value, valid: valid},
+                        description: { value: descriptionValid.value, valid: valid },
                     });
                 }
             }
@@ -869,7 +869,7 @@ class App extends Component {
             }
         }
     }
-    
+
     //This method takes care of moving to the previous step of the create event modal.
     prevStep() {
         if (this.state.allDay === true) {   //If non-recurring event lasts all day, reset the "Schedule" step field's state.
@@ -893,7 +893,7 @@ class App extends Component {
         const confirm = this.state.createConfirmPassword.value;
 
         //Checks: if fields are empty, if email input respects email format, and if passwords match.
-        if (name !== "" && email !== "" && emailRegex.test(email) && username !== "" && password !== ""  && confirm !== "" && password === confirm) {
+        if (name !== "" && email !== "" && emailRegex.test(email) && username !== "" && password !== "" && confirm !== "" && password === confirm) {
             let user = {    //Create user object from the provided user info, note that new user is not an admin by default.
                 name: name,
                 username: username,
@@ -902,67 +902,67 @@ class App extends Component {
                 password: password
             }
             axios.post('/users', user)  //Sends user object to be added in database.
-            .then(response => {
-                this.displayLogIn(); //Goes back to log in page.
-                toast.success("Woohoo, your account has been created!", {
-                    position: "top-center",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggablePercent: 60,
-                    closeButton: false,
+                .then(response => {
+                    this.displayLogIn(); //Goes back to log in page.
+                    toast.success("Woohoo, your account has been created!", {
+                        position: "top-center",
+                        autoClose: 4000,
+                        hideProgressBar: true,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggablePercent: 60,
+                        closeButton: false,
+                    })
                 })
-            })
-            .catch(error => {
-                if (this.error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
-                    toast.error("The account was not created, please try again later.", {
-                    position: "top-center",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggablePercent: 60,
-                    closeButton: false,
-                    })
-                }
-                else {  //Alerts the user of error 500 (user email already exists in database).
-                    toast.error(error.response.data, {
-                    position: "top-center",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggablePercent: 60,
-                    closeButton: false,
-                    })
-                }
-            })
+                .catch(error => {
+                    if (this.error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
+                        toast.error("The account was not created, please try again later.", {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                        })
+                    }
+                    else {  //Alerts the user of error 500 (user email already exists in database).
+                        toast.error(error.response.data, {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                        })
+                    }
+                })
         }
         else {  //If any of the fields is not valid, check which one and set their valid state to false.
             if (name === "") {
                 this.setState({
-                    createName: {value: "", valid: false},
+                    createName: { value: "", valid: false },
                 });
             }
             if (email === "" || !emailRegex.test(email)) {
                 this.setState({
-                    createEmail: {value: "", valid: false},
+                    createEmail: { value: "", valid: false },
                 });
             }
             if (username === "") {
                 this.setState({
-                    createUserName: {value: "", valid: false},
+                    createUserName: { value: "", valid: false },
                 });
             }
             if (password === "") {
                 this.setState({
-                    createPassword: {value: "", valid: false},
+                    createPassword: { value: "", valid: false },
                 });
             }
             if (password !== confirm || confirm === "") {
                 this.setState({
-                    createConfirmPassword: {value: "", valid: false},
+                    createConfirmPassword: { value: "", valid: false },
                 });
             }
         }
@@ -974,46 +974,46 @@ class App extends Component {
         const password = this.state.password.value;
         if (name !== "" && password !== "") {   //Makes sure that log in fields are valid.
             axios.post('/login', { username: name, password: password })
-            .then(response => { //Sends credentials to backend, cookie created, and reload to main page.
-                console.log(response);
-                window.location.reload();
-            })
-            .catch(error => {
-                if (this.error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
-                    toast.error('The username or password you entered is incorrect.', {
-                    position: "top-center",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggablePercent: 60,
-                    closeButton: false,
-                    })
-                }
-                else if (this.error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
-                    toast.error('The username entered does not match any account.', {
-                    position: "top-center",
-                    autoClose: 4000,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggablePercent: 60,
-                    closeButton: false,
-                    })
-                } else {
-                    console.log(this.error);
-                }
-            });
+                .then(response => { //Sends credentials to backend, cookie created, and reload to main page.
+                    console.log(response);
+                    window.location.reload();
+                })
+                .catch(error => {
+                    if (this.error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
+                        toast.error('The username or password you entered is incorrect.', {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                        })
+                    }
+                    else if (this.error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
+                        toast.error('The username entered does not match any account.', {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                        })
+                    } else {
+                        console.log(this.error);
+                    }
+                });
         }
         else {  //If log in fields are invalid, find which and alert the user.
             if (name === "") {
                 this.setState({
-                    username: {value: "", valid: false},
+                    username: { value: "", valid: false },
                 });
             }
             if (password === "") {
                 this.setState({
-                    password: {value: "", valid: false},
+                    password: { value: "", valid: false },
                 });
             }
         }
@@ -1066,66 +1066,64 @@ class App extends Component {
         let eventCalendarInfo = {   //Calendar info object contains the *only* event fields accepted by react-big-calendar.
             title: this.state.name.value,
             allDay: false,
-            start:  new Date(sDate),
+            start: new Date(sDate),
             end: new Date(eDate)
         }
         let newEvent = {    //New event object contains all of the event fields accepted (calendar info object) or not (remaining fields) by react-big-calendar.
-            capacity: this.state.capacity.value, 
-            description: this.state.description.value, 
-            location: this.state.location.value, 
+            capacity: this.state.capacity.value,
+            description: this.state.description.value,
+            location: this.state.location.value,
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
             instructor: this.state.login.username,
             registeredEmail: this.state.registerEvents,
             calendarInfo: eventCalendarInfo,
         }
-
         let events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
-
         axios.post('/events', events)   //Create the new event in the database.
-        .then(response => {
-            console.log(response);
-            this.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
-            this.setState({    //Clear out the event field's states from the create event modal.
-                name: { value: "", valid: true },
-                description: { value: "", valid: true },
-                location: { value: "", valid: true },
-                capacity: { value: 0, valid: true },
-                daysSelected: [],
-                isRecurrent: { value: "", valid: true },
-                recurrence: "",
-                allDay: false,
-                startDate: null,
-                endDate: null,
-                activationDay: null,
-                instructor: "",
-                step: 0,
-            });
-            this.toggleCreateEventModal(); //Closes the create event modal.
-            toast.success('The event was created.', {
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
+            .then(response => {
+                console.log(response);
+                this.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
+                this.setState({    //Clear out the event field's states from the create event modal.
+                    name: { value: "", valid: true },
+                    description: { value: "", valid: true },
+                    location: { value: "", valid: true },
+                    capacity: { value: 0, valid: true },
+                    daysSelected: [],
+                    isRecurrent: { value: "", valid: true },
+                    recurrence: "",
+                    allDay: false,
+                    startDate: null,
+                    endDate: null,
+                    activationDay: null,
+                    instructor: "",
+                    step: 0,
+                });
+                this.toggleCreateEventModal(); //Closes the create event modal.
+                toast.success('The event was created.', {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                })
             })
-        })
-        .catch(error => {
-            console.log(this.error);
-        });
+            .catch(error => {
+                console.log(this.error);
+            });
     }
 
     //This method sets the activation day of an event so that all users can view, and register for it.
     activateEvent() {
-        axios.put('/events/' + this.state.currentEventId, {activationDay: new Date(this.state.activationDay)})  //Modifies the activationDay field of the selected event using its id.
-        .then(response => {
-            this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
-        })
-        .catch(error => {
-            console.log(this.error);
-        });
+        axios.put('/events/' + this.state.currentEventId, { activationDay: new Date(this.state.activationDay) })  //Modifies the activationDay field of the selected event using its id.
+            .then(response => {
+                this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
+            })
+            .catch(error => {
+                console.log(this.error);
+            });
         this.setState({
             activationDay: null,
             activateToday: false,
@@ -1134,40 +1132,40 @@ class App extends Component {
     }
 
     //This method edits the event information.
-    editEvent () {
+    editEvent() {
         axios.get('/events/' + this.state.currentEventId)    //Get specific event from database.
-        .then(response => {
-                 axios.put('/events/' + this.state.currentEventId, { //Update event fields in database.
+            .then(response => {
+                axios.put('/events/' + this.state.currentEventId, { //Update event fields in database.
                     calendarInfo: {
                         title: this.state.name.value,
                         allDay: false,
                         start: new Date(this.state.startDate),
                         end: new Date(this.state.endDate)
-                    }, 
-                    capacity:  this.state.capacity.value,
+                    },
+                    capacity: this.state.capacity.value,
                     description: this.state.description.value,
                     location: this.state.location.value,
                     activationDay: new Date(this.state.activationDay)
                 })
-                .then(response => {
-                    this.fetchEvents();  //This method updates the event list displayed to reflect the new changes.
-                    this.setState({  //Clear out the event field's states from the edit event modal.
-                        name: { value: "", valid: true },
-                        description: { value: "", valid: true },
-                        location: { value: "", valid: true },
-                        capacity: { value: 0, valid: true },
-                        allDay: false,
-                        activateToday: false,
-                        startDate: null, 
-                        endDate: null,
-                        activationDay: null, 
-                        daysSelected: [],
-                        isRecurrent: { value: "", valid: true },
-                        recurrence: "",
-                        currentEventId: null,
-                        viewModal: !this.state.viewModal,
-                    });
-                    toast.success('The event was modified.', {
+                    .then(response => {
+                        this.fetchEvents();  //This method updates the event list displayed to reflect the new changes.
+                        this.setState({  //Clear out the event field's states from the edit event modal.
+                            name: { value: "", valid: true },
+                            description: { value: "", valid: true },
+                            location: { value: "", valid: true },
+                            capacity: { value: 0, valid: true },
+                            allDay: false,
+                            activateToday: false,
+                            startDate: null,
+                            endDate: null,
+                            activationDay: null,
+                            daysSelected: [],
+                            isRecurrent: { value: "", valid: true },
+                            recurrence: "",
+                            currentEventId: null,
+                            viewModal: !this.state.viewModal,
+                        });
+                        toast.success('The event was modified.', {
                             position: "top-center",
                             autoClose: 4000,
                             hideProgressBar: true,
@@ -1175,55 +1173,55 @@ class App extends Component {
                             pauseOnHover: false,
                             draggablePercent: 60,
                             closeButton: false,
+                        });
+                    })
+                    .catch(error => {
+                        console.log(this.error);
                     });
-                })
-                .catch(error => {
-                    console.log(this.error);
-                });
-        })
-        .catch(error => {
-            console.log(this.error);
-        })
+            })
+            .catch(error => {
+                console.log(this.error);
+            })
     }
 
     //This method executes as soon as the page loads.
     componentWillMount() {
         let user = {};
         axios.get('/info')  //Gets the username (full name) and admin status of the logged in user.
-        .then(response => {
-            user.username = response.data.username;
-            user.admin = response.data.admin;
-            this.setState({ login: user, });
-            this.fetchEvents();    //This method will fetch and display the most recent events.
-        })
-        .catch(error => {
-            console.log("Redirecting to login");    //If fails to get logged in user info, goes back to log in page.
-            this.setState({ login: {}, });
-        });
+            .then(response => {
+                user.username = response.data.username;
+                user.admin = response.data.admin;
+                this.setState({ login: user, });
+                this.fetchEvents();    //This method will fetch and display the most recent events.
+            })
+            .catch(error => {
+                console.log("Redirecting to login");    //If fails to get logged in user info, goes back to log in page.
+                this.setState({ login: {}, });
+            });
     }
 
     //This method deletes an event using the event (child) id.
     deleteEvent() {
         axios.delete('/events/' + this.state.currentEventId)
-        .then(res => {
-            this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
-            console.log(res.data);
-            this.toggleDeleteModal();   //Close the delete event modal.
-            toast.success('The event was deleted.', {
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
+            .then(res => {
+                this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
+                console.log(res.data);
+                this.toggleDeleteModal();   //Close the delete event modal.
+                toast.success('The event was deleted.', {
+                    position: "top-center",
+                    autoClose: 4000,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggablePercent: 60,
+                    closeButton: false,
+                });
+            })
+            .catch(error => {
+                console.log(this.error);
             });
-        })
-        .catch(error => {
-            console.log(this.error);
-        });
     }
-      
+
     //This method splits recurring events to many events, or simply returns the event list "event" past as param if non-recurring event.
     splitEvent(event) {
         let eventList = [];
@@ -1248,7 +1246,7 @@ class App extends Component {
             while (true) {
                 for (let z = 0; z < this.state.daysSelected.length; z++) {
                     let dayINeed = this.state.daysSelected[z];
-                    if (new Date(moment().add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))){
+                    if (new Date(moment().add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed))) > new Date(moment(event.calendarInfo.end))) {
                         break outer;
                     } else {
                         let s2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed));
@@ -1256,9 +1254,9 @@ class App extends Component {
                         let a2Date = moment(event.calendarInfo.start).add(i, 'weeks').isoWeekday(this.weekDaysToNumbers(dayINeed)).add(1, 'days');
                         if (s2Date >= moment(event.calendarInfo.start)) {
                             let newEvent = {
-                                capacity: event.capacity, 
-                                description: event.description, 
-                                location: event.location, 
+                                capacity: event.capacity,
+                                description: event.description,
+                                location: event.location,
                                 allDay: event.allDay,
                                 activationDay: new Date(a2Date.format()),
                                 instructor: event.instructor,
@@ -1284,296 +1282,291 @@ class App extends Component {
     //This method updates the event list displayed to reflect new changes.
     fetchEvents() {
         axios.get('/events')
-        .then(response => {
-            response.data.forEach(events => {
-                events.data.forEach(event => {  //The event dates need to be converted to JS date type before being displayed.
-                    event.calendarInfo.start = new Date(event.calendarInfo.start);
-                    event.calendarInfo.end = new Date(event.calendarInfo.end);
-                    event.activationDay = new Date(event.activationDay);
-                })
-            });
-            this.setState({ events: response.data });    //Update the state of the events list.
-        })
-        .catch(error => {
-            console.log(this.error);
-        })
+            .then(response => {
+                response.data.forEach(events => {
+                    events.data.forEach(event => {  //The event dates need to be converted to JS date type before being displayed.
+                        event.calendarInfo.start = new Date(event.calendarInfo.start);
+                        event.calendarInfo.end = new Date(event.calendarInfo.end);
+                        event.activationDay = new Date(event.activationDay);
+                    })
+                });
+                this.setState({ events: response.data });    //Update the state of the events list.
+            })
+            .catch(error => {
+                console.log(this.error);
+            })
     }
 
     //This method notifies the user registered to an event by sending them an announcement via email.
     notifyEvent(event) {
         event.preventDefault();
         axios.get('/events/' + this.state.currentEventId)   //Gets a specific event from database using its id.
-        .then(response => {
-            let startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
-            let data = {    //Creates an object with all of the information required to send the announcement.
-                notifyFullName: this.state.login.username,
-                notifyEmailSender: this.state.email.value,
-                notifyEmailRecepients: response.data.registeredEmail, 
-                notifyMessage: this.announceMessage.current.value,
-                notifyEventName: this.state.name.value,
-                notifyEventStart: startDateNotifyEmail.toString(),
-            }
-            axios.post('/notification', data)   //Send announcement data object to backend.
-            .then(
-                this.toggleAnnounceModal(),  //Close the announce modal.
-                toast.success('The announcement was sent to the participants of your event.', {
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggablePercent: 60,
-                closeButton: false,
-                }))
+            .then(response => {
+                let startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
+                let data = {    //Creates an object with all of the information required to send the announcement.
+                    notifyFullName: this.state.login.username,
+                    notifyEmailSender: this.state.email.value,
+                    notifyEmailRecepients: response.data.registeredEmail,
+                    notifyMessage: this.announceMessage.current.value,
+                    notifyEventName: this.state.name.value,
+                    notifyEventStart: startDateNotifyEmail.toString(),
+                }
+                axios.post('/notification', data)   //Send announcement data object to backend.
+                    .then(
+                        this.toggleAnnounceModal(),  //Close the announce modal.
+                        toast.success('The announcement was sent to the participants of your event.', {
+                            position: "top-center",
+                            autoClose: 4000,
+                            hideProgressBar: true,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggablePercent: 60,
+                            closeButton: false,
+                        }))
+                    .catch(error => {
+                        console.log(this.error);
+                    });
+                document.getElementById("announceModal").reset();   //Clears our the announce message.
+            })
             .catch(error => {
                 console.log(this.error);
-            });
-            document.getElementById("announceModal").reset();   //Clears our the announce message.
-        })
-        .catch(error => {
-            console.log(this.error);
-        })
+            })
     }
 
     render() {
         let wizardContentCreate;
         if (this.state.step === 0) {
-          wizardContentCreate = 
-            <fieldset>
-              <Row className="create-event-container">
-                <Col xs="6" sm="6" md="6" lg="6">
-                  <Row>
-                      <label>Name</label>
-                      <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                      <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
-                  </Row>
-                  <Row>
-                      <label>Capacity</label>
-                      <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                      <div className="invalid-feedback">Numbers and can't be empty.</div>
-                  </Row>
-                  <Row>
-                      <label>Location</label>
-                      <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                      <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
-                  </Row> 
-                  <Row>
-                      <label>Recurrence</label>
-                      <fieldset className="create-event-recurrence-dropdown">
-                          <select className={this.state.isRecurrent.valid? "custom-select w-100" : "custom-select w-100 is-invalid"} name="isRecurrent" value={this.state.isRecurrent.value} onChange={this.handleChange}>
-                            <option disabled='disabled' value="">Will it be a recurring event?</option>
-                            <option value="recurring">Yes</option>
-                            <option value="non-recurring">No</option>
-                          </select>
-                          <div className="invalid-feedback">Recurrence type is required.</div>
-                      </fieldset>
-                  </Row>
-                </Col>
-                <Col xs="6" sm="6" md="6" lg="6">
-                  <Row  className="create-event-description-row">
-                    <label>Description</label>
-                      <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control create-event-description" : "form-control is-invalid create-event-description"} placeholder="What will it be about?" rows={5}/>
-                      <div className="invalid-feedback">Can't be empty.</div>
-                  </Row>
-                </Col>
-              </Row>
-            </fieldset>;
+            wizardContentCreate =
+                <fieldset>
+                    <Row className="create-event-container">
+                        <Col xs="6" sm="6" md="6" lg="6">
+                            <Row>
+                                <label>Name</label>
+                                <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
+                                <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
+                            </Row>
+                            <Row>
+                                <label>Capacity</label>
+                                <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
+                                <div className="invalid-feedback">Numbers and can't be empty.</div>
+                            </Row>
+                            <Row>
+                                <label>Location</label>
+                                <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
+                                <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
+                            </Row>
+                            <Row>
+                                <label>Recurrence</label>
+                                <fieldset className="create-event-recurrence-dropdown">
+                                    <select className={this.state.isRecurrent.valid ? "custom-select w-100" : "custom-select w-100 is-invalid"} name="isRecurrent" value={this.state.isRecurrent.value} onChange={this.handleChange}>
+                                        <option disabled='disabled' value="">Will it be a recurring event?</option>
+                                        <option value="recurring">Yes</option>
+                                        <option value="non-recurring">No</option>
+                                    </select>
+                                    <div className="invalid-feedback">Recurrence type is required.</div>
+                                </fieldset>
+                            </Row>
+                        </Col>
+                        <Col xs="6" sm="6" md="6" lg="6">
+                            <Row className="create-event-description-row">
+                                <label>Description</label>
+                                <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid ? "form-control create-event-description" : "form-control is-invalid create-event-description"} placeholder="What will it be about?" rows={5} />
+                                <div className="invalid-feedback">Can't be empty.</div>
+                            </Row>
+                        </Col>
+                    </Row>
+                </fieldset>;
+        } else if (this.state.step === 1) {
+            if (this.state.isRecurrent.value === "recurring") {
+                wizardContentCreate =
+                    <fieldset>
+                        <Row>
+                            <Col xs="12" sm="12" md="12" lg="12">
+                                <label className="inputName" style={{ color: this.state.dateValid }}>Date & time</label>
+                                <div className="input-daterange input-group" id="datepicker-example-2">
+                                    <span className="input-group-append create-event-date-picker-icon">
+                                        <span className="input-group-text create-event-date-picker-icon">
+                                            <i className="fa fa-calendar"></i>
+                                        </span>
+                                    </span>
+                                    <DatePicker
+                                        className="input-sm form-control create-event-date-picker"
+                                        name="start"
+                                        placeholderText="Start date"
+                                        selected={this.state.startDate}
+                                        onChange={this.handleChangeStart}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        minDate={moment()}
+                                        minTime={moment().hours(9).minutes(0)}
+                                        maxTime={moment().hours(17).minutes(45)}
+                                        dateFormat="LLL"
+                                        readOnly
+                                    />
+                                    <DatePicker
+                                        className="input-sm form-control create-event-date-picker"
+                                        name="end"
+                                        placeholderText="End date"
+                                        selected={this.state.endDate}
+                                        onChange={this.handleChangeEnd}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        minDate={this.minMaxTime()}
+                                        minTime={this.startTime()}
+                                        maxTime={moment().hours(18).minutes(0)}
+                                        dateFormat="LLL"
+                                        readOnly
+                                    />
+                                    <span className="input-group-prepend create-event-enddate-picker-icon">
+                                        <span className="input-group-text create-event-enddate-picker-icon">
+                                            <i className="fa fa-calendar"></i>
+                                        </span>
+                                    </span>
+                                    <div className="invalid-input" style={{ visibility: this.state.dateValidLabel }}>Start and end dates are required</div>
+                                </div>
+                            </Col>
+                        </Row><br />
+                        <Row className="create-event-row">
+                            <Col xs="10" sm="10" md="10" lg="10">
+                                <label className="inputName" style={{ color: this.state.recurrenceValid }}>Recurrence</label>
+                                <ButtonGroup>
+                                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
+                                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
+                                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
+                                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
+                                </ButtonGroup>
+                                <div className="invalid-input" style={{ visibility: this.state.recurrenceValidLabel }}>Recurrence type is required</div>
+                            </Col>
+                        </Row><br />
+                        <Row className="create-event-row">
+                            <Col xs="10" sm="10" md="10" lg="10">
+                                <label className="inputName" style={{ color: this.state.daysSelectedValid }}>Weekday</label>
+                                <ButtonGroup name="weeklyOcurrence">
+                                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
+                                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
+                                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
+                                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
+                                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
+                                </ButtonGroup>
+                                <div className="invalid-input" style={{ visibility: this.state.daysSelectedValidLabel }}>Weekday is required</div>
+                            </Col>
+                        </Row>
+                    </fieldset>;
+            } else {
+                wizardContentCreate =
+                    <fieldset>
+                        <Row className="create-event-row">
+                            <Col xs="8" sm="8" md="8" lg="8">
+                                <label className="inputName">Type of event</label>
+                                <fieldset>
+                                    <div className="custom-control custom-toggle d-block my-2">
+                                        <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input" />
+                                        <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
+                                    </div>
+                                </fieldset>
+                            </Col>
+                        </Row><br />
+                        <Row>
+                            <Col xs="12" sm="12" md="12" lg="12">
+                                <label className="inputName" style={{ color: this.state.dateValidNonRecurr }}>Date & time</label>
+                                <div className="input-daterange input-group" id="datepicker-example-2">
+                                    <span className="input-group-append create-event-date-picker-icon">
+                                        <span className="input-group-text create-event-date-picker-icon">
+                                            <i className="fa fa-calendar"></i>
+                                        </span>
+                                    </span>
+                                    <DatePicker
+                                        className="input-sm form-control create-event-date-picker"
+                                        name="start"
+                                        placeholderText="Start date"
+                                        selected={this.state.startDate}
+                                        onChange={this.handleChangeStart}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        minDate={moment()}
+                                        minTime={moment().hours(9).minutes(0)}
+                                        maxTime={moment().hours(17).minutes(45)}
+                                        dateFormat="LLL"
+                                        readOnly
+                                    />
+                                    <DatePicker
+                                        className="input-sm form-control create-event-date-picker"
+                                        name="end"
+                                        placeholderText="End date"
+                                        selected={this.state.endDate}
+                                        onChange={this.handleChangeEnd}
+                                        showTimeSelect
+                                        timeFormat="HH:mm"
+                                        timeIntervals={15}
+                                        minDate={this.minMaxTime()}
+                                        maxDate={this.minMaxTime()}
+                                        minTime={this.startTime()}
+                                        maxTime={moment().hours(18).minutes(0)}
+                                        dateFormat="LLL"
+                                        readOnly
+                                    />
+                                    <span className="input-group-prepend create-event-enddate-picker-icon">
+                                        <span className="input-group-text create-event-enddate-picker-icon">
+                                            <i className="fa fa-calendar"></i>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div className="invalid-input" style={{ visibility: this.state.dateValidLabelNonRecurr }}>Start and end dates are required</div>
+                            </Col>
+                        </Row>
+                    </fieldset>;
+            }
+        } else {
+            if (this.state.isRecurrent.value === "non-recurring") {
+                wizardContentCreate =
+                    <fieldset>
+                        <Row>
+                            <Col xs="12" sm="12" md="12" lg="12">
+                                <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
+                                <label className="create-event-summary-name">{this.state.name.value}</label>
+                                <ul className="create-event-summary-list">
+                                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
+                                    <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
+                                    <li><span>Type of event:</span> <span>Non-recurring</span></li>
+                                    <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
+                                </ul>
+                                <hr />
+                            </Col>
+                        </Row>
+                    </fieldset>;
+            } else if (this.state.isRecurrent.value === "recurring") {
+                wizardContentCreate =
+                    <fieldset>
+                        <Row>
+                            <Col xs="12" sm="12" md="12" lg="12">
+                                <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
+                                <label className="create-event-summary-name">{this.state.name.value}</label>
+                                <ul className="create-event-summary-list">
+                                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
+                                    <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
+                                    <li><span>Type of event:</span> <span>Recurring</span></li>
+                                    <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
+                                    <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
+                                    <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
+                                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
+                                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
+                                </ul>
+                                <hr />
+                            </Col>
+                        </Row>
+                    </fieldset>;
+            }
         }
-        
-        else if (this.state.step === 1) {
-          if (this.state.isRecurrent.value === "recurring"){
-            wizardContentCreate = 
-            <fieldset> 
-              <Row>
-                <Col xs="12" sm="12" md="12" lg="12">
-                  <label className="inputName" style={{color: this.state.dateValid}}>Date & time</label>
-                    <div className="input-daterange input-group" id="datepicker-example-2">
-                      <span className="input-group-append create-event-date-picker-icon">
-                        <span className="input-group-text create-event-date-picker-icon">
-                          <i className="fa fa-calendar"></i>
-                        </span>
-                      </span>
-                      <DatePicker
-                        className="input-sm form-control create-event-date-picker"
-                        name="start"
-                        placeholderText="Start date"
-                        selected={this.state.startDate}
-                        onChange={this.handleChangeStart}
-                        showTimeSelect
-                        timeFormat="HH:mm"
-                        timeIntervals={15}
-                        minDate={moment()}
-                        minTime={moment().hours(9).minutes(0)}
-                        maxTime={moment().hours(17).minutes(45)}
-                        dateFormat="LLL"
-                        readOnly
-                      />
-                      <DatePicker
-                        className="input-sm form-control create-event-date-picker"
-                        name="end"
-                        placeholderText="End date"
-                        selected={this.state.endDate}
-                        onChange={this.handleChangeEnd}
-                        showTimeSelect
-                        timeFormat="HH:mm"
-                        timeIntervals={15}
-                        minDate={this.minMaxTime()}
-                        minTime={this.startTime()}
-                        maxTime={moment().hours(18).minutes(0)}
-                        dateFormat="LLL"
-                        readOnly
-                      />
-                      <span className="input-group-prepend create-event-enddate-picker-icon">
-                        <span className="input-group-text create-event-enddate-picker-icon">
-                          <i className="fa fa-calendar"></i>
-                        </span>
-                      </span>
-                      <div className="invalid-input" style={{visibility: this.state.dateValidLabel}}>Start and end dates are required</div>
-                    </div>
-                </Col>
-              </Row><br/>
-              <Row className="create-event-row">
-                <Col xs="10" sm="10" md="10" lg="10">
-                  <label className="inputName" style={{color: this.state.recurrenceValid}}>Recurrence</label>
-                  <ButtonGroup>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Weekly")} active={this.state.recurrence === "Weekly"}>Weekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Biweekly")} active={this.state.recurrence === "Biweekly"}>Biweekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Triweekly")} active={this.state.recurrence === "Triweekly"}>Triweekly</Button>
-                    <Button className="create-event-recurrence-radio" color="secondary" onClick={() => this.updateRecurrence("Monthly")} active={this.state.recurrence === "Monthly"}>Monthly</Button>
-                  </ButtonGroup>
-                  <div className="invalid-input" style={{visibility: this.state.recurrenceValidLabel}}>Recurrence type is required</div>
-                </Col>
-              </Row><br/>
-              <Row className="create-event-row">
-                <Col xs="10" sm="10" md="10" lg="10">
-                  <label className="inputName" style={{color: this.state.daysSelectedValid}}>Weekday</label>
-                  <ButtonGroup name="weeklyOcurrence">
-                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Monday")} active={this.state.daysSelected.includes("Monday")}>Monday</Button>
-                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Tuesday")} active={this.state.daysSelected.includes("Tuesday")}>Tuesday</Button>
-                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Wednesday")} active={this.state.daysSelected.includes("Wednesday")}>Wednesday</Button>
-                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Thursday")} active={this.state.daysSelected.includes("Thursday")}>Thursday</Button>
-                    <Button className="create-event-weekday-check" color="secondary" onClick={() => this.updateDaysSelection("Friday")} active={this.state.daysSelected.includes("Friday")}>Friday</Button>
-                  </ButtonGroup>
-                  <div className="invalid-input" style={{visibility: this.state.daysSelectedValidLabel}}>Weekday is required</div>
-                </Col>
-              </Row>
-            </fieldset>;
-          }
-          else {
-            wizardContentCreate = 
-            <fieldset>
-              <Row className="create-event-row">
-                <Col xs="8" sm="8" md="8" lg="8">
-                  <label className="inputName">Type of event</label>
-                  <fieldset>
-                    <div className="custom-control custom-toggle d-block my-2">
-                      <input type="checkbox" id="customToggle1" name="allDay" onClick={() => this.onRadioBtnClick()} className="custom-control-input"/>
-                      <label className="custom-control-label" htmlFor="customToggle1">Will your event last all day?</label>
-                    </div>
-                  </fieldset>
-                </Col>
-              </Row><br/>
-              <Row>
-                <Col xs="12" sm="12" md="12" lg="12">
-                  <label className="inputName" style={{color: this.state.dateValidNonRecurr}}>Date & time</label>
-                    <div className="input-daterange input-group" id="datepicker-example-2">
-                      <span className="input-group-append create-event-date-picker-icon">
-                        <span className="input-group-text create-event-date-picker-icon">
-                          <i className="fa fa-calendar"></i>
-                        </span>
-                      </span>
-                      <DatePicker
-                        className="input-sm form-control create-event-date-picker"
-                        name="start"
-                        placeholderText="Start date"
-                        selected={this.state.startDate}
-                        onChange={this.handleChangeStart}
-                        showTimeSelect
-                        timeFormat="HH:mm"
-                        timeIntervals={15}
-                        minDate={moment()}
-                        minTime={moment().hours(9).minutes(0)}
-                        maxTime={moment().hours(17).minutes(45)}
-                        dateFormat="LLL"
-                        readOnly
-                      />
-                      <DatePicker
-                        className="input-sm form-control create-event-date-picker"
-                        name="end"
-                        placeholderText="End date"
-                        selected={this.state.endDate}
-                        onChange={this.handleChangeEnd}
-                        showTimeSelect
-                        timeFormat="HH:mm"
-                        timeIntervals={15}
-                        minDate={this.minMaxTime()}
-                        maxDate={this.minMaxTime()}
-                        minTime={this.startTime()}
-                        maxTime={moment().hours(18).minutes(0)}
-                        dateFormat="LLL"
-                        readOnly
-                      />
-                      <span className="input-group-prepend create-event-enddate-picker-icon">
-                        <span className="input-group-text create-event-enddate-picker-icon">
-                          <i className="fa fa-calendar"></i>
-                        </span>
-                      </span>
-                    </div>
-                    <div className="invalid-input" style={{visibility: this.state.dateValidLabelNonRecurr}}>Start and end dates are required</div>
-                </Col>
-              </Row>
-            </fieldset>;
-          }
-        }  else {
-          if (this.state.isRecurrent.value === "non-recurring") {
-            wizardContentCreate = 
-            <fieldset> 
-              <Row>
-                <Col xs="12" sm="12" md="12" lg="12">
-                  <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
-                  <label className="create-event-summary-name">{this.state.name.value}</label>
-                  <ul className="create-event-summary-list">
-                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
-                    <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
-                    <li><span>Type of event:</span> <span>Non-recurring</span></li>
-                    <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
-                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
-                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
-                  </ul> 
-                  <hr/>
-                </Col>
-              </Row>
-            </fieldset>;
-          }
-          else if (this.state.isRecurrent.value === "recurring") {
-            wizardContentCreate = 
-            <fieldset> 
-              <Row>
-                <Col xs="12" sm="12" md="12" lg="12">
-                  <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
-                  <label className="create-event-summary-name">{this.state.name.value}</label>
-                  <ul className="create-event-summary-list">
-                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
-                    <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
-                    <li><span>Type of event:</span> <span>Recurring</span></li>
-                    <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
-                    <li><span>Time:</span> <span>From {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
-                    <li><span>Recurring basis:</span> <span>{this.state.recurrence} from {moment(this.state.startDate).format("MMMM Do YYYY")} to {moment(this.state.endDate).format("MMMM Do YYYY")}</span></li>
-                    <li><span>Location:</span> <span>{this.state.location.value}</span></li>
-                    <li><span>Description:</span> <span>{this.state.description.value}</span></li>
-                  </ul> 
-                  <hr/>
-                </Col>
-              </Row>
-            </fieldset>;
-          }
-        }
-
         if (this.state.login.username === "default") {
             return (
                 <div className='sweet-loading app-loader'>
                     <PulseLoader
-                        color={'#D73636'} 
+                        color={'#D73636'}
                         loading={true}
                         size={50}
                     />
@@ -1586,59 +1579,59 @@ class App extends Component {
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
-                                    <form> 
+                                    <form>
                                         <h3 className="create-account-label"> Create An Account </h3>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group create-account-elements-container">
-                                                        <label htmlFor="name" className="create-account-elements">Full name</label>
-                                                        <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your full name"/>
-                                                        <div className="invalid-feedback create-account-elements">Name can't be left empty.</div>
-                                                    </div>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group create-account-elements-container">
+                                                    <label htmlFor="name" className="create-account-elements">Full name</label>
+                                                    <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your full name" />
+                                                    <div className="invalid-feedback create-account-elements">Name can't be left empty.</div>
                                                 </div>
-                                            </Row>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group create-account-elements-container">
-                                                        <label htmlFor="email" className="create-account-elements">Email</label>
-                                                        <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your email"/>
-                                                        <div className="invalid-feedback create-account-elements">Email format should be a@b.c.</div>
-                                                    </div>
+                                            </div>
+                                        </Row>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group create-account-elements-container">
+                                                    <label htmlFor="email" className="create-account-elements">Email</label>
+                                                    <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your email" />
+                                                    <div className="invalid-feedback create-account-elements">Email format should be a@b.c.</div>
                                                 </div>
-                                            </Row>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group create-account-elements-container">
-                                                        <label htmlFor="username" className="create-account-elements">Username</label>
-                                                        <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your username"/>
-                                                        <div className="invalid-feedback create-account-elements">Username can't be left empty.</div>
-                                                    </div>
+                                            </div>
+                                        </Row>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group create-account-elements-container">
+                                                    <label htmlFor="username" className="create-account-elements">Username</label>
+                                                    <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your username" />
+                                                    <div className="invalid-feedback create-account-elements">Username can't be left empty.</div>
                                                 </div>
-                                            </Row>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group create-account-elements-container">
-                                                        <label htmlFor="password" className="create-account-elements">Password</label>
-                                                        <Input type="password" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password"/>
-                                                        <div className="invalid-feedback create-account-elements">Password can't be left empty.</div>
-                                                    </div>
+                                            </div>
+                                        </Row>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group create-account-elements-container">
+                                                    <label htmlFor="password" className="create-account-elements">Password</label>
+                                                    <Input type="password" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password" />
+                                                    <div className="invalid-feedback create-account-elements">Password can't be left empty.</div>
                                                 </div>
-                                            </Row>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group reate-account-elements-container">
-                                                        <label htmlFor="confirmPassword" className="create-account-elements">Confirm your password</label>
-                                                        <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Confirm your password"/>
-                                                        <div className="invalid-feedback create-account-elements">Passwords do not match.</div>
-                                                    </div>
+                                            </div>
+                                        </Row>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group reate-account-elements-container">
+                                                    <label htmlFor="confirmPassword" className="create-account-elements">Confirm your password</label>
+                                                    <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Confirm your password" />
+                                                    <div className="invalid-feedback create-account-elements">Passwords do not match.</div>
                                                 </div>
-                                            </Row>  
+                                            </div>
+                                        </Row>
                                         <input className="btn btn-primary d-flex ml-auto mr-auto create-account-button" onClick={this.createAccount} type="button" value="Create"></input>
                                     </form>
                                 </div>
                             </div>
                             <p className="switch-login-createaccount-link" onClick={this.displayLogIn}> Return to log in </p>
-                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
+                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
                         </div>
                     </div>
                 </div>
@@ -1650,32 +1643,32 @@ class App extends Component {
                         <div className="container py-4">
                             <div className="row justify-content-md-center px-4">
                                 <div className="col-sm-12 col-md-7 col-lg-5 p-4 mb-4 card">
-                                    <form> 
+                                    <form>
                                         <h3 className="log-in-label"> Umba </h3>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group log-in-form">
-                                                        <label htmlFor="username" className="log-in-elements">Username</label>
-                                                        <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your username"></Input>
-                                                        <div className="invalid-feedback log-in-elements">Username can't be left empty.</div>
-                                                    </div>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group log-in-form">
+                                                    <label htmlFor="username" className="log-in-elements">Username</label>
+                                                    <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your username"></Input>
+                                                    <div className="invalid-feedback log-in-elements">Username can't be left empty.</div>
                                                 </div>
-                                            </Row>
-                                            <Row>
-                                                <div className="col-md-12 col-sm-12">
-                                                    <div className="form-group log-in-form">
-                                                        <label htmlFor="password" className="log-in-elements">Password</label>
-                                                        <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your password"></Input>
-                                                        <div className="invalid-feedback log-in-elements">Password can't be left empty.</div>
-                                                    </div>
+                                            </div>
+                                        </Row>
+                                        <Row>
+                                            <div className="col-md-12 col-sm-12">
+                                                <div className="form-group log-in-form">
+                                                    <label htmlFor="password" className="log-in-elements">Password</label>
+                                                    <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your password"></Input>
+                                                    <div className="invalid-feedback log-in-elements">Password can't be left empty.</div>
                                                 </div>
-                                            </Row>
+                                            </div>
+                                        </Row>
                                         <input className="btn btn-primary d-flex ml-auto mr-auto log-in-button" onClick={this.handleLoginSubmit} type="button" value="Log In"></input>
                                     </form>
                                 </div>
                             </div>
                             <p className="switch-login-createaccount-link" onClick={this.displayCreateAccount}> Create an account </p>
-                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
+                            <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
                         </div>
                     </div>
                 </div>
@@ -1687,75 +1680,69 @@ class App extends Component {
                     <div className="welcome d-flex justify-content-center flex-column">
                         <div className="container">
                             <nav className="navbar navbar-expand-lg navbar-dark pt-4 px-0">
-                            <a className="app-name">
-                                Umba
+                                <a className="app-name">
+                                    Umba
                             </a>
-                            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                                <span className="navbar-toggler-icon"></span>
-                            </button>
-                            <div className="collapse navbar-collapse" id="navbarNavDropdown">
-                                <ul className="navbar-nav">
-                                <li className="nav-item">
-                                    <a onClick={this.logOut} className="nav-link app-logout-button">Log Out</a>
-                                </li>
-                                </ul>
-                            </div>
+                                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span className="navbar-toggler-icon"></span>
+                                </button>
+                                <div className="collapse navbar-collapse" id="navbarNavDropdown">
+                                    <ul className="navbar-nav">
+                                        <li className="nav-item">
+                                            <a onClick={this.logOut} className="nav-link app-logout-button">Log Out</a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </nav>
                         </div>
-
                         {/*<----------------------- MAIN PAGE ----------------------->*/}
                         <div className="inner-wrapper mt-auto mb-auto container">
                             <div className="row">
-                            <div className="col-md-7">
-                                <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.username)}</h1>
-                                <label className="app-welcome-subheading">Scroll down to get started</label>
-                            </div>
+                                <div className="col-md-7">
+                                    <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.username)}</h1>
+                                    <label className="app-welcome-subheading">Scroll down to get started</label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                            {/*<----------------------- CALENDAR PAGE ----------------------->*/}
-                            <div id="our-services" className="our-services section py-4">
-                            <div className="app-counter-alert">
-                                {this.state.secondsElapsed > 0 &&
-                                    (<Alert color="primary" isOpen={this.state.visible} fade={false}>
-                                        <div>
-                                            <h4 className="app-stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
-                                        </div>
-                                    </Alert>)}
-                                    {this.state.secondsElapsed === 0 &&
-                                    ( this.unRegisterEvent() )}
-                            </div>
-                            <h3 className="section-title text-center my-5">Your Schedule</h3>
-                    
-                            <div className="container py-4">
-                                <div className="row justify-content-md-center px-4">
-                                <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card"> 
-                    
+                    {/*<----------------------- CALENDAR PAGE ----------------------->*/}
+                    <div id="our-services" className="our-services section py-4">
+                        <div className="app-counter-alert">
+                            {this.state.secondsElapsed > 0 &&
+                                (<Alert color="primary" isOpen={this.state.visible} fade={false}>
+                                    <div>
+                                        <h4 className="app-stopwatch-timer">Time left to register for added events: {formattedSeconds(this.state.secondsElapsed)}</h4>
+                                    </div>
+                                </Alert>)}
+                            {this.state.secondsElapsed === 0 &&
+                                (this.unRegisterEvent())}
+                        </div>
+                        <h3 className="section-title text-center my-5">Your Schedule</h3>
+                        <div className="container py-4">
+                            <div className="row justify-content-md-center px-4">
+                                <div className="contact-form col-sm-12 col-md-12 col-lg-12 p-4 mb-4 card">
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12">
                                             <div className="calendar-main">
-                                            <BigCalendar
-                                                selectable={true}
-                                                min={new Date('2018, 1, 7, 09:00')}
-                                                max={new Date('2018, 1, 7, 18:00')}
-                                                defaultView='week'
-                                                onSelectEvent={(obj) => this.toggleViewModal(obj)}
-                                                events={flatten2(this.state.events)}
-                                                startAccessor='start'
-                                                endAccessor='end'>
-                                            </BigCalendar>
+                                                <BigCalendar
+                                                    selectable={true}
+                                                    min={new Date('2018, 1, 7, 09:00')}
+                                                    max={new Date('2018, 1, 7, 18:00')}
+                                                    defaultView='week'
+                                                    onSelectEvent={(obj) => this.toggleViewModal(obj)}
+                                                    events={flatten2(this.state.events)}
+                                                    startAccessor='start'
+                                                    endAccessor='end'>
+                                                </BigCalendar>
                                             </div>
                                         </Col>
                                     </Row>
-                                    
                                     <Row>
                                         <Col xs="12" sm="12" md="12" lg="12" className="calendar-my-events-col">
                                             <Button className="btn btn-secondary calendar-my-events-button" onClick={this.toggleRegisterModal}>My Events</Button>
-                                            <label className="calendar-my-events-label" style={{display: this.state.myEventsErrorLabel}}> No added events to show. </label>
+                                            <label className="calendar-my-events-label" style={{ display: this.state.myEventsErrorLabel }}> No added events to show. </label>
                                         </Col>
                                     </Row>
-                    
                                     {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.createModal} toggle={this.toggleCreateEventModal} className={this.props.className}>
                                         <ModalHeader>
@@ -1790,7 +1777,6 @@ class App extends Component {
                                             </Form>
                                         </ModalBody>
                                     </Modal>
-
                                     {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
                                         <ModalHeader>
@@ -1799,40 +1785,39 @@ class App extends Component {
                                         <ModalBody>
                                             <form>
                                                 {this.state.registerEvents.length > 0 &&
-                                                (
-                                                    this.state.registerEvents.map((registerEvents, index) => {
-                                                        let event = registerEvents;
+                                                    (
+                                                        this.state.registerEvents.map((registerEvents, index) => {
+                                                            let event = registerEvents;
                                                             if (event) {
                                                                 return <Row key={index + 1}>
-                                                                            <Col xs="12" sm="12" md="12" lg="12">
-                                                                                <i className="fa fa-check-circle icon-pass cycle-status submit-event-icon"></i>
-                                                                                <label className="submit-event-name-label">{event.calendarInfo.title}</label>
-                                                                                <i className="fas fa-times pull-right submit-event-remove-icon" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
-                                                                                <ul className="submit-event-list">
-                                                                                    <li><span>Instructor:</span> <span>{event.instructor}</span></li>
-                                                                                    <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
-                                                                                    <li><span>Time:</span> <span>From {moment(event.calendarInfo.start).format("H:mm")} to {moment(event.calendarInfo.end).format("H:mm")}</span></li>
-                                                                                    <li><span>Location:</span> <span>{event.location}</span></li>
-                                                                                    <li><span>Capacity:</span> <span>{event.capacity}</span></li>
-                                                                                    <li><span>Description:</span> <span>{event.description}</span></li>
-                                                                                </ul>
-                                                                                <hr/>
-                                                                            </Col>
-                                                                    </Row>;
+                                                                    <Col xs="12" sm="12" md="12" lg="12">
+                                                                        <i className="fa fa-check-circle icon-pass cycle-status submit-event-icon"></i>
+                                                                        <label className="submit-event-name-label">{event.calendarInfo.title}</label>
+                                                                        <i className="fas fa-times pull-right submit-event-remove-icon" onClick={() => this.unregisterFromSingleEvent(event._id)}></i>
+                                                                        <ul className="submit-event-list">
+                                                                            <li><span>Instructor:</span> <span>{event.instructor}</span></li>
+                                                                            <li><span>Date:</span> <span>{moment(event.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></li>
+                                                                            <li><span>Time:</span> <span>From {moment(event.calendarInfo.start).format("H:mm")} to {moment(event.calendarInfo.end).format("H:mm")}</span></li>
+                                                                            <li><span>Location:</span> <span>{event.location}</span></li>
+                                                                            <li><span>Capacity:</span> <span>{event.capacity}</span></li>
+                                                                            <li><span>Description:</span> <span>{event.description}</span></li>
+                                                                        </ul>
+                                                                        <hr />
+                                                                    </Col>
+                                                                </Row>;
                                                             } else return null;
-                                                    })
-                                                )}
+                                                        })
+                                                    )}
                                             </form>
                                         </ModalBody>
                                         <ModalFooter>
-                                                {(this.state.secondsElapsed !== 0 &&
+                                            {(this.state.secondsElapsed !== 0 &&
                                                 this.incrementer === this.state.lastClearedIncrementer
-                                                ? <button type="button" className="btn btn-success pull-right" align="right"onClick={() => {this.registerForEvents()}}>Register</button>
+                                                ? <button type="button" className="btn btn-success pull-right" align="right" onClick={() => { this.registerForEvents() }}>Register</button>
                                                 : null
-                                                )}
+                                            )}
                                         </ModalFooter>
                                     </Modal>
-
                                     {/*<----------------------- EVENT ANNOUNCE MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.announceModal} toggle={this.toggleAnnounceModal} className={this.props.className}>
                                         <form onSubmit={this.notifyEvent} id="announceModal">
@@ -1842,9 +1827,9 @@ class App extends Component {
                                             <ModalBody>
                                                 <div className="row">
                                                     <div className="col">
-                                                    <div className="form-group">
-                                                        <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4 announce-event-textarea" rows="10" required="required" placeholder="Enter your message..."></textarea>
-                                                    </div>
+                                                        <div className="form-group">
+                                                            <textarea id="announceMessage" ref={this.announceMessage} className="form-control mb-4 announce-event-textarea" rows="10" required="required" placeholder="Enter your message..."></textarea>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </ModalBody>
@@ -1855,25 +1840,22 @@ class App extends Component {
                                             </ModalFooter>
                                         </form>
                                     </Modal>
-
                                     {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.addAdminModal} toggle={this.toggleAddAdminModal} className={this.props.className}>
                                         <ModalHeader>
                                             <label className="add-admin-label">Add Admin</label>
                                         </ModalHeader>
                                         <ModalBody>
-                                            
-                                                <label htmlFor="contactFormEmail">Search by email</label>
-                                                <Row>
-                                                    <div className="col-md-9 col-sm-9 add-admin-input-email-container">
-                                                        <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
-                                                        <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
-                                                    </div>
-                                                    <div className="col-md-3 col-sm-3 add-admin-search-button-container">
-                                                        <Button className="add-admin-search-button" color="secondary light" onClick={() => {this.searchAdminEmail(this.state.email.value)}}>Search</Button>
-                                                    </div>
-                                                
-                                                    <Col xs="12" sm="12" md="12" lg="12" className="add-admin-modal" style={{display: this.state.newAdminSearchTable}}>
+                                            <label htmlFor="contactFormEmail">Search by email</label>
+                                            <Row>
+                                                <div className="col-md-9 col-sm-9 add-admin-input-email-container">
+                                                    <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid ? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
+                                                    <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
+                                                </div>
+                                                <div className="col-md-3 col-sm-3 add-admin-search-button-container">
+                                                    <Button className="add-admin-search-button" color="secondary light" onClick={() => { this.searchAdminEmail(this.state.email.value) }}>Search</Button>
+                                                </div>
+                                                <Col xs="12" sm="12" md="12" lg="12" className="add-admin-modal" style={{ display: this.state.newAdminSearchTable }}>
                                                     <Table className="add-admin-table">
                                                         <tbody>
                                                             <tr>
@@ -1889,249 +1871,248 @@ class App extends Component {
                                                                 <td><span className="add-admin-user-info-data">{this.state.emailUserModal}</span></td>
                                                             </tr>
                                                         </tbody>
-                                                    </Table> 
-                                                    </Col>
-                                                </Row>
+                                                    </Table>
+                                                </Col>
+                                            </Row>
                                         </ModalBody>
-                                        <ModalFooter className="add-admin-modal-footer" style={{display: this.state.newAdminSearchTable}}>
+                                        <ModalFooter className="add-admin-modal-footer" style={{ display: this.state.newAdminSearchTable }}>
                                             <div className="col-md-12 col-sm-12">
-                                                <button type="button" className="btn btn-secondary pull-right" align="right" style={{display: this.state.newAdminSearchTable}} onClick={() => {this.addAdmin()}}>Add</button>
+                                                <button type="button" className="btn btn-secondary pull-right" align="right" style={{ display: this.state.newAdminSearchTable }} onClick={() => { this.addAdmin() }}>Add</button>
                                             </div>
-                                        </ModalFooter>        
+                                        </ModalFooter>
                                     </Modal>
-                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
-
+                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                         <ModalHeader>
-                                        {this.state.instructor !== this.state.login.username &&
-                                            (<label className="select-event-view-header-label">{this.state.calendarInfo.title}</label>)}
-                                        {this.state.instructor === this.state.login.username &&
-                                            (<label className="select-event-edit-header-label">Edit Event</label>)}
+                                            {this.state.instructor !== this.state.login.username &&
+                                                (<label className="select-event-view-header-label">{this.state.calendarInfo.title}</label>)}
+                                            {this.state.instructor === this.state.login.username &&
+                                                (<label className="select-event-edit-header-label">Edit Event</label>)}
                                         </ModalHeader>
                                         <ModalBody>
                                             {this.state.instructor !== this.state.login.username &&
-                                            (<Row className="select-event-modal">
+                                                (<Row className="select-event-modal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
-                                                    <Table className="select-event-table">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td className="select-event-top"><span className="select-event-info">Instructor:</span></td>
-                                                                <td className="select-event-top"><span className="select-event-info-data">{this.state.instructor}</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><span className="select-event-info">Date:</span></td>
-                                                                <td><span className="select-event-info-data">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><span className="select-event-info">Time:</span></td>
-                                                                <td><span className="select-event-info-data">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><span className="select-event-info">Location:</span></td>
-                                                                <td><span className="select-event-info-data">{this.state.location.value}</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><span className="select-event-info">Capacity:</span></td>
-                                                                <td><span className="select-event-info-data">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td><span className="select-event-info">Description:</span></td>
-                                                                <td><span className="select-event-info-data">{this.state.description.value}</span></td>
-                                                            </tr> 
-                                                        </tbody>
-                                                    </Table> 
+                                                        <Table className="select-event-table">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td className="select-event-top"><span className="select-event-info">Instructor:</span></td>
+                                                                    <td className="select-event-top"><span className="select-event-info-data">{this.state.instructor}</span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><span className="select-event-info">Date:</span></td>
+                                                                    <td><span className="select-event-info-data">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><span className="select-event-info">Time:</span></td>
+                                                                    <td><span className="select-event-info-data">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><span className="select-event-info">Location:</span></td>
+                                                                    <td><span className="select-event-info-data">{this.state.location.value}</span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><span className="select-event-info">Capacity:</span></td>
+                                                                    <td><span className="select-event-info-data">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><span className="select-event-info">Description:</span></td>
+                                                                    <td><span className="select-event-info-data">{this.state.description.value}</span></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </Table>
                                                     </Col>
-                                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
-                                                </Row> )}
+                                                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
+                                                </Row>)}
                                             {this.state.instructor === this.state.login.username &&
-                                            (<Row>
-                                            <fieldset>
-                                                <Row className="select-event-row">
-                                                    <Col xs="6" sm="6" md="6" lg="6">
-                                                    <Row>
-                                                        <label className="select-event-edit-label-top">Name</label>
-                                                        <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid? "form-control" : "form-control is-invalid"} placeholder="What will it be called?"/>
-                                                        <div className="invalid-feedback">Characters only and can't be empty.</div>
-                                                    </Row>
-                                                    <Row>
-                                                        <label className="select-event-edit-label-top">Capacity</label>
-                                                        <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid? "form-control" : "form-control is-invalid"} placeholder="How many people?"/>
-                                                        <div className="invalid-feedback">Numbers only and can't be empty.</div>
-                                                    </Row>
-                                                    <Row>
-                                                        <label className="select-event-edit-label-top">Location</label>
-                                                        <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?"/>
-                                                        <div className="invalid-feedback">Alphanumeric only and can't be empty.</div>
-                                                    </Row> 
-                                                    <Row>
-                                                        <label className="select-event-edit-label-top">Activation day</label>
+                                                (<Row>
+                                                    <fieldset>
+                                                        <Row className="select-event-row">
+                                                            <Col xs="6" sm="6" md="6" lg="6">
+                                                                <Row>
+                                                                    <label className="select-event-edit-label-top">Name</label>
+                                                                    <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
+                                                                    <div className="invalid-feedback">Characters only and can't be empty.</div>
+                                                                </Row>
+                                                                <Row>
+                                                                    <label className="select-event-edit-label-top">Capacity</label>
+                                                                    <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
+                                                                    <div className="invalid-feedback">Numbers only and can't be empty.</div>
+                                                                </Row>
+                                                                <Row>
+                                                                    <label className="select-event-edit-label-top">Location</label>
+                                                                    <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
+                                                                    <div className="invalid-feedback">Alphanumeric only and can't be empty.</div>
+                                                                </Row>
+                                                                <Row>
+                                                                    <label className="select-event-edit-label-top">Activation day</label>
+                                                                    <div className="input-daterange input-group" id="datepicker-example-2">
+                                                                        <span className="input-group-append select-event-date-picker-icon">
+                                                                            <span className="input-group-text select-event-date-picker-icon">
+                                                                                <i className="fa fa-calendar"></i>
+                                                                            </span>
+                                                                        </span>
+                                                                        <DatePicker
+                                                                            className="input-sm form-control select-event-date-picker"
+                                                                            placeholderText="Activation date"
+                                                                            selected={this.state.activationDay}
+                                                                            onChange={this.handleChangeActivationDate}
+                                                                            popperModifiers={{
+                                                                                flip: {
+                                                                                    enabled: false
+                                                                                },
+                                                                                preventOverflow: {
+                                                                                    enabled: true,
+                                                                                    escapeWithReference: false
+                                                                                }
+                                                                            }}
+                                                                            showTimeSelect
+                                                                            timeFormat="HH:mm"
+                                                                            timeIntervals={15}
+                                                                            minDate={moment()}
+                                                                            dateFormat="LLL"
+                                                                            readOnly
+                                                                        />
+                                                                    </div>
+                                                                </Row>
+                                                            </Col>
+                                                            <Col xs="6" sm="6" md="6" lg="6">
+                                                                <Row className="select-event-description-row">
+                                                                    <label className="select-event-edit-label-top">Description</label>
+                                                                    <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid ? "form-control select-event-description" : "form-control is-invalid select-event-description"} placeholder="What is your event about?"></textarea>
+                                                                    <div className="invalid-feedback">Can't be empty.</div>
+                                                                </Row>
+                                                            </Col>
+                                                        </Row>
+                                                    </fieldset>
+                                                    <Col xs="12" sm="12" md="12" lg="12" className="select-event-edit-date-col">
+                                                        <label className="select-event-edit-label">Date & time</label>
                                                         <div className="input-daterange input-group" id="datepicker-example-2">
-                                                        <span className="input-group-append select-event-date-picker-icon">
-                                                            <span className="input-group-text select-event-date-picker-icon">
-                                                            <i className="fa fa-calendar"></i>
+                                                            <span className="input-group-append select-event-date-picker-icon">
+                                                                <span className="input-group-text select-event-date-picker-icon">
+                                                                    <i className="fa fa-calendar"></i>
+                                                                </span>
                                                             </span>
-                                                        </span>
                                                             <DatePicker
-                                                                className="input-sm form-control select-event-date-picker"
-                                                                placeholderText="Activation date"
-                                                                selected={this.state.activationDay}
-                                                                onChange={this.handleChangeActivationDate}
+                                                                className="input-sm form-control create-event-date-picker"
+                                                                name="start"
+                                                                placeholderText="Start date"
+                                                                selected={this.state.startDate}
+                                                                onChange={this.handleChangeStart}
                                                                 popperModifiers={{
-                                                                flip: {
-                                                                  enabled: false
-                                                                },
-                                                                preventOverflow: {
-                                                                  enabled: true,
-                                                                  escapeWithReference: false
-                                                                }}}
+                                                                    flip: {
+                                                                        enabled: false
+                                                                    },
+                                                                    preventOverflow: {
+                                                                        enabled: true,
+                                                                        escapeWithReference: false
+                                                                    }
+                                                                }}
                                                                 showTimeSelect
                                                                 timeFormat="HH:mm"
                                                                 timeIntervals={15}
                                                                 minDate={moment()}
+                                                                minTime={moment().hours(9).minutes(0)}
+                                                                maxTime={moment().hours(17).minutes(45)}
                                                                 dateFormat="LLL"
                                                                 readOnly
                                                             />
+                                                            <DatePicker
+                                                                className="input-sm form-control create-event-date-picker"
+                                                                name="end"
+                                                                placeholderText="End date"
+                                                                selected={this.state.endDate}
+                                                                onChange={this.handleChangeEnd}
+                                                                showTimeSelect
+                                                                timeFormat="HH:mm"
+                                                                timeIntervals={15}
+                                                                minDate={this.minMaxTime()}
+                                                                maxDate={this.minMaxTime()}
+                                                                minTime={this.startTime()}
+                                                                maxTime={moment().hours(18).minutes(0)}
+                                                                dateFormat="LLL"
+                                                                readOnly
+                                                            />
+                                                            <span className="input-group-prepend select-event-enddate-picker-icon">
+                                                                <span className="input-group-text select-event-enddate-picker-icon">
+                                                                    <i className="fa fa-calendar"></i>
+                                                                </span>
+                                                            </span>
                                                         </div>
-                                                    </Row>
                                                     </Col>
-                                                    <Col xs="6" sm="6" md="6" lg="6">
-                                                    <Row className="select-event-description-row">
-                                                        <label className="select-event-edit-label-top">Description</label>
-                                                        <textarea name="description" value={this.state.description.value} onChange={this.handleChange} className={this.state.description.valid? "form-control select-event-description" : "form-control is-invalid select-event-description"} placeholder="What is your event about?"></textarea>
-                                                        <div className="invalid-feedback">Can't be empty.</div>
-                                                    </Row>
-                                                    </Col>
-                                                </Row>
-                                                </fieldset>
-                                                <Col xs="12" sm="12" md="12" lg="12" className="select-event-edit-date-col">
-                                                <label className="select-event-edit-label">Date & time</label>
-                                                    <div className="input-daterange input-group" id="datepicker-example-2">
-                                                    <span className="input-group-append select-event-date-picker-icon">
-                                                        <span className="input-group-text select-event-date-picker-icon">
-                                                        <i className="fa fa-calendar"></i>
-                                                        </span>
-                                                    </span>
-                                                    <DatePicker
-                                                        className="input-sm form-control create-event-date-picker"
-                                                        name="start"
-                                                        placeholderText="Start date"
-                                                        selected={this.state.startDate}
-                                                        onChange={this.handleChangeStart}
-                                                        popperModifiers={{
-                                                        flip: {
-                                                          enabled: false
-                                                        },
-                                                        preventOverflow: {
-                                                          enabled: true,
-                                                          escapeWithReference: false
-                                                        }}}
-                                                        showTimeSelect
-                                                        timeFormat="HH:mm"
-                                                        timeIntervals={15}
-                                                        minDate={moment()}
-                                                        minTime={moment().hours(9).minutes(0)}
-                                                        maxTime={moment().hours(17).minutes(45)}
-                                                        dateFormat="LLL"
-                                                        readOnly
-                                                    />
-                                                    <DatePicker
-                                                        className="input-sm form-control create-event-date-picker"
-                                                        name="end"
-                                                        placeholderText="End date"
-                                                        selected={this.state.endDate}
-                                                        onChange={this.handleChangeEnd}
-                                                        showTimeSelect
-                                                        timeFormat="HH:mm"
-                                                        timeIntervals={15}
-                                                        minDate={this.minMaxTime()}
-                                                        maxDate={this.minMaxTime()}
-                                                        minTime={this.startTime()}
-                                                        maxTime={moment().hours(18).minutes(0)}
-                                                        dateFormat="LLL"
-                                                        readOnly
-                                                    />
-                                                    <span className="input-group-prepend select-event-enddate-picker-icon">
-                                                        <span className="input-group-text select-event-enddate-picker-icon">
-                                                        <i className="fa fa-calendar"></i>
-                                                        </span>
-                                                    </span>
-                                                    </div>
-                                                </Col>
-                                            </Row>)}
+                                                </Row>)}
                                         </ModalBody>
                                         <ModalFooter>
-                                        {this.state.instructor !== this.state.login.username &&
-                                            (<Col xs="12" sm="12" md="12" lg="12">
-                                            <Button className="select-event-add-button" color="primary" onClick={() => {this.addEventBasket(this.state.currentEventId)}}>Add</Button>
-                                            <label className="select-event-error-label" style={{display: this.state.allReadyRegisteredErrorLabel}}> You're already registered to this event. </label>
-                                            <label className="select-event-error-label" style={{display: this.state.fullCapacityErrorLabel}}> This event is already full. </label>
-                                            </Col>)}
-                                        {this.state.instructor === this.state.login.username &&
-                                            (<Button color="warning" onClick={() => {this.editEvent()}}>Save</Button>)}
+                                            {this.state.instructor !== this.state.login.username &&
+                                                (<Col xs="12" sm="12" md="12" lg="12">
+                                                    <Button className="select-event-add-button" color="primary" onClick={() => { this.addEventBasket(this.state.currentEventId) }}>Add</Button>
+                                                    <label className="select-event-error-label" style={{ display: this.state.allReadyRegisteredErrorLabel }}> You're already registered to this event. </label>
+                                                    <label className="select-event-error-label" style={{ display: this.state.fullCapacityErrorLabel }}> This event is already full. </label>
+                                                </Col>)}
+                                            {this.state.instructor === this.state.login.username &&
+                                                (<Button color="warning" onClick={() => { this.editEvent() }}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
-
                                     {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
                                         <ModalHeader>
                                             <label className="activate-event-label">Activate Event</label>
                                         </ModalHeader>
                                         <ModalBody>
-                                        <Row >
-                                            <Col xs="8" sm="8" md="8" lg="8">
-                                            <fieldset>
-                                                <div className="custom-control custom-toggle d-block my-2">
-                                                <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input"/>
-                                                <label className="custom-control-label" htmlFor="customToggle1">Today</label>
-                                                </div>
-                                            </fieldset>
-                                            </Col>
-                                        </Row><br/>
-                                        <Row>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                                <div className="input-daterange input-group" id="datepicker-example-2">
-                                                <span className="input-group-append create-event-date-picker-icon">
-                                                    <span className="input-group-text create-event-date-picker-icon">
-                                                    <i className="fa fa-calendar"></i>
-                                                    </span>
-                                                </span>
-                                                <DatePicker
-                                                    className="input-sm form-control activate-event-date-picker"
-                                                    placeholderText="Activation date"
-                                                    selected={this.state.activationDay}
-                                                    onChange={this.handleChangeActivationDate}
-                                                    showTimeSelect
-                                                    timeFormat="HH:mm"
-                                                    timeIntervals={15}
-                                                    minDate={moment()}
-                                                    dateFormat="LLL"
-                                                    readOnly
-                                                />
-                                                </div>
-                                            </Col>
-                                        </Row>
+                                            <Row >
+                                                <Col xs="8" sm="8" md="8" lg="8">
+                                                    <fieldset>
+                                                        <div className="custom-control custom-toggle d-block my-2">
+                                                            <input type="checkbox" id="customToggle1" name="activateToday" onClick={() => this.onRadioBtnActivateClick()} className="custom-control-input" />
+                                                            <label className="custom-control-label" htmlFor="customToggle1">Today</label>
+                                                        </div>
+                                                    </fieldset>
+                                                </Col>
+                                            </Row><br />
+                                            <Row>
+                                                <Col xs="12" sm="12" md="12" lg="12">
+                                                    <div className="input-daterange input-group" id="datepicker-example-2">
+                                                        <span className="input-group-append create-event-date-picker-icon">
+                                                            <span className="input-group-text create-event-date-picker-icon">
+                                                                <i className="fa fa-calendar"></i>
+                                                            </span>
+                                                        </span>
+                                                        <DatePicker
+                                                            className="input-sm form-control activate-event-date-picker"
+                                                            placeholderText="Activation date"
+                                                            selected={this.state.activationDay}
+                                                            onChange={this.handleChangeActivationDate}
+                                                            showTimeSelect
+                                                            timeFormat="HH:mm"
+                                                            timeIntervals={15}
+                                                            minDate={moment()}
+                                                            dateFormat="LLL"
+                                                            readOnly
+                                                        />
+                                                    </div>
+                                                </Col>
+                                            </Row>
                                         </ModalBody>
                                         <ModalFooter>
                                             <Row className="activate-event-button-row pull-right">
-                                                <Button color="success" onClick={() => this.activateEvent()}>Activate</Button>  
+                                                <Button color="success" onClick={() => this.activateEvent()}>Activate</Button>
                                             </Row>
                                         </ModalFooter>
                                     </Modal>
                                     {/*<----------------------- EVENT DELETE MODAL ----------------------->*/}
-
                                     <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
                                         <ModalHeader>
                                             <label className="delete-event-delete-label">Delete Event</label>
                                         </ModalHeader>
                                         <ModalBody>
-                                        <Row className="delete-event-row">
-                                        <p className="delete-event-message">Are you sure you wish to delete this event?</p>
-                                        </Row>
+                                            <Row className="delete-event-row">
+                                                <p className="delete-event-message">Are you sure you wish to delete this event?</p>
+                                            </Row>
                                         </ModalBody>
                                         <ModalFooter>
                                             <Row className="delete-event-button-row pull-right">
-                                                <Button color="danger" onClick={() => {this.deleteEvent()}}>Delete</Button>
+                                                <Button color="danger" onClick={() => { this.deleteEvent() }}>Delete</Button>
                                             </Row>
                                         </ModalFooter>
                                     </Modal>
@@ -2139,105 +2120,104 @@ class App extends Component {
                             </div>
                         </div>
                     </div>
-
                     <div className="contact section-invert py-4">
                         {this.state.login.admin === true &&
-                        (<div>
-                            <Row>
-                                <div className="col-md-12 col-sm-12">
-                                    <h1 className="app-admin-page-header">Admin</h1>
-                                </div>
-                            </Row>
-                            <Row>
-                                <div className="col-md-12 col-sm-12">
-                                    <h3 className="app-admin-page-subheader">Inactive Events</h3>
-                                </div>
-                            </Row>
-                            <Row className="app-admin-page-inactive-events">
-                                <div className="col-md-12 col-sm-12">
-                                    <Table>
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Location</th>
-                                            <th>Capacity</th>
-                                        </tr>
-                                        </thead>    
-                                        {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
-                                            <tbody>
-                                            {
-                                                activeChecker(this.state.events, this.state.login.username).map((events, index) => {
-                                                    let event = events;
-                                                    if (event) {
-                                                        return <tr key={index + 1}>
-                                                                <th>{event.calendarInfo.title}</th>
-                                                                <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
-                                                                <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
-                                                                <td>{event.location}</td>
-                                                                <td>{event.capacity}</td>
-                                                                <td><Button outline color="success" onClick={() => {this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end)}}>Activate</Button></td>
-                                                                <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
-                                                                <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
-                                                            </tr>;
-                                                    } else return null;
-                                                })
+                            (<div>
+                                <Row>
+                                    <div className="col-md-12 col-sm-12">
+                                        <h1 className="app-admin-page-header">Admin</h1>
+                                    </div>
+                                </Row>
+                                <Row>
+                                    <div className="col-md-12 col-sm-12">
+                                        <h3 className="app-admin-page-subheader">Inactive Events</h3>
+                                    </div>
+                                </Row>
+                                <Row className="app-admin-page-inactive-events">
+                                    <div className="col-md-12 col-sm-12">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Location</th>
+                                                    <th>Capacity</th>
+                                                </tr>
+                                            </thead>
+                                            {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
+                                                <tbody>
+                                                    {
+                                                        activeChecker(this.state.events, this.state.login.username).map((events, index) => {
+                                                            let event = events;
+                                                            if (event) {
+                                                                return <tr key={index + 1}>
+                                                                    <th>{event.calendarInfo.title}</th>
+                                                                    <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
+                                                                    <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
+                                                                    <td>{event.location}</td>
+                                                                    <td>{event.capacity}</td>
+                                                                    <td><Button outline color="success" onClick={() => { this.toggleActivateModal(event._id, event.calendarInfo.start, event.calendarInfo.end) }}>Activate</Button></td>
+                                                                    <td><Button outline color="warning" onClick={() => { this.toggleViewModal(event.calendarInfo) }}>View</Button></td>
+                                                                    <td><Button outline color="danger" onClick={() => { this.toggleDeleteModal(event._id) }}>Delete</Button></td>
+                                                                </tr>;
+                                                            } else return null;
+                                                        })
+                                                    }
+                                                </tbody>
                                             }
-                                            </tbody>
+                                        </Table>
+                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
+                                            <label className="app-no-events-message">Get started by creating an event</label>
                                         }
-                                    </Table>
-                                    {activeChecker(this.state.events, this.state.login.username).length === 0 &&
-                                        <label className="app-no-events-message">Get started by creating an event</label>
-                                    }
-                                </div>
-                            </Row>
-                            <Row>
-                                <div className="col-md-12 col-sm-12">
-                                    <h3 className="app-admin-page-subheader">Active Events</h3>
-                                </div>
-                            </Row>
-                            <Row className="app-admin-page-active-events">
-                                <div className="col-md-12 col-sm-12">
-                                    <Table>
-                                        <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Location</th>
-                                            <th>Capacity</th>
-                                            <th>Registration Started</th>
-                                        </tr>
-                                        </thead>
-                                        {flatten3(this.state.events, this.state.login.username).length !== 0 &&
-                                            <tbody>
-                                                {
-                                                    flatten3(this.state.events, this.state.login.username).map((events, index) => {
-                                                        let event = events;
-                                                        if (event) {
-                                                            return <tr key={index + 1}>
+                                    </div>
+                                </Row>
+                                <Row>
+                                    <div className="col-md-12 col-sm-12">
+                                        <h3 className="app-admin-page-subheader">Active Events</h3>
+                                    </div>
+                                </Row>
+                                <Row className="app-admin-page-active-events">
+                                    <div className="col-md-12 col-sm-12">
+                                        <Table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Location</th>
+                                                    <th>Capacity</th>
+                                                    <th>Registration Started</th>
+                                                </tr>
+                                            </thead>
+                                            {flatten3(this.state.events, this.state.login.username).length !== 0 &&
+                                                <tbody>
+                                                    {
+                                                        flatten3(this.state.events, this.state.login.username).map((events, index) => {
+                                                            let event = events;
+                                                            if (event) {
+                                                                return <tr key={index + 1}>
                                                                     <th>{event.calendarInfo.title}</th>
                                                                     <td>{moment(event.calendarInfo.start).format('dddd[,] MMMM Do YYYY')}</td>
                                                                     <td>{moment(event.calendarInfo.start).format('LT')} - {moment(event.calendarInfo.end).format('LT')}</td>
                                                                     <td>{event.location}</td>
                                                                     <td>{event.registeredEmail.length} / {event.capacity}</td>
                                                                     <td>{moment(event.activationDay).format('dddd[,] MMMM Do YYYY')}</td>
-                                                                    <td><Button outline color="success" onClick={() => {this.toggleAnnounceModal(event)}}>Announce</Button></td>
-                                                                    <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
-                                                                    <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
+                                                                    <td><Button outline color="success" onClick={() => { this.toggleAnnounceModal(event) }}>Announce</Button></td>
+                                                                    <td><Button outline color="warning" onClick={() => { this.toggleViewModal(event.calendarInfo) }}>View</Button></td>
+                                                                    <td><Button outline color="danger" onClick={() => { this.toggleDeleteModal(event._id) }}>Delete</Button></td>
                                                                 </tr>;
-                                                        } else return null;
-                                                    })
-                                                }
-                                            </tbody>
+                                                            } else return null;
+                                                        })
+                                                    }
+                                                </tbody>
+                                            }
+                                        </Table>
+                                        {flatten3(this.state.events, this.state.login.username).length === 0 &&
+                                            <label className="app-no-events-message">Activate an event to make it public</label>
                                         }
-                                    </Table>
-                                    {flatten3(this.state.events, this.state.login.username).length === 0 &&
-                                        <label className="app-no-events-message">Activate an event to make it public</label>
-                                    }
-                                </div>
-                            </Row>
+                                    </div>
+                                </Row>
                                 <div className="col-md-12 col-sm-12">
                                     <Row className="app-button-container-row">
                                         <div className="app-button-container">
@@ -2249,14 +2229,12 @@ class App extends Component {
                                     </Row>
                                 </div>
                             </div>)}
-
                     </div>
-                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false}/>
+                    <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
                 </div>
             );
         }
     }
 }
-
 
 export default App;
