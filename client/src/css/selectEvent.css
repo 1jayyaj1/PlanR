@@ -88,10 +88,18 @@
 
 .select-event-edit-header-label {
 	margin-bottom:0px!important;
+	font-size: 32px;
 }
 
 .select-event-view-header-label {
 	margin-bottom:0px!important;
 	margin-left: 7%!important;
 	width: 250px!important;
+	font-size: 32px;
+}
+
+.select-event-selected-event {
+	margin-bottom: 0px!important;
+	
+	font-size: 32px;
 }

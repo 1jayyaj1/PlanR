@@ -58,7 +58,7 @@ function flatten3(l, currentUser) {
         return events.data
     })
     
-    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }});
+    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) >= new Date(moment(x.activationDay).format())); } else {return null;} });
 
     return test;
 }
@@ -67,7 +67,7 @@ function activeChecker(l, currentUser) {
     var test = l.map(events => {
         return events.data
     })
-    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())) }});
+    test = flatten(test).filter(x => { if ( x.instructor === currentUser ){ return ( new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else {return null; } });
     return test;
 }
 
@@ -892,7 +892,7 @@ class App extends Component {
     //This method creates a user account.
     createAccount() {
         const myComponent = this;
-        const emailRegex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+        const emailRegex = /^(([^<>()[\].,;:\s@"]+(.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+.)+[^<>()[\].,;:\s@"]{2,})$/i;
         const username = this.state.createUserName.value;
         const password = this.state.createPassword.value;
         const email = this.state.createEmail.value;
@@ -1774,7 +1774,7 @@ class App extends Component {
                                     {/*<----------------------- EVENT CREATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.createModal} toggle={this.toggleCreateEventModal} className={this.props.className}>
                                         <ModalHeader>
-                                            <h2 className="create-event-new-event-label">New Event</h2>
+                                            <label className="create-event-new-event-label">New Event</label>
                                         </ModalHeader>
                                         <ModalBody>
                                             <Form>
@@ -1808,7 +1808,9 @@ class App extends Component {
 
                                     {/*<----------------------- EVENT SUBMIT MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.registerModal} toggle={this.toggleRegisterModal} className={this.props.className}>
-                                        <ModalHeader><h2>Selected Events</h2></ModalHeader>
+                                        <ModalHeader>
+                                            <label className="select-event-selected-event">Selected Events</label>
+                                        </ModalHeader>
                                         <ModalBody>
                                             <form>
                                                 {this.state.registerEvents.length > 0 &&
@@ -1832,7 +1834,7 @@ class App extends Component {
                                                                                 <hr/>
                                                                             </Col>
                                                                     </Row>;
-                                                            } else return
+                                                            } else return null;
                                                     })
                                                 )}
                                             </form>
@@ -1849,7 +1851,9 @@ class App extends Component {
                                     {/*<----------------------- EVENT ANNOUNCE MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.announceModal} toggle={this.toggleAnnounceModal} className={this.props.className}>
                                         <form onSubmit={this.notifyEvent} id="announceModal">
-                                            <ModalHeader><h2 className="announce-event-announcement-label">Announcement</h2></ModalHeader>
+                                            <ModalHeader>
+                                                <label className="announce-event-announcement-label">Announcement</label>
+                                            </ModalHeader>
                                             <ModalBody>
                                                 <div className="row">
                                                     <div className="col">
@@ -1869,7 +1873,9 @@ class App extends Component {
 
                                     {/*<----------------------- ADD ADMIN MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.addAdminModal} toggle={this.toggleAddAdminModal} className={this.props.className}>
-                                        <ModalHeader><h2 className="add-admin-label">Add Admin</h2></ModalHeader>
+                                        <ModalHeader>
+                                            <label className="add-admin-label">Add Admin</label>
+                                        </ModalHeader>
                                         <ModalBody>
                                             
                                                 <label htmlFor="contactFormEmail">Search by email</label>
@@ -1886,15 +1892,15 @@ class App extends Component {
                                                     <Table className="add-admin-table">
                                                         <tbody>
                                                             <tr>
-                                                                <td scope="row" className="add-admin-user-top"><span className="add-admin-user-info">Name:</span></td>
+                                                                <td className="add-admin-user-top"><span className="add-admin-user-info">Name:</span></td>
                                                                 <td className="add-admin-user-top"><span className="add-admin-user-info-data">{this.state.nameUserModal}</span></td>
                                                             </tr>
                                                             <tr>
-                                                                <td scope="row"><span className="add-admin-user-info">Username:</span></td>
+                                                                <td><span className="add-admin-user-info">Username:</span></td>
                                                                 <td><span className="add-admin-user-info-data">{this.state.userNameModal}</span></td>
                                                             </tr>
                                                             <tr>
-                                                                <td scope="row"><span className="add-admin-user-info">Email:</span></td>
+                                                                <td><span className="add-admin-user-info">Email:</span></td>
                                                                 <td><span className="add-admin-user-info-data">{this.state.emailUserModal}</span></td>
                                                             </tr>
                                                         </tbody>
@@ -1914,9 +1920,9 @@ class App extends Component {
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                         <ModalHeader>
                                         {this.state.instructor !== this.state.login.username &&
-                                            (<h2 className="select-event-view-header-label">{this.state.calendarInfo.title}</h2>)}
+                                            (<label className="select-event-view-header-label">{this.state.calendarInfo.title}</label>)}
                                         {this.state.instructor === this.state.login.username &&
-                                            (<h2 className="select-event-edit-header-label">Edit Event</h2>)}
+                                            (<label className="select-event-edit-header-label">Edit Event</label>)}
                                         </ModalHeader>
                                         <ModalBody>
                                             {this.state.instructor !== this.state.login.username &&
@@ -1924,35 +1930,30 @@ class App extends Component {
                                                     <Col xs="12" sm="12" md="12" lg="12">
                                                     <Table className="select-event-table">
                                                         <tbody>
-                                                        <tr>
-                                                            <td scope="row" className="select-event-top"><span className="select-event-info">Instructor:</span></td>
-                                                            <td className="select-event-top"><span className="select-event-info-data">{this.state.instructor}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Date:</span></td>
-                                                            <td><span className="select-event-info-data">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Time:</span></td>
-                                                            <td><span className="select-event-info-data">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Location:</span></td>
-                                                            <td><span className="select-event-info-data">{this.state.location.value}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Capacity:</span></td>
-                                                            <td><span className="select-event-info-data">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Description:</span></td>
-                                                            <td><span className="select-event-info-data">{this.state.description.value}</span></td>
-                                                        </tr>
-                                                        {this.state.isRecurrent.value &&
-                                                        <tr>
-                                                            <td scope="row"><span className="select-event-info">Recurrence:</span></td>
-                                                            <td><span className="select-event-info-data">{this.state.recurrence}</span></td>
-                                                        </tr>} 
+                                                            <tr>
+                                                                <td className="select-event-top"><span className="select-event-info">Instructor:</span></td>
+                                                                <td className="select-event-top"><span className="select-event-info-data">{this.state.instructor}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><span className="select-event-info">Date:</span></td>
+                                                                <td><span className="select-event-info-data">{moment(this.state.calendarInfo.start).format("dddd [,] MMMM Do YYYY")}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><span className="select-event-info">Time:</span></td>
+                                                                <td><span className="select-event-info-data">From {moment(this.state.calendarInfo.start).format("H:mm")} to {moment(this.state.calendarInfo.end).format("H:mm")}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><span className="select-event-info">Location:</span></td>
+                                                                <td><span className="select-event-info-data">{this.state.location.value}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><span className="select-event-info">Capacity:</span></td>
+                                                                <td><span className="select-event-info-data">{this.state.liveCapacity} / {this.state.capacity.value}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><span className="select-event-info">Description:</span></td>
+                                                                <td><span className="select-event-info-data">{this.state.description.value}</span></td>
+                                                            </tr> 
                                                         </tbody>
                                                     </Table> 
                                                     </Col>
@@ -2073,7 +2074,7 @@ class App extends Component {
                                     {/*<----------------------- EVENT ACTIVATION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.activateModal} toggle={this.toggleActivateModal} className={this.props.className}>
                                         <ModalHeader>
-                                        <h2 className="activate-event-label">Activate Event</h2>
+                                            <label className="activate-event-label">Activate Event</label>
                                         </ModalHeader>
                                         <ModalBody>
                                         <Row >
@@ -2120,7 +2121,7 @@ class App extends Component {
 
                                     <Modal isOpen={this.state.deleteModal} toggle={this.toggleDeleteModal} className={this.props.className}>
                                         <ModalHeader>
-                                        <h2 className="delete-event-delete-event-label">Delete Event</h2>
+                                            <label className="delete-event-delete-label">Delete Event</label>
                                         </ModalHeader>
                                         <ModalBody>
                                         <Row className="delete-event-row">
@@ -2162,10 +2163,7 @@ class App extends Component {
                                             <th>Location</th>
                                             <th>Capacity</th>
                                         </tr>
-                                        </thead>
-                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
-                                            <label className="app-no-events-message">Get started by creating an event</label>
-                                        }    
+                                        </thead>    
                                         {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
                                             <tbody>
                                             {
@@ -2182,12 +2180,15 @@ class App extends Component {
                                                                 <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
                                                                 <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                             </tr>;
-                                                    } else return
+                                                    } else return null;
                                                 })
                                             }
                                             </tbody>
                                         }
                                     </Table>
+                                    {activeChecker(this.state.events, this.state.login.username).length === 0 &&
+                                        <label className="app-no-events-message">Get started by creating an event</label>
+                                    }
                                 </div>
                             </Row>
                             <Row>
@@ -2208,9 +2209,6 @@ class App extends Component {
                                             <th>Registration Started</th>
                                         </tr>
                                         </thead>
-                                        {flatten3(this.state.events, this.state.login.username).length === 0 &&
-                                            <label className="app-no-events-message">Activate an event to make it public</label>
-                                        }
                                         {flatten3(this.state.events, this.state.login.username).length !== 0 &&
                                             <tbody>
                                                 {
@@ -2228,12 +2226,15 @@ class App extends Component {
                                                                     <td><Button outline color="warning" onClick={() => {this.toggleViewModal(event.calendarInfo)}}>View</Button></td>
                                                                     <td><Button outline color="danger" onClick={() => {this.toggleDeleteModal(event._id)}}>Delete</Button></td>
                                                                 </tr>;
-                                                        } else return
+                                                        } else return null;
                                                     })
                                                 }
                                             </tbody>
                                         }
                                     </Table>
+                                    {flatten3(this.state.events, this.state.login.username).length === 0 &&
+                                        <label className="app-no-events-message">Activate an event to make it public</label>
+                                    }
                                 </div>
                             </Row>
                                 <div className="col-md-12 col-sm-12">

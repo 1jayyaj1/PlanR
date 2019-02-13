@@ -10,7 +10,8 @@
 	padding-right: 3.2%;
 }
 
-.delete-event-delete-event-label {
+.delete-event-delete-label {
 	margin-bottom: 0px!important;
 	width: 200px!important;
+	font-size: 32px;
 }

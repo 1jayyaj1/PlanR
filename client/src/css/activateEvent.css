@@ -8,11 +8,8 @@
 
 .activate-event-label {
 	margin-bottom: 0px!important;
-    width: 200px!important
-}
-
-.activate-event-modal-body {
-	
+    width: 200px!important;
+    font-size: 32px;
 }
 
 .activate-event-date-picker {
