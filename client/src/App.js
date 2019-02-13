@@ -309,7 +309,7 @@ class App extends Component {
                 }
             })
             .catch(error => {
-                console.log(this.error);
+                // console.log(error); for development purposes.
             })
     }
 
@@ -329,7 +329,7 @@ class App extends Component {
                 });
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
                 toast.error('The user was not set as an administrator, please try again later.', {  //Alerts the user that the operation was not successful.
                     position: "top-center",
                     autoClose: 4000,
@@ -529,7 +529,7 @@ class App extends Component {
                 }
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error); for development purposes.
             })
         if (this.state.announceModal === false) { //Fill in event info fields when opening the event announce modal.
             this.setState({
@@ -563,7 +563,6 @@ class App extends Component {
     unregisterFromSingleEvent(id) {
         axios.get('/events/' + id)  //Get specific event using id.
             .then(event => {
-                console.log(event)
                 let i = 0;
                 let index;
                 this.state.registerEvents.forEach(event => {   //Loop through all the uncompleted registered events.
@@ -578,10 +577,8 @@ class App extends Component {
                         event.data.registeredEmail.splice(emailCounter, 1)
                         axios.put('/events/' + id, { registeredEmail: event.data.registeredEmail })   //Removes event from database.
                             .then(response => {
-                                console.log(response.data)
                                 if (this.state.registerEvents.length === 1) {    //If the unregistered event was the only one in the list, remove event from local list and close modal.
                                     this.state.registerEvents.splice(index, 1);
-                                    console.log(this.state.registerEvents);
                                     this.setState({
                                         registerEvents: this.state.registerEvents,
                                         registerModal: false,
@@ -591,24 +588,20 @@ class App extends Component {
                                 }
                                 else {  //If the unregistered event was not the only one in the list, remove it from the local list and keep the modal open.
                                     this.state.registerEvents.splice(index, 1);
-                                    console.log(this.state.registerEvents);
                                     this.setState({
                                         registerEvents: this.state.registerEvents,
                                     });
                                 }
-
                             })
                             .catch(error => {
-                                console.log(this.error);
+                                //console.log(error);   for development purposes.
                             });
                     }
                     emailCounter++;
                 })
-
-
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error); for development purposes.
             });
     }
 
@@ -617,14 +610,12 @@ class App extends Component {
         this.state.registerEventId.forEach(id => {    //Loops through each event that hasn't confirm its registration.
             axios.get('/events/' + id)  //Get specific event from database using id.
                 .then(event => {
-                    console.log(event)
                     let i = 0;  //Used to find the index.
                     event.data.registeredEmail.forEach(email => { //Loops through each registered email of an event.
                         if (this.state.registerEventEmail === email) {   //If event's email list contains current user's email, remove it and update changes in database.
                             event.data.registeredEmail.splice(i, 1)
                             axios.put('/events/' + id, { registeredEmail: event.data.registeredEmail })
                                 .then(response => {
-                                    console.log(response.data)
                                     this.setState({
                                         registerEvents: [],
                                         visible: false,
@@ -632,7 +623,7 @@ class App extends Component {
                                     this.handleResetClick(); //Reset counter to 5 minutes since no events require a completion of registration.
                                 })
                                 .catch(error => {
-                                    console.log(this.error);
+                                    //console.log(error);   for development purposes.
                                 });
                         }
                         i++;
@@ -641,7 +632,7 @@ class App extends Component {
 
                 })
                 .catch(error => {
-                    console.log(this.error);
+                    //console.log(error);   for development purposes.
                 });
         })
     }
@@ -659,7 +650,6 @@ class App extends Component {
                         if (this.state.login.name === user.name && this.state.login.username === user.username) {   //If the name of the user matches the one of the logged in user.
                             axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
                                 .then(response => {
-                                    console.log(response.data)
                                     if (response.data.registeredEmail.length === response.data.capacity) {   //If the number of email registered = event capacity, event is full -> can't add it.
                                         fullCapacity = true
                                     }
@@ -675,7 +665,6 @@ class App extends Component {
                                     if (alreadyRegistered === false && fullCapacity === false) {
                                         axios.put('/events/' + currentEventId, { registeredEmail: response.data.registeredEmail.concat(user.email) }) //Adds the logged in user's email to the registered email field of the event.
                                             .then(response => {
-                                                console.log(response.data)
                                                 this.handleResetClick()  //Resets the registration counter to 5 min.
                                                 this.handleStartClick()  //Starts again the registration counter.
                                                 this.setState({
@@ -690,11 +679,11 @@ class App extends Component {
                                                         });
                                                     })
                                                     .catch(error => {
-                                                        console.log(this.error);
+                                                        //console.log(error);   for development purposes.
                                                     })
                                             })
                                             .catch(error => {
-                                                console.log(this.error);
+                                                //console.log(error);   for development purposes.
                                             });
                                     }
                                     else if (alreadyRegistered === true) {   //Alerts the user if they are already registered to the event.
@@ -709,7 +698,7 @@ class App extends Component {
                                     }
                                 })
                                 .catch(error => {
-                                    console.log(this.error);
+                                    //console.log(error);   for development purposes.
                                 });
                             throw BreakException;
                         }
@@ -720,7 +709,7 @@ class App extends Component {
                 }
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             })
     }
 
@@ -976,7 +965,6 @@ class App extends Component {
         if (username !== "" && password !== "") {   //Makes sure that log in fields are valid.
             axios.post('/login', { username: username, password: password })
                 .then(response => { //Sends credentials to backend, cookie created, and reload to main page.
-                    console.log(response);
                     window.location.reload();
                 })
                 .catch(error => {
@@ -1002,7 +990,7 @@ class App extends Component {
                             closeButton: false,
                         })
                     } else {
-                        console.log(error);
+                        //console.log(error);   for development purposes.
                     }
                 });
         }
@@ -1083,7 +1071,6 @@ class App extends Component {
         let events = this.splitEvent(newEvent); //This method returns an event list if recurring, or returns newEvent unchanged if non-recurring.
         axios.post('/events', events)   //Create the new event in the database.
             .then(response => {
-                console.log(response);
                 this.fetchEvents();    //This method updates the event list displayed to reflect the newly created event.
                 this.setState({    //Clear out the event field's states from the create event modal.
                     name: { value: "", valid: true },
@@ -1112,7 +1099,7 @@ class App extends Component {
                 })
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             });
     }
 
@@ -1123,7 +1110,7 @@ class App extends Component {
                 this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             });
         this.setState({
             activationDay: null,
@@ -1177,11 +1164,11 @@ class App extends Component {
                         });
                     })
                     .catch(error => {
-                        console.log(this.error);
+                        //console.log(error);   for development purposes.
                     });
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             })
     }
 
@@ -1197,8 +1184,7 @@ class App extends Component {
                 this.fetchEvents();    //This method will fetch and display the most recent events.
             })
             .catch(error => {
-                console.log("Redirecting to login");    //If fails to get logged in user info, goes back to log in page.
-                this.setState({ login: {}, });
+                this.setState({ login: {}, });    //If fails to get logged in user info, goes back to log in page.
             });
     }
 
@@ -1207,7 +1193,6 @@ class App extends Component {
         axios.delete('/events/' + this.state.currentEventId)
             .then(res => {
                 this.fetchEvents();    //This method updates the event list displayed to reflect the new changes.
-                console.log(res.data);
                 this.toggleDeleteModal();   //Close the delete event modal.
                 toast.success('The event was deleted.', {
                     position: "top-center",
@@ -1220,7 +1205,7 @@ class App extends Component {
                 });
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             });
     }
 
@@ -1295,7 +1280,7 @@ class App extends Component {
                 this.setState({ events: response.data });    //Update the state of the events list.
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             })
     }
 
@@ -1326,12 +1311,12 @@ class App extends Component {
                             closeButton: false,
                         }))
                     .catch(error => {
-                        console.log(this.error);
+                        //console.log(error);   for development purposes.
                     });
                 document.getElementById("announceModal").reset();   //Clears our the announce message.
             })
             .catch(error => {
-                console.log(this.error);
+                //console.log(error);   for development purposes.
             })
     }
 
