@@ -135,7 +135,7 @@ class App extends Component {
             emailUserModal: "",
             idUserModal: "",
             newAdminSearchTable: 'none',
-            login: { username: "default", email: "default", admin: false },
+            login: { username: "default", name: "default", admin: false },
             visible: false,
             liveCapacity: 0,
             myEventsErrorLabel: 'none',
@@ -515,7 +515,8 @@ class App extends Component {
                 let BreakException = {};
                 try {
                     users.forEach(user => {  //Loops through each user received from the database.
-                        if (this.state.login.username === user.name) {   //We only store the name of logged in user, therefore this "if" statement
+                        if (this.state.login.name === user.name && this.state.login.username === user.username) { 
+                            //We only store the name of logged in user, therefore this "if" statement
                             this.setState({                          //gives us the logged in user email that will be used to sent the announcement.
                                 email: { value: user.email, valid: true },
                             });
@@ -655,7 +656,7 @@ class App extends Component {
                 let BreakException = {};
                 try {
                     users.forEach(user => {  //Loops through each user from the database.
-                        if (this.state.login.username === user.name) {   //If the name of the user matches the one of the logged in user.
+                        if (this.state.login.name === user.name && this.state.login.username === user.username) {   //If the name of the user matches the one of the logged in user.
                             axios.get('/events/' + currentEventId)  //Get the info of the selected event using its id.
                                 .then(response => {
                                     console.log(response.data)
@@ -915,7 +916,7 @@ class App extends Component {
                     })
                 })
                 .catch(error => {
-                    if (this.error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
+                    if (error.response.data.toString() === "Bad Request") { //Alerts the user of an error 400 (bad request).
                         toast.error("The account was not created, please try again later.", {
                             position: "top-center",
                             autoClose: 4000,
@@ -970,16 +971,16 @@ class App extends Component {
 
     //This method is triggered when the user logs in.
     handleLoginSubmit() {
-        const name = this.state.username.value;
+        const username = this.state.username.value;
         const password = this.state.password.value;
-        if (name !== "" && password !== "") {   //Makes sure that log in fields are valid.
-            axios.post('/login', { username: name, password: password })
+        if (username !== "" && password !== "") {   //Makes sure that log in fields are valid.
+            axios.post('/login', { username: username, password: password })
                 .then(response => { //Sends credentials to backend, cookie created, and reload to main page.
                     console.log(response);
                     window.location.reload();
                 })
                 .catch(error => {
-                    if (this.error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
+                    if (error.response.status.toString() === "401") {   //Alerts user of error 401 (wrong password, but username exists).
                         toast.error('The username or password you entered is incorrect.', {
                             position: "top-center",
                             autoClose: 4000,
@@ -990,7 +991,7 @@ class App extends Component {
                             closeButton: false,
                         })
                     }
-                    else if (this.error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
+                    else if (error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
                         toast.error('The username entered does not match any account.', {
                             position: "top-center",
                             autoClose: 4000,
@@ -1001,17 +1002,17 @@ class App extends Component {
                             closeButton: false,
                         })
                     } else {
-                        console.log(this.error);
+                        console.log(error);
                     }
                 });
         }
         else {  //If log in fields are invalid, find which and alert the user.
-            if (name === "") {
+            if (username === "") {
                 this.setState({
                     username: { value: "", valid: false },
                 });
             }
-            if (password === "") {
+            if (username === "") {
                 this.setState({
                     password: { value: "", valid: false },
                 });
@@ -1075,7 +1076,7 @@ class App extends Component {
             location: this.state.location.value,
             allDay: this.state.allDay,
             activationDay: new Date(aDate),
-            instructor: this.state.login.username,
+            instructor: this.state.login.name,
             registeredEmail: this.state.registerEvents,
             calendarInfo: eventCalendarInfo,
         }
@@ -1190,6 +1191,7 @@ class App extends Component {
         axios.get('/info')  //Gets the username (full name) and admin status of the logged in user.
             .then(response => {
                 user.username = response.data.username;
+                user.name = response.data.name;
                 user.admin = response.data.admin;
                 this.setState({ login: user, });
                 this.fetchEvents();    //This method will fetch and display the most recent events.
@@ -1304,7 +1306,7 @@ class App extends Component {
             .then(response => {
                 let startDateNotifyEmail = moment(this.state.startDate).format('LLLL')   //Adjusts the format of the event date so that it's readable in an email.
                 let data = {    //Creates an object with all of the information required to send the announcement.
-                    notifyFullName: this.state.login.username,
+                    notifyFullName: this.state.login.name,
                     notifyEmailSender: this.state.email.value,
                     notifyEmailRecepients: response.data.registeredEmail,
                     notifyMessage: this.announceMessage.current.value,
@@ -1528,7 +1530,7 @@ class App extends Component {
                                 <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
                                 <label className="create-event-summary-name">{this.state.name.value}</label>
                                 <ul className="create-event-summary-list">
-                                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
+                                    <li><span>Instructor:</span> <span>{this.state.login.name}</span></li>
                                     <li><span>Capacity:</span> <span>{String(this.state.capacity.value)}</span></li>
                                     <li><span>Type of event:</span> <span>Non-recurring</span></li>
                                     <li><span>Time & date:</span> <span>{moment(this.state.startDate).format("dddd [,] MMMM Do YYYY")} from {moment(this.state.startDate).format("H:mm")} to {moment(this.state.endDate).format("H:mm")}</span></li>
@@ -1547,7 +1549,7 @@ class App extends Component {
                                 <i className="fa fa-check-circle icon-pass cycle-status create-event-summary-icon"></i>
                                 <label className="create-event-summary-name">{this.state.name.value}</label>
                                 <ul className="create-event-summary-list">
-                                    <li><span>Instructor:</span> <span>{this.state.login.username}</span></li>
+                                    <li><span>Instructor:</span> <span>{this.state.login.name}</span></li>
                                     <li><span>Capacity:</span> <span>{this.state.capacity.value}</span></li>
                                     <li><span>Type of event:</span> <span>Recurring</span></li>
                                     <li><span>Day of the week:</span> <span>{this.state.daysSelected.join(", ")}</span></li>
@@ -1699,7 +1701,7 @@ class App extends Component {
                         <div className="inner-wrapper mt-auto mb-auto container">
                             <div className="row">
                                 <div className="col-md-7">
-                                    <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.username)}</h1>
+                                    <h1 className="welcome-heading display-4 text-white">Hello {this.findFirstName(this.state.login.name)}</h1>
                                     <label className="app-welcome-subheading">Scroll down to get started</label>
                                 </div>
                             </div>
@@ -1885,13 +1887,13 @@ class App extends Component {
                                     {/*<----------------------- EVENT SELECTION MODAL ----------------------->*/}
                                     <Modal isOpen={this.state.viewModal} toggle={this.toggleViewModal} className={this.props.className}>
                                         <ModalHeader>
-                                            {this.state.instructor !== this.state.login.username &&
+                                            {this.state.instructor !== this.state.login.name &&
                                                 (<label className="select-event-view-header-label">{this.state.calendarInfo.title}</label>)}
-                                            {this.state.instructor === this.state.login.username &&
+                                            {this.state.instructor === this.state.login.name &&
                                                 (<label className="select-event-edit-header-label">Edit Event</label>)}
                                         </ModalHeader>
                                         <ModalBody>
-                                            {this.state.instructor !== this.state.login.username &&
+                                            {this.state.instructor !== this.state.login.name &&
                                                 (<Row className="select-event-modal">
                                                     <Col xs="12" sm="12" md="12" lg="12">
                                                         <Table className="select-event-table">
@@ -1925,7 +1927,7 @@ class App extends Component {
                                                     </Col>
                                                     <ToastContainer position="top-center" autoClose={3000} hideProgressBar newestOnTop={false} closeOnClick rtl={false} pauseOnVisibilityChange={false} draggablePercent={60} pauseOnHover={false} />
                                                 </Row>)}
-                                            {this.state.instructor === this.state.login.username &&
+                                            {this.state.instructor === this.state.login.name &&
                                                 (<Row>
                                                     <fieldset>
                                                         <Row className="select-event-row">
@@ -2044,13 +2046,13 @@ class App extends Component {
                                                 </Row>)}
                                         </ModalBody>
                                         <ModalFooter>
-                                            {this.state.instructor !== this.state.login.username &&
+                                            {this.state.instructor !== this.state.login.name &&
                                                 (<Col xs="12" sm="12" md="12" lg="12">
                                                     <Button className="select-event-add-button" color="primary" onClick={() => { this.addEventBasket(this.state.currentEventId) }}>Add</Button>
                                                     <label className="select-event-error-label" style={{ display: this.state.allReadyRegisteredErrorLabel }}> You're already registered to this event. </label>
                                                     <label className="select-event-error-label" style={{ display: this.state.fullCapacityErrorLabel }}> This event is already full. </label>
                                                 </Col>)}
-                                            {this.state.instructor === this.state.login.username &&
+                                            {this.state.instructor === this.state.login.name &&
                                                 (<Button color="warning" onClick={() => { this.editEvent() }}>Save</Button>)}
                                         </ModalFooter>
                                     </Modal>
@@ -2145,10 +2147,10 @@ class App extends Component {
                                                     <th>Capacity</th>
                                                 </tr>
                                             </thead>
-                                            {activeChecker(this.state.events, this.state.login.username).length !== 0 &&
+                                            {activeChecker(this.state.events, this.state.login.name).length !== 0 &&
                                                 <tbody>
                                                     {
-                                                        activeChecker(this.state.events, this.state.login.username).map((events, index) => {
+                                                        activeChecker(this.state.events, this.state.login.name).map((events, index) => {
                                                             let event = events;
                                                             if (event) {
                                                                 return <tr key={index + 1}>
@@ -2167,7 +2169,7 @@ class App extends Component {
                                                 </tbody>
                                             }
                                         </Table>
-                                        {activeChecker(this.state.events, this.state.login.username).length === 0 &&
+                                        {activeChecker(this.state.events, this.state.login.name).length === 0 &&
                                             <label className="app-no-events-message">Get started by creating an event</label>
                                         }
                                     </div>
@@ -2190,10 +2192,10 @@ class App extends Component {
                                                     <th>Registration Started</th>
                                                 </tr>
                                             </thead>
-                                            {flatten3(this.state.events, this.state.login.username).length !== 0 &&
+                                            {flatten3(this.state.events, this.state.login.name).length !== 0 &&
                                                 <tbody>
                                                     {
-                                                        flatten3(this.state.events, this.state.login.username).map((events, index) => {
+                                                        flatten3(this.state.events, this.state.login.name).map((events, index) => {
                                                             let event = events;
                                                             if (event) {
                                                                 return <tr key={index + 1}>
@@ -2213,7 +2215,7 @@ class App extends Component {
                                                 </tbody>
                                             }
                                         </Table>
-                                        {flatten3(this.state.events, this.state.login.username).length === 0 &&
+                                        {flatten3(this.state.events, this.state.login.name).length === 0 &&
                                             <label className="app-no-events-message">Activate an event to make it public</label>
                                         }
                                     </div>

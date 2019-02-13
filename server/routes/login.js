@@ -19,7 +19,8 @@ router.post('/', function(req, res, next) {
                     bcrypt.compare(body.password, user.password, function(err, status) {
                         if (status == true) {
                             req.session.admin = user.admin;
-                            req.session.username = user.name;
+                            req.session.username = user.username;
+                            req.session.name = user.name;
                             req.session.logged = true;
                             return res.sendStatus(200);
                         } else {

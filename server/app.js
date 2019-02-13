@@ -72,6 +72,7 @@ app.get('/info', function(req, res) {
     } else {
         var info = {
             username: req.session.username,
+            name: req.session.name,
             admin: req.session.admin
         };
     
