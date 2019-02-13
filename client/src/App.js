@@ -990,7 +990,7 @@ class App extends Component {
                     closeButton: false,
                     })
                 }
-                else if (error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
+                else if (this.error.response.status.toString() === "404") {  //Alerts the user of error 404 (username does not exist in database).
                     toast.error('The username entered does not match any account.', {
                     position: "top-center",
                     autoClose: 4000,
@@ -1977,6 +1977,14 @@ class App extends Component {
                                                                 placeholderText="Activation date"
                                                                 selected={this.state.activationDay}
                                                                 onChange={this.handleChangeActivationDate}
+                                                                popperModifiers={{
+                                                                flip: {
+                                                                  enabled: false
+                                                                },
+                                                                preventOverflow: {
+                                                                  enabled: true,
+                                                                  escapeWithReference: false
+                                                                }}}
                                                                 showTimeSelect
                                                                 timeFormat="HH:mm"
                                                                 timeIntervals={15}
@@ -2010,6 +2018,14 @@ class App extends Component {
                                                         placeholderText="Start date"
                                                         selected={this.state.startDate}
                                                         onChange={this.handleChangeStart}
+                                                        popperModifiers={{
+                                                        flip: {
+                                                          enabled: false
+                                                        },
+                                                        preventOverflow: {
+                                                          enabled: true,
+                                                          escapeWithReference: false
+                                                        }}}
                                                         showTimeSelect
                                                         timeFormat="HH:mm"
                                                         timeIntervals={15}

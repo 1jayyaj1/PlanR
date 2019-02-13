@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose')
 require('dotenv').config();
-var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var eventsRouter = require('./routes/events');
 var feedbackRouter = require('./routes/feedback');
@@ -63,7 +62,6 @@ app.use('/users', usersRouter);
 
 app.use(helmet())
 app.use('/login', loginRouter);
-app.use('/', indexRouter);
 app.use('/events', eventsRouter);
 app.use('/feedback', feedbackRouter);
 app.use('/notification', announceRouter);
