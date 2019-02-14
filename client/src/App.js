@@ -35,41 +35,42 @@ const steps = [{
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment))
 
-function flatten(arr) {
-    let test = arr.reduce(function (flat, toFlatten) {
-
-        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
-
-    return test;
+//This generic recursive method flattens out a multi level array.
+function flatten(nestedArray) {
+    let unNestedArray = nestedArray.reduce(function (flat, toFlatten) { //Reduce will "reduce" the original array (flat) into an unnested array (toFlatten).
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);  //Recursive behaviour flatten out multiple levels of array nesting.
+    }, []);    //This lonely empty array will holds the toFlatten array.
+    return unNestedArray;
 }
 
-function flatten2(l) {
-    let test = l.map(events => {
+//This method is used to get a flattenned array of event's calendar info.
+function flattenEvents(eventsList) {
+    let eventData = eventsList.map(events => {   //Returns list of event data.
         return events.data
     })
-
-    test = flatten(test).filter(x => { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
-
-    return test;
+    //This next line uses flatten fct to flatten each event.data. Then, it only keeps the calendarInfo fields from the event which are active.
+    eventData = flatten(eventData).filter(x => { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())) }).map(x => { return x.calendarInfo });
+    return eventData;   //Final eventData contains the calendarInfo of active events. Used to feed events to react-big-calendar.
 }
 
-function flatten3(l, currentUser) {
-    let test = l.map(events => {
+//This method is used to get a flattened list of active events data associated to the current user logged in.
+function activeChecker(eventsList, currentUser) {
+    let eventData = eventsList.map(events => {  //Returns list of event data.
         return events.data
     })
-
-    test = flatten(test).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())); } else { return null; } });
-
-    return test;
+    //This next line uses flatten fct to flatten each event.data. Then, it checks if the event belongs to the logged in user and if it's active.
+    eventData = flatten(eventData).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) >= new Date(moment(x.activationDay).format())); } else { return null; } });
+    return eventData;
 }
 
-function activeChecker(l, currentUser) {
-    let test = l.map(events => {
+//This method is used to get a flattened list of inactive events data associated to the current user logged in.
+function inactiveChecker(eventsList, currentUser) {
+    let eventData = eventsList.map(events => {  //Returns list of event data.
         return events.data
     })
-    test = flatten(test).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else { return null; } });
-    return test;
+    //This next line uses flatten fct to flatten each event.data. Then, it checks if the event belongs to the logged in user and if it's inactive.
+    eventData = flatten(eventData).filter(x => { if (x.instructor === currentUser) { return (new Date(moment().format()) <= new Date(moment(x.activationDay).format())); } else { return null; } });
+    return eventData;
 }
 
 const formattedSeconds = (sec) =>
@@ -1718,7 +1719,7 @@ class App extends Component {
                                                     max={new Date('2018, 1, 7, 18:00')}
                                                     defaultView='week'
                                                     onSelectEvent={(obj) => this.toggleViewModal(obj)}
-                                                    events={flatten2(this.state.events)}
+                                                    events={flattenEvents(this.state.events)}
                                                     startAccessor='start'
                                                     endAccessor='end'>
                                                 </BigCalendar>
@@ -2133,10 +2134,10 @@ class App extends Component {
                                                     <th>Capacity</th>
                                                 </tr>
                                             </thead>
-                                            {activeChecker(this.state.events, this.state.login.name).length !== 0 &&
+                                            {inactiveChecker(this.state.events, this.state.login.name).length !== 0 &&
                                                 <tbody>
                                                     {
-                                                        activeChecker(this.state.events, this.state.login.name).map((events, index) => {
+                                                        inactiveChecker(this.state.events, this.state.login.name).map((events, index) => {
                                                             let event = events;
                                                             if (event) {
                                                                 return <tr key={index + 1}>
@@ -2155,7 +2156,7 @@ class App extends Component {
                                                 </tbody>
                                             }
                                         </Table>
-                                        {activeChecker(this.state.events, this.state.login.name).length === 0 &&
+                                        {inactiveChecker(this.state.events, this.state.login.name).length === 0 &&
                                             <label className="app-no-events-message">Get started by creating an event</label>
                                         }
                                     </div>
@@ -2178,10 +2179,10 @@ class App extends Component {
                                                     <th>Registration Started</th>
                                                 </tr>
                                             </thead>
-                                            {flatten3(this.state.events, this.state.login.name).length !== 0 &&
+                                            {activeChecker(this.state.events, this.state.login.name).length !== 0 &&
                                                 <tbody>
                                                     {
-                                                        flatten3(this.state.events, this.state.login.name).map((events, index) => {
+                                                        activeChecker(this.state.events, this.state.login.name).map((events, index) => {
                                                             let event = events;
                                                             if (event) {
                                                                 return <tr key={index + 1}>
@@ -2201,7 +2202,7 @@ class App extends Component {
                                                 </tbody>
                                             }
                                         </Table>
-                                        {flatten3(this.state.events, this.state.login.name).length === 0 &&
+                                        {activeChecker(this.state.events, this.state.login.name).length === 0 &&
                                             <label className="app-no-events-message">Activate an event to make it public</label>
                                         }
                                     </div>
