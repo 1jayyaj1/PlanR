@@ -10,16 +10,17 @@ import 'antd/dist/antd.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.min.css';
 import { PulseLoader } from 'react-spinners';
-import './css/logIn.css';
-import './css/createAccount.css';
-import './css/createEvent.css';
-import './css/calendarPage.css';
-import './css/submitEvent.css';
-import './css/announceEvent.css';
-import './css/addAdmin.css';
-import './css/selectEvent.css';
-import './css/deleteEvent.css';
-import './css/activateEvent.css';
+import './components/logIn/logIn.css';
+import './components/createAccount/createAccount.css';
+import './components/createEvent/createEvent.css';
+import './components/calendarPage/calendarPage.css';
+import './components/submitEvent/submitEvent.css';
+import './components/announceEvent/announceEvent.css';
+import './components/addAdmin/addAdmin.css';
+import './components/selectEvent/selectEvent.css';
+import './components/deleteEvent/deleteEvent.css';
+import './components/activateEvent/activateEvent.css';
+
 const axios = require('axios');
 
 const Step = Steps.Step;
