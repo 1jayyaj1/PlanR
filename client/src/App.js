@@ -1330,17 +1330,17 @@ class App extends Component {
                         <Col xs="6" sm="6" md="6" lg="6">
                             <Row>
                                 <label>Name</label>
-                                <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
+                                <Input autoComplete="off" name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
                                 <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
                             </Row>
                             <Row>
                                 <label>Capacity</label>
-                                <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
+                                <Input autoComplete="off" name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
                                 <div className="invalid-feedback">Numbers and can't be empty.</div>
                             </Row>
                             <Row>
                                 <label>Location</label>
-                                <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
+                                <Input autoComplete="off" name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
                                 <div className="invalid-feedback">Alphanumeric and can't be empty.</div>
                             </Row>
                             <Row>
@@ -1573,7 +1573,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group create-account-elements-container">
                                                     <label htmlFor="name" className="create-account-elements">Full name</label>
-                                                    <Input type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your full name" />
+                                                    <Input autoComplete="off" type="text" name="createName" value={this.state.createName.value} onChange={this.handleChange} className={this.state.createName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your full name" />
                                                     <div className="invalid-feedback create-account-elements">Name can't be left empty.</div>
                                                 </div>
                                             </div>
@@ -1582,7 +1582,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group create-account-elements-container">
                                                     <label htmlFor="email" className="create-account-elements">Email</label>
-                                                    <Input type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your email" />
+                                                    <Input autoComplete="off" type="text" name="createEmail" value={this.state.createEmail.value} onChange={this.handleChange} className={this.state.createEmail.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your email" />
                                                     <div className="invalid-feedback create-account-elements">Email format should be a@b.c.</div>
                                                 </div>
                                             </div>
@@ -1591,7 +1591,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group create-account-elements-container">
                                                     <label htmlFor="username" className="create-account-elements">Username</label>
-                                                    <Input type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your username" />
+                                                    <Input autoComplete="off" type="text" name="createUserName" value={this.state.createUserName.value} onChange={this.handleChange} className={this.state.createUserName.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your username" />
                                                     <div className="invalid-feedback create-account-elements">Username can't be left empty.</div>
                                                 </div>
                                             </div>
@@ -1600,7 +1600,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group create-account-elements-container">
                                                     <label htmlFor="password" className="create-account-elements">Password</label>
-                                                    <Input type="password" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password" />
+                                                    <Input autoComplete="off" type="password" name="createPassword" value={this.state.createPassword.value} onChange={this.handleChange} className={this.state.createPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Enter your password" />
                                                     <div className="invalid-feedback create-account-elements">Password can't be left empty.</div>
                                                 </div>
                                             </div>
@@ -1609,7 +1609,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group reate-account-elements-container">
                                                     <label htmlFor="confirmPassword" className="create-account-elements">Confirm your password</label>
-                                                    <Input type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Confirm your password" />
+                                                    <Input autoComplete="off" type="password" name="createConfirmPassword" value={this.state.createConfirmPassword.value} onChange={this.handleChange} className={this.state.createConfirmPassword.valid ? "form-control create-account-elements" : "form-control is-invalid create-account-elements"} placeholder="Confirm your password" />
                                                     <div className="invalid-feedback create-account-elements">Passwords do not match.</div>
                                                 </div>
                                             </div>
@@ -1637,7 +1637,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group log-in-form">
                                                     <label htmlFor="username" className="log-in-elements">Username</label>
-                                                    <Input type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your username"></Input>
+                                                    <Input autoComplete="off" type="text" name="username" value={this.state.username.value} onChange={this.handleChange} className={this.state.username.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your username"></Input>
                                                     <div className="invalid-feedback log-in-elements">Username can't be left empty.</div>
                                                 </div>
                                             </div>
@@ -1646,7 +1646,7 @@ class App extends Component {
                                             <div className="col-md-12 col-sm-12">
                                                 <div className="form-group log-in-form">
                                                     <label htmlFor="password" className="log-in-elements">Password</label>
-                                                    <Input type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your password"></Input>
+                                                    <Input autoComplete="off" type="password" name="password" value={this.state.password.value} onChange={this.handleChange} className={this.state.password.valid ? "form-control log-in-elements" : "form-control is-invalid log-in-elements"} placeholder="Enter your password"></Input>
                                                     <div className="invalid-feedback log-in-elements">Password can't be left empty.</div>
                                                 </div>
                                             </div>
@@ -1837,7 +1837,7 @@ class App extends Component {
                                             <label htmlFor="contactFormEmail">Search by email</label>
                                             <Row>
                                                 <div className="col-md-9 col-sm-9 add-admin-input-email-container">
-                                                    <input name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid ? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
+                                                    <input autoComplete="off" name="email" value={this.state.email.value} onChange={this.handleChangeSearchNewAdmin} className={this.state.email.valid ? "form-control add-admin-input-email" : "form-control is-invalid add-admin-input-email"} type="email" id="contactFormEmail" required="required" placeholder="Enter the new admin's email"></input>
                                                     <div className="invalid-feedback">Email address {this.state.email.value} doesn't exist, or is already an admin.</div>
                                                 </div>
                                                 <div className="col-md-3 col-sm-3 add-admin-search-button-container">
@@ -1920,17 +1920,17 @@ class App extends Component {
                                                             <Col xs="6" sm="6" md="6" lg="6">
                                                                 <Row>
                                                                     <label className="select-event-edit-label-top">Name</label>
-                                                                    <Input name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
+                                                                    <Input autoComplete="off" name="name" value={this.state.name.value} onChange={this.handleChange} className={this.state.name.valid ? "form-control" : "form-control is-invalid"} placeholder="What will it be called?" />
                                                                     <div className="invalid-feedback">Characters only and can't be empty.</div>
                                                                 </Row>
                                                                 <Row>
                                                                     <label className="select-event-edit-label-top">Capacity</label>
-                                                                    <Input name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
+                                                                    <Input autoComplete="off" name="capacity" value={String(this.state.capacity.value)} onChange={this.handleChange} className={this.state.capacity.valid ? "form-control" : "form-control is-invalid"} placeholder="How many people?" />
                                                                     <div className="invalid-feedback">Numbers only and can't be empty.</div>
                                                                 </Row>
                                                                 <Row>
                                                                     <label className="select-event-edit-label-top">Location</label>
-                                                                    <Input name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
+                                                                    <Input autoComplete="off" name="location" value={this.state.location.value} onChange={this.handleChange} className={this.state.location.valid ? "form-control" : "form-control is-invalid"} placeholder="Where will it take place?" />
                                                                     <div className="invalid-feedback">Alphanumeric only and can't be empty.</div>
                                                                 </Row>
                                                                 <Row>
