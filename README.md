@@ -1,4 +1,4 @@
-# Umba
+# PlanR
 
 
 ## Table of contents
@@ -19,7 +19,7 @@ You will also need to have *Node.js* installed (https://nodejs.org/en/).
 We use *Express.js* as our back-end. In order to start the server, do this:
 
 ```
-cd Umba/server
+cd PlanR/server
 npm install
 npm start
 ```
@@ -27,22 +27,15 @@ npm start
 As for the front-end, we use *ReactJS*. To get started, run this:
 
 ```
-cd Umba/client
+cd PlanR/client
 npm install
 npm start
 ```
 
-
 <a name="usage"></a>
 ## Usage
 
-We took care of writing extensive documentation (available in this repository) that give more details on how to use Umba.
-
-
-<a name="tech"></a>
-## Technologies
-
-Can you think of a better duo than peanut butter and jelly? Yeah, it's called using ReactJS for the front-end and Express.js for the back-end. As mentioned, make sure also to get MongoDB installed and running for Umba to run correctly.
+We took care of writing extensive documentation (available in this repository) that give more details on how to use PlanR.
 
 
 <a name="improv"></a>
@@ -53,4 +46,4 @@ Again, the documentation (available in this repository) lists multiple future im
 <a name="license"></a>
 ## License
 
-MIT, but feel free to use my code for your projects! Sharing is caring am I right?
+MIT, but feel free to use my code for your projects!
